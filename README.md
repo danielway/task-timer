@@ -5,6 +5,8 @@
 
 This is a simple client-side web application for tracking time spent on tasks. Note that this application is currently in-development.
 
+Access the application [here](https://tasktimer.danieldway.com).
+
 ## Notable features
 
 - Create tasks and log time manually or with a timer
