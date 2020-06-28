@@ -1,7 +1,7 @@
 # This is the primary CI workflow to build/test code pre-merge
 
 name: React CI
-on: pull-request
+on: pull_request
 
 jobs:
   build:
