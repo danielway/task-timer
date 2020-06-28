@@ -1,8 +1,8 @@
 import React from 'react';
-import './App.css';
+import Layout from './shared/layout/Layout';
 
 function App() {
-  return <p>Hello world</p>;
+  return <Layout>Hello world!</Layout>;
 }
 
 export default App;
