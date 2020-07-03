@@ -10,6 +10,7 @@ export const DELETE_TASK = 'DELETE_TASK';
 
 interface CreateTaskAction {
   type: typeof CREATE_TASK;
+  id: number;
   name: string;
 }
 
@@ -31,8 +32,9 @@ export type TaskActionType =
 
 // Actions
 
+let largestId = 5;
 export function createTask(name: string): TaskActionType {
-  return { type: CREATE_TASK, name };
+  return { type: CREATE_TASK, id: ++largestId, name };
 }
 
 export function updateTask(id: number, name: string): TaskActionType {
@@ -56,21 +58,38 @@ export interface AppState {
 
 // Reducer
 
+const initialState: AppState = {
+  tasks: [1, 2, 3, 4, 5].map((i) => ({ id: i, name: `Example task ${i}` })),
+};
+
 export function taskReducer(
-  state: AppState = { tasks: [] },
+  state = initialState,
   action: TaskActionType
 ): AppState {
-  // TODO task actions
-  return state;
+  switch (action.type) {
+    case CREATE_TASK:
+      const tasks = state.tasks.slice();
+      tasks.push({ id: action.id, name: action.name });
+      return { tasks };
+    case UPDATE_TASK:
+    case DELETE_TASK:
+    default:
+      return state;
+  }
 }
 
 // Store
 
-const persistedState = localStorage['state'];
+const persistedState: AppState = localStorage['state']
+  ? JSON.parse(localStorage['state'])
+  : undefined;
+if (persistedState) {
+  largestId = persistedState.tasks[persistedState.tasks.length - 1].id;
+}
 
 export const store = configureStore({
   reducer: taskReducer,
-  preloadedState: persistedState ? JSON.parse(persistedState) : undefined,
+  preloadedState: persistedState,
 });
 
 store.subscribe(
