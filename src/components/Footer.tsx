@@ -5,7 +5,7 @@ function Footer() {
   return (
     <Box>
       <Divider variant="middle" />
-      <Box marginTop="15px" textAlign="center">
+      <Box marginTop="15px" marginBottom="15px" textAlign="center">
         Created by{' '}
         <Link href="https://www.danieldway.com" color="secondary">
           Daniel Way
