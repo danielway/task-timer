@@ -68,11 +68,30 @@ export function taskReducer(
 ): AppState {
   switch (action.type) {
     case CREATE_TASK:
+      // Clone tasks array, add new task
       const tasks = state.tasks.slice();
       tasks.push({ id: action.id, name: action.name });
       return { tasks };
     case UPDATE_TASK:
+      // Clone tasks array, only updating the updated task
+      return {
+        tasks: state.tasks.map((task: Task) => {
+          // Skip unchanged tasks (keep same object/reference)
+          if (task.id !== action.id) {
+            return task;
+          }
+
+          // Overlay the updated name on the existing task
+          return {
+            ...task,
+            name: action.name,
+          };
+        }),
+      };
     case DELETE_TASK:
+      return {
+        tasks: state.tasks.filter((task: Task) => task.id !== action.id),
+      };
     default:
       return state;
   }

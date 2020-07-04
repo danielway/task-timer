@@ -34,7 +34,7 @@ class CreateTask extends React.Component<CreateTaskProps, CreateTaskState> {
         <StyledTableCell>
           <Input
             style={{ fontSize: 13 }}
-            placeholder="Add task"
+            placeholder="Task name/description"
             value={this.state.taskName}
             onChange={this.handleNameChange}
           />

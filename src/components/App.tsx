@@ -29,6 +29,8 @@ class App extends React.Component<AppProps> {
         <TaskTable
           tasks={this.props.tasks}
           createTask={this.props.createTask}
+          updateTask={this.props.updateTask}
+          deleteTask={this.props.deleteTask}
         />
       </Layout>
     );

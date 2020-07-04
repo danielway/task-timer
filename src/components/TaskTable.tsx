@@ -16,6 +16,8 @@ import TaskRow from './TaskRow';
 interface TaskTableProps {
   tasks: Task[];
   createTask: (name: string) => any;
+  updateTask: (id: number, name: string) => any;
+  deleteTask: (id: number) => any;
 }
 
 class TaskTable extends React.Component<TaskTableProps> {
@@ -31,7 +33,12 @@ class TaskTable extends React.Component<TaskTableProps> {
           </TableHead>
           <TableBody>
             {this.props.tasks.map((task) => (
-              <TaskRow task={task} key={task.id} />
+              <TaskRow
+                task={task}
+                key={task.id}
+                updateTask={this.props.updateTask}
+                deleteTask={this.props.deleteTask}
+              />
             ))}
             <CreateTask createTask={this.props.createTask} />
           </TableBody>

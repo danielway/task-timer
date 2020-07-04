@@ -1,0 +1,19 @@
+.taskRow:hover {
+  background-color: #f5f5f5;
+}
+.taskRow:hover th {
+  text-decoration: underline;
+}
+
+.taskName,
+.taskDelete {
+  cursor: pointer;
+}
+
+.taskName:hover {
+  color: #bf3111;
+}
+
+.taskDelete:hover {
+  color: #870000;
+}
