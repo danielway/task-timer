@@ -15,8 +15,25 @@ import {
   createStyles,
   Input,
   Button,
-  Box,
 } from '@material-ui/core';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+
+const IconTableCell = withStyles((theme: Theme) =>
+  createStyles({
+    head: {
+      paddingRight: 0,
+      width: 10,
+      fontSize: 14,
+    },
+    body: {
+      color: theme.palette.primary.light,
+      paddingTop: 10,
+      paddingRight: 0,
+      width: 10,
+      fontSize: 14,
+    },
+  })
+)(TableCell);
 
 const StyledTableCell = withStyles((theme: Theme) =>
   createStyles({
@@ -75,36 +92,44 @@ class App extends React.Component<AppProps, AppComponentState> {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <StyledTableCell>Task</StyledTableCell>
+                <IconTableCell />
+                <StyledTableCell align="left">Task</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {this.props.tasks.map((task) => (
                 <TableRow key={task.id}>
-                  <StyledTableCell component="th" scope="row">
+                  <IconTableCell>
+                    <HighlightOffIcon fontSize="small" />
+                  </IconTableCell>
+                  <StyledTableCell align="left" component="th" scope="row">
                     {task.name}
                   </StyledTableCell>
                 </TableRow>
               ))}
+              <TableRow>
+                <IconTableCell />
+                <StyledTableCell>
+                  <Input
+                    style={{ fontSize: 13 }}
+                    placeholder="Add task"
+                    value={this.state.taskName}
+                    onChange={this.handleNameChange}
+                  />
+                  <Button
+                    color="secondary"
+                    size="small"
+                    variant="contained"
+                    style={{ marginLeft: 10 }}
+                    onClick={this.addTask}
+                  >
+                    Add Task
+                  </Button>
+                </StyledTableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
-        <Box padding="20px">
-          <Button
-            color="secondary"
-            size="small"
-            variant="contained"
-            onClick={this.addTask}
-          >
-            Add Task
-          </Button>
-          <Input
-            placeholder="Placeholder"
-            style={{ marginLeft: '10px' }}
-            value={this.state.taskName}
-            onChange={this.handleNameChange}
-          />
-        </Box>
       </Layout>
     );
   }
