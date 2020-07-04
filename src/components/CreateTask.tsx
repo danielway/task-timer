@@ -48,6 +48,7 @@ class CreateTask extends React.Component<CreateTaskProps, CreateTaskState> {
             Add Task
           </Button>
         </StyledTableCell>
+        <StyledTableCell colSpan={11}></StyledTableCell>
       </TableRow>
     );
   }

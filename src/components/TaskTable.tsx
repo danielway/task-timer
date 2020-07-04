@@ -12,6 +12,7 @@ import IconTableCell from './IconTableCell';
 import StyledTableCell from './StyledTableCell';
 import CreateTask from './CreateTask';
 import TaskRow from './TaskRow';
+import { TimeHeaderCells } from './TimeCells';
 
 interface TaskTableProps {
   tasks: Task[];
@@ -29,6 +30,7 @@ class TaskTable extends React.Component<TaskTableProps> {
             <TableRow>
               <IconTableCell />
               <StyledTableCell>Task</StyledTableCell>
+              <TimeHeaderCells />
             </TableRow>
           </TableHead>
           <TableBody>

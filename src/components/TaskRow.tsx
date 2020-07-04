@@ -5,6 +5,7 @@ import { TableRow, Input, Button } from '@material-ui/core';
 import IconTableCell from './IconTableCell';
 import StyledTableCell from './StyledTableCell';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { TimeBodyCells } from './TimeCells';
 
 interface TaskRowProps {
   task: Task;
@@ -61,6 +62,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
         >
           {task.name}
         </StyledTableCell>
+        <TimeBodyCells />
       </TableRow>
     );
   }
@@ -85,6 +87,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
             Update Task
           </Button>
         </StyledTableCell>
+        <TimeBodyCells />
       </TableRow>
     );
   }
