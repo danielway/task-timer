@@ -20,3 +20,7 @@
 .increment.logged {
   background-color: #bf3111;
 }
+
+td:last-child {
+  padding-right: 5px;
+}
