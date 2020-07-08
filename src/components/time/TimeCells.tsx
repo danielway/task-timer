@@ -1,6 +1,7 @@
 import React from 'react';
 import './TimeCells.css';
 import TimeTableCell from './TimeTableCell';
+import { Time } from '../../app/redux';
 
 export const TimeHeaderCells = () => (
   <>
@@ -12,26 +13,38 @@ export const TimeHeaderCells = () => (
   </>
 );
 
-const IsLogged = () => Math.random() > 0.8;
-const Increment = () => {
-  if (IsLogged()) {
-    return <div className="increment logged" />;
-  } else {
-    return <div className="increment" />;
-  }
-};
-
-export const TimeBodyCells = () => {
+export const TimeBodyCells = (props: any) => {
   const cells: JSX.Element[] = [];
-  for (let i = 0; i < 11; i++) {
+  for (let hour = 0; hour < 11; hour++) {
+    // Calculate segments for this hour
+    const increments = [0, 1, 2, 3].map((segment) => {
+      const thisTimeSegment = hour * 4 + segment;
+      const matchingTime = props.time.find(
+        (t: Time) => t.timeSegment === thisTimeSegment
+      );
+      if (matchingTime >= 0) {
+        return (
+          <div
+            className="increment logged"
+            // onClick={props.removeTime(props.task.id, thisTimeSegment)}
+          />
+        );
+      } else {
+        return (
+          <div
+            className="increment"
+            // onClick={props.logTime(props.task.id, thisTimeSegment)}
+          />
+        );
+      }
+    });
+
+    const renderedIncrements = <>{increments}</>;
+
+    // Render this hour
     cells.push(
-      <TimeTableCell key={i}>
-        <div className="incrementContainer">
-          <Increment />
-          <Increment />
-          <Increment />
-          <Increment />
-        </div>
+      <TimeTableCell key={hour}>
+        <div className="incrementContainer">{renderedIncrements}</div>
       </TimeTableCell>
     );
   }
