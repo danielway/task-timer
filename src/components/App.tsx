@@ -1,5 +1,5 @@
 import React, { Dispatch } from 'react';
-import Layout from './Layout';
+import Layout from './layout/Layout';
 import { connect } from 'react-redux';
 import { AppState, createTask, updateTask, deleteTask } from '../app/redux';
 import TaskTable from './TaskTable';

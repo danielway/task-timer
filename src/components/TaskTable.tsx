@@ -10,9 +10,9 @@ import {
 } from '@material-ui/core';
 import IconTableCell from './IconTableCell';
 import StyledTableCell from './StyledTableCell';
-import CreateTask from './CreateTask';
-import TaskRow from './TaskRow';
-import { TimeHeaderCells } from './TimeCells';
+import CreateTask from './task/CreateTask';
+import TaskRow from './task/TaskRow';
+import { TimeHeaderCells } from './time/TimeCells';
 
 interface TaskTableProps {
   tasks: Task[];

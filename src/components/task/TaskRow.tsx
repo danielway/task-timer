@@ -1,11 +1,11 @@
 import React, { ChangeEvent } from 'react';
 import './TaskRow.css';
-import { Task } from '../app/redux';
+import { Task } from '../../app/redux';
 import { TableRow, Input, Button } from '@material-ui/core';
-import IconTableCell from './IconTableCell';
-import StyledTableCell from './StyledTableCell';
+import IconTableCell from '../IconTableCell';
+import StyledTableCell from '../StyledTableCell';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { TimeBodyCells } from './TimeCells';
+import { TimeBodyCells } from '../time/TimeCells';
 
 interface TaskRowProps {
   task: Task;
