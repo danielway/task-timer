@@ -6,6 +6,9 @@ export const CREATE_TASK = 'CREATE_TASK';
 export const UPDATE_TASK = 'UPDATE_TASK';
 export const DELETE_TASK = 'DELETE_TASK';
 
+export const LOG_TIME = 'LOG_TIME';
+export const REMOVE_TIME = 'REMOVE_TIME';
+
 // Action types
 
 interface CreateTaskAction {
@@ -30,6 +33,22 @@ export type TaskActionType =
   | UpdateTaskAction
   | DeleteTaskAction;
 
+interface LogTimeAction {
+  type: typeof LOG_TIME;
+  taskId: number;
+  timeSegment: number;
+}
+
+interface RemoveTimeAction {
+  type: typeof REMOVE_TIME;
+  taskId: number;
+  timeSegment: number;
+}
+
+export type TimeActionType = LogTimeAction | RemoveTimeAction;
+
+export type ActionType = TaskActionType | TimeActionType;
+
 // Actions
 
 let largestId = 5;
@@ -45,6 +64,17 @@ export function deleteTask(id: number): TaskActionType {
   return { type: DELETE_TASK, id };
 }
 
+export function logTime(taskId: number, timeSegment: number): TimeActionType {
+  return { type: LOG_TIME, taskId, timeSegment };
+}
+
+export function removeTime(
+  taskId: number,
+  timeSegment: number
+): TimeActionType {
+  return { type: REMOVE_TIME, taskId, timeSegment };
+}
+
 // State schema
 
 export interface Task {
@@ -52,29 +82,34 @@ export interface Task {
   name: string;
 }
 
+export interface Time {
+  taskId: number;
+  timeSegment: number; // 11 hours * 4 segments, 0 indexed
+}
+
 export interface AppState {
   tasks: Task[];
+  time: Time[];
 }
 
 // Reducer
 
-const initialState: AppState = {
-  tasks: [1, 2, 3, 4, 5].map((i) => ({ id: i, name: `Example task ${i}` })),
-};
+const initialState: AppState = { tasks: [], time: [] };
 
 export function taskReducer(
   state = initialState,
-  action: TaskActionType
+  action: ActionType
 ): AppState {
   switch (action.type) {
     case CREATE_TASK:
       // Clone tasks array, add new task
       const tasks = state.tasks.slice();
       tasks.push({ id: action.id, name: action.name });
-      return { tasks };
+      return { ...state, tasks };
     case UPDATE_TASK:
       // Clone tasks array, only updating the updated task
       return {
+        ...state,
         tasks: state.tasks.map((task: Task) => {
           // Skip unchanged tasks (keep same object/reference)
           if (task.id !== action.id) {
@@ -90,7 +125,22 @@ export function taskReducer(
       };
     case DELETE_TASK:
       return {
+        ...state,
         tasks: state.tasks.filter((task: Task) => task.id !== action.id),
+      };
+    case LOG_TIME:
+      // Clone time array, add new entry
+      const time = state.time.slice();
+      time.push({ taskId: action.taskId, timeSegment: action.timeSegment });
+      return { ...state, time };
+    case REMOVE_TIME:
+      return {
+        ...state,
+        time: state.time.filter(
+          (time: Time) =>
+            time.taskId !== action.taskId &&
+            time.timeSegment !== action.timeSegment
+        ),
       };
     default:
       return state;

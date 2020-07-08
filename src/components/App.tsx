@@ -6,6 +6,7 @@ import TaskTable from './TaskTable';
 
 const mapStateToProps = (state: AppState): AppState => ({
   tasks: state.tasks,
+  time: state.time,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<any>): AppActions => ({
