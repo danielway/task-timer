@@ -12,7 +12,7 @@ import IconTableCell from './IconTableCell';
 import StyledTableCell from './StyledTableCell';
 import CreateTask from './task/CreateTask';
 import TaskRow from './task/TaskRow';
-import { TimeHeaderCells } from './time/TimeCells';
+import { TimeHeaderCells } from './time/TimeHeaderCell';
 
 interface TaskTableProps {
   tasks: Task[];
