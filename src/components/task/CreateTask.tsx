@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { TableRow, Input, Button } from '@material-ui/core';
 import IconTableCell from '../IconTableCell';
 import StyledTableCell from '../StyledTableCell';
@@ -17,10 +17,17 @@ class CreateTask extends React.Component<CreateTaskProps, CreateTaskState> {
     this.state = { taskName: '' };
 
     this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleNameKey = this.handleNameKey.bind(this);
   }
 
   handleNameChange = (event: ChangeEvent<HTMLInputElement>) =>
     this.setState({ taskName: event.target.value });
+
+  handleNameKey = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.keyCode === 13) {
+      this.addTask();
+    }
+  };
 
   addTask = () => {
     this.props.createTask(this.state.taskName);
@@ -37,6 +44,7 @@ class CreateTask extends React.Component<CreateTaskProps, CreateTaskState> {
             placeholder="Task name/description"
             value={this.state.taskName}
             onChange={this.handleNameChange}
+            onKeyUp={this.handleNameKey}
           />
           <Button
             color="secondary"
