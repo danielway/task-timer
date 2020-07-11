@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, KeyboardEvent } from 'react';
 import './TaskRow.css';
 import { Task, Time } from '../../app/redux';
 import { TableRow, Input, Button } from '@material-ui/core';
@@ -28,10 +28,17 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
     this.state = { editing: false, taskName: '' };
 
     this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleNameKey = this.handleNameKey.bind(this);
   }
 
   handleNameChange = (event: ChangeEvent<HTMLInputElement>) =>
     this.setState({ ...this.state, taskName: event.target.value });
+
+  handleNameKey = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.keyCode === 13) {
+      this.updateTask();
+    }
+  };
 
   startEditing = () =>
     this.setState({ editing: true, taskName: this.props.task.name });
@@ -88,6 +95,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
             style={{ fontSize: 13 }}
             value={this.state.taskName}
             onChange={this.handleNameChange}
+            onKeyUp={this.handleNameKey}
           />
           <Button
             color="secondary"
@@ -105,6 +113,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
           logTime={this.props.logTime}
           removeTime={this.props.removeTime}
         />
+        <SummaryCell timeCount={this.props.time.length} />
       </TableRow>
     );
   }
