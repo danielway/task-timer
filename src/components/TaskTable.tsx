@@ -34,6 +34,7 @@ class TaskTable extends React.Component<TaskTableProps> {
               <IconTableCell />
               <StyledTableCell>Task</StyledTableCell>
               <TimeHeaderCells />
+              <StyledTableCell>Total</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>

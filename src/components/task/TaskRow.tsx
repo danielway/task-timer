@@ -6,6 +6,7 @@ import IconTableCell from '../IconTableCell';
 import StyledTableCell from '../StyledTableCell';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import TimeCellRow from '../time/TimeCells';
+import SummaryCell from '../time/SummaryCell';
 
 interface TaskRowProps {
   task: Task;
@@ -73,6 +74,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
           logTime={this.props.logTime}
           removeTime={this.props.removeTime}
         />
+        <SummaryCell timeCount={this.props.time.length} />
       </TableRow>
     );
   }
