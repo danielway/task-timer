@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task } from '../app/redux';
+import { Task, Time } from '../app/redux';
 import {
   TableContainer,
   Table,
@@ -10,15 +10,18 @@ import {
 } from '@material-ui/core';
 import IconTableCell from './IconTableCell';
 import StyledTableCell from './StyledTableCell';
-import CreateTask from './CreateTask';
-import TaskRow from './TaskRow';
-import { TimeHeaderCells } from './TimeCells';
+import CreateTask from './task/CreateTask';
+import TaskRow from './task/TaskRow';
+import { TimeHeaderCells } from './time/TimeHeaderCell';
 
 interface TaskTableProps {
   tasks: Task[];
+  time: Time[];
   createTask: (name: string) => any;
   updateTask: (id: number, name: string) => any;
   deleteTask: (id: number) => any;
+  logTime: (taskId: number, timeSegment: number) => any;
+  removeTime: (taskId: number, timeSegment: number) => any;
 }
 
 class TaskTable extends React.Component<TaskTableProps> {
@@ -37,9 +40,12 @@ class TaskTable extends React.Component<TaskTableProps> {
             {this.props.tasks.map((task) => (
               <TaskRow
                 task={task}
+                time={this.props.time.filter((time) => time.taskId === task.id)}
                 key={task.id}
                 updateTask={this.props.updateTask}
                 deleteTask={this.props.deleteTask}
+                logTime={this.props.logTime}
+                removeTime={this.props.removeTime}
               />
             ))}
             <CreateTask createTask={this.props.createTask} />

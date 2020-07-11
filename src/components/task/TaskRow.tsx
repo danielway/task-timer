@@ -1,16 +1,19 @@
 import React, { ChangeEvent } from 'react';
 import './TaskRow.css';
-import { Task } from '../app/redux';
+import { Task, Time } from '../../app/redux';
 import { TableRow, Input, Button } from '@material-ui/core';
-import IconTableCell from './IconTableCell';
-import StyledTableCell from './StyledTableCell';
+import IconTableCell from '../IconTableCell';
+import StyledTableCell from '../StyledTableCell';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { TimeBodyCells } from './TimeCells';
+import TimeCellRow from '../time/TimeCells';
 
 interface TaskRowProps {
   task: Task;
+  time: Time[];
   updateTask: (id: number, name: string) => any;
   deleteTask: (id: number) => any;
+  logTime: (taskId: number, timeSegment: number) => any;
+  removeTime: (taskId: number, timeSegment: number) => any;
 }
 
 interface TaskRowState {
@@ -62,7 +65,12 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
         >
           {task.name}
         </StyledTableCell>
-        <TimeBodyCells />
+        <TimeCellRow
+          task={task}
+          time={this.props.time}
+          logTime={this.props.logTime}
+          removeTime={this.props.removeTime}
+        />
       </TableRow>
     );
   }
@@ -87,7 +95,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
             Update Task
           </Button>
         </StyledTableCell>
-        <TimeBodyCells />
+        <TimeCellRow />
       </TableRow>
     );
   }
