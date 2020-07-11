@@ -13,40 +13,64 @@ export const TimeHeaderCells = () => (
   </>
 );
 
-export const TimeBodyCells = (props: any) => {
-  const cells: JSX.Element[] = [];
-  for (let hour = 0; hour < 11; hour++) {
-    // Calculate segments for this hour
-    const increments = [0, 1, 2, 3].map((segment) => {
-      const thisTimeSegment = hour * 4 + segment;
-      const matchingTime = props.time.find(
-        (t: Time) => t.timeSegment === thisTimeSegment
-      );
-      if (matchingTime >= 0) {
-        return (
-          <div
-            className="increment logged"
-            // onClick={props.removeTime(props.task.id, thisTimeSegment)}
-          />
-        );
-      } else {
-        return (
-          <div
-            className="increment"
-            // onClick={props.logTime(props.task.id, thisTimeSegment)}
-          />
-        );
-      }
-    });
+class TimeCell extends React.Component<any> {
+  constructor(props: any) {
+    super(props);
 
-    const renderedIncrements = <>{increments}</>;
-
-    // Render this hour
-    cells.push(
-      <TimeTableCell key={hour}>
-        <div className="incrementContainer">{renderedIncrements}</div>
-      </TimeTableCell>
-    );
+    this.logTime = this.logTime.bind(this);
+    this.removeTime = this.removeTime.bind(this);
   }
-  return <>{cells}</>;
-};
+
+  logTime() {
+    this.props.logTime(this.props.taskId, this.props.timeSegment);
+  }
+
+  removeTime() {
+    this.props.removeTime(this.props.taskId, this.props.timeSegment);
+  }
+
+  render() {
+    if (this.props.logged) {
+      return <div className="increment logged" onClick={this.removeTime} />;
+    } else {
+      return <div className="increment" onClick={this.logTime} />;
+    }
+  }
+}
+
+class TimeBodyCells extends React.Component<any> {
+  render() {
+    const cells: JSX.Element[] = [];
+    for (let hour = 0; hour < 11; hour++) {
+      // Calculate segments for this hour
+      const increments = [0, 1, 2, 3].map((segment) => {
+        const thisTimeSegment = hour * 4 + segment;
+        const matchingTime = this.props.time.find(
+          (t: Time) => t.timeSegment === thisTimeSegment
+        );
+        return (
+          <TimeCell
+            key={`${hour}-${segment}`}
+            logged={!!matchingTime}
+            taskId={this.props.task.id}
+            timeSegment={thisTimeSegment}
+            logTime={this.props.logTime}
+            removeTime={this.props.removeTime}
+          />
+        );
+      });
+
+      const renderedIncrements = <>{increments}</>;
+
+      // Render this hour
+      cells.push(
+        <TimeTableCell key={hour}>
+          <div className="incrementContainer">{renderedIncrements}</div>
+        </TimeTableCell>
+      );
+    }
+    return <>{cells}</>;
+  }
+}
+
+export default TimeBodyCells;

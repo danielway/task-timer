@@ -5,7 +5,7 @@ import { TableRow, Input, Button } from '@material-ui/core';
 import IconTableCell from '../IconTableCell';
 import StyledTableCell from '../StyledTableCell';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { TimeBodyCells } from '../time/TimeCells';
+import TimeBodyCells from '../time/TimeCells';
 
 interface TaskRowProps {
   task: Task;
