@@ -49,7 +49,10 @@ class TaskTable extends React.Component<TaskTableProps> {
                 removeTime={this.props.removeTime}
               />
             ))}
-            <CreateTask createTask={this.props.createTask} />
+            <CreateTask
+              timeCount={this.props.time.length}
+              createTask={this.props.createTask}
+            />
           </TableBody>
         </Table>
       </TableContainer>

@@ -2,8 +2,10 @@ import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { TableRow, Input, Button } from '@material-ui/core';
 import IconTableCell from '../IconTableCell';
 import StyledTableCell from '../StyledTableCell';
+import SummaryCell from '../time/SummaryCell';
 
 interface CreateTaskProps {
+  timeCount: number;
   createTask: (name: string) => any;
 }
 
@@ -57,6 +59,7 @@ class CreateTask extends React.Component<CreateTaskProps, CreateTaskState> {
           </Button>
         </StyledTableCell>
         <StyledTableCell colSpan={11}></StyledTableCell>
+        <SummaryCell timeCount={this.props.timeCount} />
       </TableRow>
     );
   }
