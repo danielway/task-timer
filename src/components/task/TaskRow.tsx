@@ -44,7 +44,9 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
 
   render() {
     const task = this.props.task;
-    return this.state.editing ? this.renderEditRow() : this.renderViewRow(task);
+    return this.state.editing
+      ? this.renderEditRow(task)
+      : this.renderViewRow(task);
   }
 
   renderViewRow(task: Task) {
@@ -75,7 +77,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
     );
   }
 
-  renderEditRow() {
+  renderEditRow(task: Task) {
     return (
       <TableRow>
         <IconTableCell />
@@ -95,7 +97,12 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
             Update Task
           </Button>
         </StyledTableCell>
-        <TimeCellRow />
+        <TimeCellRow
+          task={task}
+          time={this.props.time}
+          logTime={this.props.logTime}
+          removeTime={this.props.removeTime}
+        />
       </TableRow>
     );
   }
