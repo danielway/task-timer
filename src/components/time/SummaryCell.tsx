@@ -1,5 +1,5 @@
 import React from 'react';
-import StyledTableCell from '../StyledTableCell';
+import StyledTableCell from '../layout/StyledTableCell';
 
 class SummaryCell extends React.Component<any> {
   padTwoDigits = (val: number) => ('00' + val).slice(-2);

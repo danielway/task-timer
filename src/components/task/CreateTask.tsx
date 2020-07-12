@@ -1,7 +1,7 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { TableRow, Input, Button } from '@material-ui/core';
-import IconTableCell from '../IconTableCell';
-import StyledTableCell from '../StyledTableCell';
+import IconTableCell from '../layout/IconTableCell';
+import StyledTableCell from '../layout/StyledTableCell';
 import SummaryCell from '../time/SummaryCell';
 
 interface CreateTaskProps {

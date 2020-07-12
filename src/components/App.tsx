@@ -24,8 +24,8 @@ import {
 
 // Layout
 import Layout from './layout/Layout';
-import IconTableCell from './IconTableCell';
-import StyledTableCell from './StyledTableCell';
+import IconTableCell from './layout/IconTableCell';
+import StyledTableCell from './layout/StyledTableCell';
 
 // Children
 import CreateTask from './task/CreateTask';
