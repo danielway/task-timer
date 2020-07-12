@@ -3,7 +3,7 @@ import './TaskRow.css';
 import { Task, Time } from '../../app/redux';
 import { TableRow, Input, Button } from '@material-ui/core';
 import IconTableCell from '../layout/IconTableCell';
-import StyledTableCell from '../layout/StyledTableCell';
+import TableCell from '../layout/TableCell';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import TimeCellRow from '../time/TimeCells';
 import SummaryCell from '../time/SummaryCell';
@@ -67,14 +67,14 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
             fontSize="small"
           />
         </IconTableCell>
-        <StyledTableCell
+        <TableCell
           onClick={this.startEditing}
           component="th"
           scope="row"
           className="taskName"
         >
           {task.name}
-        </StyledTableCell>
+        </TableCell>
         <TimeCellRow
           task={task}
           time={this.props.time}
@@ -90,7 +90,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
     return (
       <TableRow>
         <IconTableCell />
-        <StyledTableCell component="th" scope="row">
+        <TableCell component="th" scope="row">
           <Input
             style={{ fontSize: 13 }}
             value={this.state.taskName}
@@ -106,7 +106,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
           >
             Update Task
           </Button>
-        </StyledTableCell>
+        </TableCell>
         <TimeCellRow
           task={task}
           time={this.props.time}

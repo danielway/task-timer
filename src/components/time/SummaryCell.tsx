@@ -1,5 +1,5 @@
 import React from 'react';
-import StyledTableCell from '../layout/StyledTableCell';
+import TableCell from '../layout/TableCell';
 
 class SummaryCell extends React.Component<any> {
   padTwoDigits = (val: number) => ('00' + val).slice(-2);
@@ -9,9 +9,9 @@ class SummaryCell extends React.Component<any> {
   render() {
     const totalMinutes = this.props.timeCount * 15;
     return (
-      <StyledTableCell>
+      <TableCell>
         {this.getHours(totalMinutes)}:{this.getMinutes(totalMinutes)}
-      </StyledTableCell>
+      </TableCell>
     );
   }
 }

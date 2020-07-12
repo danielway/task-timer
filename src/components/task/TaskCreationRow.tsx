@@ -1,7 +1,7 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { TableRow, Input, Button } from '@material-ui/core';
 import IconTableCell from '../layout/IconTableCell';
-import StyledTableCell from '../layout/StyledTableCell';
+import TableCell from '../layout/TableCell';
 import SummaryCell from '../time/SummaryCell';
 
 interface CreateTaskProps {
@@ -13,7 +13,10 @@ interface CreateTaskState {
   taskName: string;
 }
 
-class CreateTask extends React.Component<CreateTaskProps, CreateTaskState> {
+class TaskCreationRow extends React.Component<
+  CreateTaskProps,
+  CreateTaskState
+> {
   constructor(props: CreateTaskProps) {
     super(props);
     this.state = { taskName: '' };
@@ -40,7 +43,7 @@ class CreateTask extends React.Component<CreateTaskProps, CreateTaskState> {
     return (
       <TableRow>
         <IconTableCell />
-        <StyledTableCell>
+        <TableCell>
           <Input
             style={{ fontSize: 13 }}
             placeholder="Task name/description"
@@ -57,12 +60,12 @@ class CreateTask extends React.Component<CreateTaskProps, CreateTaskState> {
           >
             Add Task
           </Button>
-        </StyledTableCell>
-        <StyledTableCell colSpan={11}></StyledTableCell>
+        </TableCell>
+        <TableCell colSpan={11}></TableCell>
         <SummaryCell timeCount={this.props.timeCount} />
       </TableRow>
     );
   }
 }
 
-export default CreateTask;
+export default TaskCreationRow;

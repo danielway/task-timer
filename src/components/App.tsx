@@ -25,10 +25,10 @@ import {
 // Layout
 import Layout from './layout/Layout';
 import IconTableCell from './layout/IconTableCell';
-import StyledTableCell from './layout/StyledTableCell';
+import TableCell from './layout/TableCell';
 
 // Children
-import CreateTask from './task/CreateTask';
+import TaskCreationRow from './task/TaskCreationRow';
 import TaskRow from './task/TaskRow';
 import { TimeHeaderCells } from './time/TimeHeaderCell';
 
@@ -54,9 +54,9 @@ class App extends React.Component<AppProps> {
             <TableHead>
               <TableRow>
                 <IconTableCell />
-                <StyledTableCell>Task</StyledTableCell>
-                <TimeHeaderCells />
-                <StyledTableCell>Total</StyledTableCell>
+                <TableCell>Task</TableCell>
+                <TimeHeaderCells></TimeHeaderCells>
+                <TableCell>Total</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -71,7 +71,7 @@ class App extends React.Component<AppProps> {
                   removeTime={this.props.removeTime}
                 />
               ))}
-              <CreateTask
+              <TaskCreationRow
                 timeCount={this.props.time.length}
                 createTask={this.props.createTask}
               />
