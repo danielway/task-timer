@@ -138,8 +138,10 @@ export function taskReducer(
         ...state,
         time: state.time.filter(
           (time: Time) =>
-            time.taskId !== action.taskId &&
-            time.timeSegment !== action.timeSegment
+            !(
+              time.taskId === action.taskId &&
+              time.timeSegment === action.timeSegment
+            )
         ),
       };
     default:
