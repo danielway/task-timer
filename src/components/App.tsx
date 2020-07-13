@@ -1,6 +1,8 @@
+// Core
 import React, { Dispatch } from 'react';
-import Layout from './layout/Layout';
 import { connect } from 'react-redux';
+
+// Redux
 import {
   AppState,
   createTask,
@@ -9,49 +11,85 @@ import {
   logTime,
   removeTime,
 } from '../app/redux';
-import TaskTable from './TaskTable';
 
-const mapStateToProps = (state: AppState): AppState => ({
-  tasks: state.tasks,
-  time: state.time,
-});
+// Mat-UI
+import {
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableBody,
+  Paper,
+} from '@material-ui/core';
 
-const mapDispatchToProps = (dispatch: Dispatch<any>): AppActions => ({
-  createTask: (name: string) => dispatch(createTask(name)),
-  updateTask: (id: number, name: string) => dispatch(updateTask(id, name)),
-  deleteTask: (id: number) => dispatch(deleteTask(id)),
-  logTime: (taskId: number, timeSegment: number) =>
-    dispatch(logTime(taskId, timeSegment)),
-  removeTime: (taskId: number, timeSegment: number) =>
-    dispatch(removeTime(taskId, timeSegment)),
-});
+// Layout
+import Layout from './layout/Layout';
+import IconTableCell from './layout/IconTableCell';
+import TableCell from './layout/TableCell';
+
+// Children
+import TaskCreationRow from './task/TaskCreationRow';
+import TaskRow from './task/TaskRow';
+import { TimeHeaderCells } from './time/TimeHeaderCell';
 
 interface AppActions {
   createTask: (name: string) => any;
   updateTask: (id: number, name: string) => any;
   deleteTask: (id: number) => any;
-  logTime: (taskId: number, timeSegment: number) => any;
-  removeTime: (taskId: number, timeSegment: number) => any;
+  logTime: (taskId: number, timeSeg: number) => any;
+  removeTime: (taskId: number, timeSeg: number) => any;
 }
 
 type AppProps = AppActions & AppState;
 
 class App extends React.Component<AppProps> {
   render() {
+    const tasks = this.props.tasks;
+    const time = this.props.time;
+
     return (
       <Layout>
-        <TaskTable
-          tasks={this.props.tasks}
-          time={this.props.time}
-          createTask={this.props.createTask}
-          updateTask={this.props.updateTask}
-          deleteTask={this.props.deleteTask}
-          logTime={this.props.logTime}
-          removeTime={this.props.removeTime}
-        />
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <IconTableCell />
+                <TableCell>Task</TableCell>
+                <TimeHeaderCells></TimeHeaderCells>
+                <TableCell>Total</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {tasks.map((task) => (
+                <TaskRow
+                  task={task}
+                  time={time.filter((time) => time.taskId === task.id)}
+                  key={task.id}
+                  updateTask={this.props.updateTask}
+                  deleteTask={this.props.deleteTask}
+                  logTime={this.props.logTime}
+                  removeTime={this.props.removeTime}
+                />
+              ))}
+              <TaskCreationRow
+                timeCount={this.props.time.length}
+                createTask={this.props.createTask}
+              />
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Layout>
     );
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(
+  (state: AppState) => state,
+  (dispatch: Dispatch<any>): AppActions => ({
+    createTask: (name) => dispatch(createTask(name)),
+    updateTask: (id, name) => dispatch(updateTask(id, name)),
+    deleteTask: (id) => dispatch(deleteTask(id)),
+    logTime: (taskId, timeSeg) => dispatch(logTime(taskId, timeSeg)),
+    removeTime: (taskId, timeSeg) => dispatch(removeTime(taskId, timeSeg)),
+  })
+)(App);

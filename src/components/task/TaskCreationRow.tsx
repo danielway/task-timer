@@ -1,8 +1,8 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { TableRow, Input, Button } from '@material-ui/core';
-import IconTableCell from '../IconTableCell';
-import StyledTableCell from '../StyledTableCell';
-import SummaryCell from '../time/SummaryCell';
+import IconTableCell from '../layout/IconTableCell';
+import TableCell from '../layout/TableCell';
+import TimeSummaryCell from '../time/TimeSummaryCell';
 
 interface CreateTaskProps {
   timeCount: number;
@@ -13,7 +13,10 @@ interface CreateTaskState {
   taskName: string;
 }
 
-class CreateTask extends React.Component<CreateTaskProps, CreateTaskState> {
+class TaskCreationRow extends React.Component<
+  CreateTaskProps,
+  CreateTaskState
+> {
   constructor(props: CreateTaskProps) {
     super(props);
     this.state = { taskName: '' };
@@ -40,7 +43,7 @@ class CreateTask extends React.Component<CreateTaskProps, CreateTaskState> {
     return (
       <TableRow>
         <IconTableCell />
-        <StyledTableCell>
+        <TableCell>
           <Input
             style={{ fontSize: 13 }}
             placeholder="Task name/description"
@@ -57,12 +60,12 @@ class CreateTask extends React.Component<CreateTaskProps, CreateTaskState> {
           >
             Add Task
           </Button>
-        </StyledTableCell>
-        <StyledTableCell colSpan={11}></StyledTableCell>
-        <SummaryCell timeCount={this.props.timeCount} />
+        </TableCell>
+        <TableCell colSpan={11}></TableCell>
+        <TimeSummaryCell timeCount={this.props.timeCount} />
       </TableRow>
     );
   }
 }
 
-export default CreateTask;
+export default TaskCreationRow;

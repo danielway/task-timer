@@ -2,11 +2,11 @@ import React, { ChangeEvent, KeyboardEvent } from 'react';
 import './TaskRow.css';
 import { Task, Time } from '../../app/redux';
 import { TableRow, Input, Button } from '@material-ui/core';
-import IconTableCell from '../IconTableCell';
-import StyledTableCell from '../StyledTableCell';
+import IconTableCell from '../layout/IconTableCell';
+import TableCell from '../layout/TableCell';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import TimeCellRow from '../time/TimeCells';
-import SummaryCell from '../time/SummaryCell';
+import TimeRowCell from '../time/TimeRow';
+import TimeSummaryCell from '../time/TimeSummaryCell';
 
 interface TaskRowProps {
   task: Task;
@@ -67,21 +67,21 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
             fontSize="small"
           />
         </IconTableCell>
-        <StyledTableCell
+        <TableCell
           onClick={this.startEditing}
           component="th"
           scope="row"
           className="taskName"
         >
           {task.name}
-        </StyledTableCell>
-        <TimeCellRow
+        </TableCell>
+        <TimeRowCell
           task={task}
           time={this.props.time}
           logTime={this.props.logTime}
           removeTime={this.props.removeTime}
         />
-        <SummaryCell timeCount={this.props.time.length} />
+        <TimeSummaryCell timeCount={this.props.time.length} />
       </TableRow>
     );
   }
@@ -90,7 +90,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
     return (
       <TableRow>
         <IconTableCell />
-        <StyledTableCell component="th" scope="row">
+        <TableCell component="th" scope="row">
           <Input
             style={{ fontSize: 13 }}
             value={this.state.taskName}
@@ -106,14 +106,14 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
           >
             Update Task
           </Button>
-        </StyledTableCell>
-        <TimeCellRow
+        </TableCell>
+        <TimeRowCell
           task={task}
           time={this.props.time}
           logTime={this.props.logTime}
           removeTime={this.props.removeTime}
         />
-        <SummaryCell timeCount={this.props.time.length} />
+        <TimeSummaryCell timeCount={this.props.time.length} />
       </TableRow>
     );
   }
