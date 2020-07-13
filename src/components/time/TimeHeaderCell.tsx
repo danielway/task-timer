@@ -1,5 +1,5 @@
 import React from 'react';
-import TimeTableCell from './TimeTableCell';
+import TimeTableCell from '../layout/TimeTableCell';
 
 export const TimeHeaderCells = () => (
   <>

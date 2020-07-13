@@ -5,8 +5,8 @@ import { TableRow, Input, Button } from '@material-ui/core';
 import IconTableCell from '../layout/IconTableCell';
 import TableCell from '../layout/TableCell';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import TimeCellRow from '../time/TimeCells';
-import SummaryCell from '../time/SummaryCell';
+import TimeRowCell from '../time/TimeRow';
+import TimeSummaryCell from '../time/TimeSummaryCell';
 
 interface TaskRowProps {
   task: Task;
@@ -75,13 +75,13 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
         >
           {task.name}
         </TableCell>
-        <TimeCellRow
+        <TimeRowCell
           task={task}
           time={this.props.time}
           logTime={this.props.logTime}
           removeTime={this.props.removeTime}
         />
-        <SummaryCell timeCount={this.props.time.length} />
+        <TimeSummaryCell timeCount={this.props.time.length} />
       </TableRow>
     );
   }
@@ -107,13 +107,13 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
             Update Task
           </Button>
         </TableCell>
-        <TimeCellRow
+        <TimeRowCell
           task={task}
           time={this.props.time}
           logTime={this.props.logTime}
           removeTime={this.props.removeTime}
         />
-        <SummaryCell timeCount={this.props.time.length} />
+        <TimeSummaryCell timeCount={this.props.time.length} />
       </TableRow>
     );
   }

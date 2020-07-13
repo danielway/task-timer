@@ -1,7 +1,7 @@
 import React from 'react';
 import TableCell from '../layout/TableCell';
 
-class SummaryCell extends React.Component<any> {
+class TimeSummaryCell extends React.Component<any> {
   padTwoDigits = (val: number) => ('00' + val).slice(-2);
   getHours = (tot: number) => this.padTwoDigits(Math.floor(tot / 60));
   getMinutes = (tot: number) => this.padTwoDigits(tot % 60);
@@ -16,4 +16,4 @@ class SummaryCell extends React.Component<any> {
   }
 }
 
-export default SummaryCell;
+export default TimeSummaryCell;

@@ -2,7 +2,7 @@ import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { TableRow, Input, Button } from '@material-ui/core';
 import IconTableCell from '../layout/IconTableCell';
 import TableCell from '../layout/TableCell';
-import SummaryCell from '../time/SummaryCell';
+import TimeSummaryCell from '../time/TimeSummaryCell';
 
 interface CreateTaskProps {
   timeCount: number;
@@ -62,7 +62,7 @@ class TaskCreationRow extends React.Component<
           </Button>
         </TableCell>
         <TableCell colSpan={11}></TableCell>
-        <SummaryCell timeCount={this.props.timeCount} />
+        <TimeSummaryCell timeCount={this.props.timeCount} />
       </TableRow>
     );
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-class TimeCell extends React.Component<any> {
+class TimeIncrement extends React.Component<any> {
   constructor(props: any) {
     super(props);
 
@@ -25,4 +25,4 @@ class TimeCell extends React.Component<any> {
   }
 }
 
-export default TimeCell;
+export default TimeIncrement;
