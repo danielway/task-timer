@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Divider, Link } from '@material-ui/core';
+import { Box, Divider, Link } from '@mui/material';
 
 function Footer() {
   return (

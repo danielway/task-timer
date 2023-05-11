@@ -1,4 +1,5 @@
-import { withStyles, Theme, createStyles, TableCell } from '@material-ui/core';
+import { Theme, createStyles, TableCell } from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 const TimeTableCell = withStyles((theme: Theme) =>
   createStyles({

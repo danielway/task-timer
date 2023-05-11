@@ -20,7 +20,7 @@ import {
   TableRow,
   TableBody,
   Paper,
-} from '@material-ui/core';
+} from '@mui/material';
 
 // Layout
 import Layout from './layout/Layout';

@@ -1,9 +1,9 @@
 import {
-  withStyles,
   Theme,
   createStyles,
   TableCell as MatTableCell,
-} from '@material-ui/core';
+} from '@mui/material';
+import { withStyles } from '@mui/styles';
 
 const TableCell = withStyles((theme: Theme) =>
   createStyles({

@@ -7,12 +7,11 @@ import {
   CssBaseline,
   Container,
   Box,
-} from '@material-ui/core';
+} from '@mui/material';
 
 function Layout(props: any) {
   const theme = createMuiTheme({
     palette: {
-      type: 'light',
       primary: { main: '#173040' },
       secondary: { main: '#bf3111' },
     },

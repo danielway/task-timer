@@ -1,5 +1,5 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
-import { TableRow, Input, Button } from '@material-ui/core';
+import { TableRow, Input, Button } from '@mui/material';
 import IconTableCell from '../layout/IconTableCell';
 import TableCell from '../layout/TableCell';
 import TimeSummaryCell from '../time/TimeSummaryCell';

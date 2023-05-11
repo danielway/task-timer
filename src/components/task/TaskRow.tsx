@@ -1,10 +1,10 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
 import './TaskRow.css';
 import { Task, Time } from '../../app/redux';
-import { TableRow, Input, Button } from '@material-ui/core';
+import { TableRow, Input, Button } from '@mui/material';
 import IconTableCell from '../layout/IconTableCell';
 import TableCell from '../layout/TableCell';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import TimeRowCell from '../time/TimeRow';
 import TimeSummaryCell from '../time/TimeSummaryCell';
 
