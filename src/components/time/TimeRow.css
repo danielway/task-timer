@@ -24,3 +24,11 @@
 td:last-child {
   padding-right: 5px;
 }
+
+.cell {
+  border-left: '1px solid #e0e0e0';
+  width: 65;
+  padding: 0;
+  padding-left: 5;
+  padding-right: 5;
+}

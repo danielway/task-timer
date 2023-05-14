@@ -1,8 +1,8 @@
 import React from 'react';
 import './TimeRow.css';
-import TimeTableCell from '../layout/TimeTableCell';
 import { Time, Task } from '../../app/redux';
 import TimeIncrement from './TimeIncrement';
+import { TableCell } from '@mui/material';
 
 interface TimeRowProps {
   task: Task;
@@ -28,11 +28,11 @@ class TimeRowCell extends React.Component<TimeRowProps> {
    * @param hour The hour, non-indexed.
    */
   renderHour = (hour: number) => (
-    <TimeTableCell key={hour}>
+    <TableCell key={hour} className='cell'>
       <div className="incrementContainer">
         {[0, 1, 2, 3].map((segment) => this.renderSegment(hour * 4 + segment))}
       </div>
-    </TimeTableCell>
+    </TableCell>
   );
 
   /**
