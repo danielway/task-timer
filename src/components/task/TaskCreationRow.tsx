@@ -41,7 +41,7 @@ class TaskCreationRow extends React.Component<
     return (
       <TableRow>
         <TableCell className='icon' />
-        <TableCell className='cell'>
+        <TableCell>
           <Input
             style={{ fontSize: 13 }}
             placeholder="Task name/description"

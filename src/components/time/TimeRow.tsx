@@ -28,7 +28,7 @@ class TimeRowCell extends React.Component<TimeRowProps> {
    * @param hour The hour, non-indexed.
    */
   renderHour = (hour: number) => (
-    <TableCell key={hour} className='cell'>
+    <TableCell key={hour} className='cell increment-cell'>
       <div className="incrementContainer">
         {[0, 1, 2, 3].map((segment) => this.renderSegment(hour * 4 + segment))}
       </div>

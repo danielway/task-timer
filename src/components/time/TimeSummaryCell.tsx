@@ -9,7 +9,7 @@ class TimeSummaryCell extends React.Component<any> {
   render() {
     const totalMinutes = this.props.timeCount * 15;
     return (
-      <TableCell className='header'>
+      <TableCell>
         {this.getHours(totalMinutes)}:{this.getMinutes(totalMinutes)}
       </TableCell>
     );
