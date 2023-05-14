@@ -26,7 +26,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "stamp-version": "replace-in-file --is-regex true /REPLACE_WITH_RELEASE/g $VERSION src/components/layout/Footer.tsx"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -45,5 +46,8 @@
   },
   "overrides": {
     "typescript": "^5.0.4"
+  },
+  "devDependencies": {
+    "replace-in-file": "^6.3.5"
   }
 }
