@@ -20,12 +20,13 @@ import {
   TableRow,
   TableBody,
   Paper,
+  TableCell,
 } from '@mui/material';
+import './App.css';
 
 // Layout
 import Layout from './layout/Layout';
 import IconTableCell from './layout/IconTableCell';
-import TableCell from './layout/TableCell';
 
 // Children
 import TaskCreationRow from './task/TaskCreationRow';
@@ -54,9 +55,9 @@ class App extends React.Component<AppProps> {
             <TableHead>
               <TableRow>
                 <IconTableCell />
-                <TableCell>Task</TableCell>
+                <TableCell className='cell'>Task</TableCell>
                 <TimeHeaderCells></TimeHeaderCells>
-                <TableCell>Total</TableCell>
+                <TableCell className='cell'>Total</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

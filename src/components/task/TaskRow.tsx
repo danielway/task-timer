@@ -1,9 +1,8 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
 import './TaskRow.css';
 import { Task, Time } from '../../app/redux';
-import { TableRow, Input, Button } from '@mui/material';
+import { TableRow, Input, Button, TableCell } from '@mui/material';
 import IconTableCell from '../layout/IconTableCell';
-import TableCell from '../layout/TableCell';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import TimeRowCell from '../time/TimeRow';
 import TimeSummaryCell from '../time/TimeSummaryCell';
@@ -59,7 +58,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
 
   renderViewRow(task: Task) {
     return (
-      <TableRow className="taskRow">
+      <TableRow className="taskRow cell">
         <IconTableCell>
           <HighlightOffIcon
             onClick={this.deleteTask}
@@ -90,7 +89,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
     return (
       <TableRow>
         <IconTableCell />
-        <TableCell component="th" scope="row">
+        <TableCell component="th" scope="row" className='cell'>
           <Input
             style={{ fontSize: 13 }}
             value={this.state.taskName}

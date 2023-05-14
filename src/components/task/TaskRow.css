@@ -17,3 +17,7 @@
 .taskDelete:hover {
   color: #870000;
 }
+
+.cell {
+  font-size: 14px;
+}

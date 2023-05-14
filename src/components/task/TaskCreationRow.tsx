@@ -1,8 +1,8 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
-import { TableRow, Input, Button } from '@mui/material';
+import { TableRow, Input, Button, TableCell } from '@mui/material';
 import IconTableCell from '../layout/IconTableCell';
-import TableCell from '../layout/TableCell';
 import TimeSummaryCell from '../time/TimeSummaryCell';
+import './TaskCreationRow.css';
 
 interface CreateTaskProps {
   timeCount: number;
@@ -43,7 +43,7 @@ class TaskCreationRow extends React.Component<
     return (
       <TableRow>
         <IconTableCell />
-        <TableCell>
+        <TableCell className='cell'>
           <Input
             style={{ fontSize: 13 }}
             placeholder="Task name/description"
