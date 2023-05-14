@@ -2,15 +2,15 @@ import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import {
-  createMuiTheme,
   ThemeProvider,
   CssBaseline,
   Container,
   Box,
+  createTheme,
 } from '@mui/material';
 
 function Layout(props: any) {
-  const theme = createMuiTheme({
+  const theme = createTheme({
     palette: {
       primary: { main: '#173040' },
       secondary: { main: '#bf3111' },
