@@ -21,11 +21,3 @@
 .cell {
   font-size: 14px;
 }
-
-.icon {
-  color: var(--mui-palette-primary-light);
-  padding-top: 10px;
-  padding-right: 0;
-  width: 10px;
-  font-size: 14px;
-}

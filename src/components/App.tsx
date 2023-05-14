@@ -22,7 +22,6 @@ import {
   Paper,
   TableCell,
 } from '@mui/material';
-import './App.css';
 
 // Layout
 import Layout from './layout/Layout';
@@ -54,9 +53,9 @@ class App extends React.Component<AppProps> {
             <TableHead>
               <TableRow>
                 <TableCell className='icon' />
-                <TableCell className='cell'>Task</TableCell>
+                <TableCell className='header'>Task</TableCell>
                 <TimeHeaderCells></TimeHeaderCells>
-                <TableCell className='cell'>Total</TableCell>
+                <TableCell className='header'>Total</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

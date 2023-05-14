@@ -1,7 +1,6 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { TableRow, Input, Button, TableCell } from '@mui/material';
 import TimeSummaryCell from '../time/TimeSummaryCell';
-import './TaskCreationRow.css';
 
 interface CreateTaskProps {
   timeCount: number;

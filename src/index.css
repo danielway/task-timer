@@ -1,0 +1,24 @@
+th.header {
+    font-weight: bold;
+    font-size: 15px;
+}
+
+th.time {
+    font-weight: bold;
+    text-align: center;
+    width: 55px;
+    font-size: 13px;
+    padding: 0;
+}
+
+td.cell {
+    font-size: 14px;
+}
+
+td.icon {
+    color: var(--mui-palette-primary-light);
+    padding-top: 10px;
+    padding-right: 0;
+    width: 10px;
+    font-size: 14px;
+}
