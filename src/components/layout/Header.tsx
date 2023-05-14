@@ -1,15 +1,12 @@
-import { AppBar, Toolbar, Typography } from '@mui/material';
+import { AppBar, Toolbar, Typography } from "@mui/material";
 
-function Header() {
-  return (
-    <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h5">Task Timer</Typography>
-        <div style={{ flexGrow: 1 }} />
-        <Typography>{new Date().toDateString()}</Typography>
-      </Toolbar>
-    </AppBar>
-  );
-}
-
-export default Header;
+export const Header = () => (
+  <AppBar position="static">
+    <Toolbar>
+      <Typography variant="h5" sx={{ flexGrow: 1 }}>
+        Task Timer
+      </Typography>
+      <Typography>{new Date().toDateString()}</Typography>
+    </Toolbar>
+  </AppBar>
+);

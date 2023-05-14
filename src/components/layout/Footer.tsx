@@ -1,25 +1,22 @@
-import { Box, Divider, Link } from '@mui/material';
+import { Box, Divider, Link } from "@mui/material";
 
-function Footer() {
-  return (
-    <Box>
-      <Divider variant="middle" />
-      <Box marginTop="15px" marginBottom="15px" textAlign="center">
-        Created by{' '}
-        <Link href="https://www.danieldway.com" color="secondary">
-          Daniel Way
-        </Link>{' '}
-        under the MIT License.
-        <Link
-          style={{ marginLeft: '10px' }}
-          href="https://github.com/danielway/task-timer"
-          color="secondary"
-        >
-          Contribute or fork on GitHub.
-        </Link>
-      </Box>
+export const Footer = () => (
+  <Box>
+    <Divider variant="middle" />
+    <Box my={2} fontSize={13} textAlign="center">
+      Created by {websiteLink()} under the MIT License. {repositoryLink()}
     </Box>
-  );
-}
+  </Box>
+);
 
-export default Footer;
+const websiteLink = () => (
+  <Link href="https://www.danieldway.com" color="secondary">
+    Daniel Way
+  </Link>
+);
+
+const repositoryLink = () => (
+  <Link href="https://github.com/danielway/task-timer" color="secondary">
+    Contribute or fork on GitHub.
+  </Link>
+);

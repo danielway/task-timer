@@ -1,18 +1,18 @@
-import Header from './Header';
-import Footer from './Footer';
+import { Header } from "./Header";
+import { Footer } from "./Footer";
 import {
   ThemeProvider,
   CssBaseline,
   Container,
   Box,
   createTheme,
-} from '@mui/material';
+} from "@mui/material";
 
 function Layout(props: any) {
   const theme = createTheme({
     palette: {
-      primary: { main: '#173040' },
-      secondary: { main: '#bf3111' },
+      primary: { main: "#173040" },
+      secondary: { main: "#bf3111" },
     },
   });
 
