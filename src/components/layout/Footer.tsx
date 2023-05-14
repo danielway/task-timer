@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Divider, Link } from '@mui/material';
 
 function Footer() {
