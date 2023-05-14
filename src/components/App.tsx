@@ -26,7 +26,6 @@ import './App.css';
 
 // Layout
 import Layout from './layout/Layout';
-import IconTableCell from './layout/IconTableCell';
 
 // Children
 import TaskCreationRow from './task/TaskCreationRow';
@@ -54,7 +53,7 @@ class App extends React.Component<AppProps> {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <IconTableCell />
+                <TableCell className='icon' />
                 <TableCell className='cell'>Task</TableCell>
                 <TimeHeaderCells></TimeHeaderCells>
                 <TableCell className='cell'>Total</TableCell>

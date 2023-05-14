@@ -1,6 +1,5 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { TableRow, Input, Button, TableCell } from '@mui/material';
-import IconTableCell from '../layout/IconTableCell';
 import TimeSummaryCell from '../time/TimeSummaryCell';
 import './TaskCreationRow.css';
 
@@ -42,7 +41,7 @@ class TaskCreationRow extends React.Component<
   render() {
     return (
       <TableRow>
-        <IconTableCell />
+        <TableCell className='icon' />
         <TableCell className='cell'>
           <Input
             style={{ fontSize: 13 }}
