@@ -1,8 +1,5 @@
-// Core
-import React, { Dispatch } from 'react';
-import { connect } from 'react-redux';
-
-// Redux
+import React, { Dispatch } from "react";
+import { connect } from "react-redux";
 import {
   AppState,
   createTask,
@@ -10,9 +7,7 @@ import {
   deleteTask,
   logTime,
   removeTime,
-} from '../app/redux';
-
-// Mat-UI
+} from "../app/redux";
 import {
   TableContainer,
   Table,
@@ -21,15 +16,11 @@ import {
   TableBody,
   Paper,
   TableCell,
-} from '@mui/material';
-
-// Layout
-import Layout from './layout/Layout';
-
-// Children
-import TaskCreationRow from './task/TaskCreationRow';
-import TaskRow from './task/TaskRow';
-import { TimeHeaderCells } from './time/TimeHeaderCell';
+} from "@mui/material";
+import Layout from "./layout/Layout";
+import TaskCreationRow from "./task/TaskCreationRow";
+import TaskRow from "./task/TaskRow";
+import { TimeHeaderCells } from "./time/TimeHeaderCell";
 
 interface AppActions {
   createTask: (name: string) => any;
@@ -52,10 +43,10 @@ class App extends React.Component<AppProps> {
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell className='icon' />
-                <TableCell className='header'>Task</TableCell>
+                <TableCell className="icon" />
+                <TableCell className="header">Task</TableCell>
                 <TimeHeaderCells></TimeHeaderCells>
-                <TableCell className='header'>Total</TableCell>
+                <TableCell className="header">Total</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

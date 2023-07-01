@@ -1,6 +1,6 @@
-import React, { ChangeEvent, KeyboardEvent } from 'react';
-import { TableRow, Input, Button, TableCell } from '@mui/material';
-import TimeSummaryCell from '../time/TimeSummaryCell';
+import React, { ChangeEvent, KeyboardEvent } from "react";
+import { TableRow, Input, Button, TableCell } from "@mui/material";
+import TimeSummaryCell from "../time/TimeSummaryCell";
 
 interface CreateTaskProps {
   timeCount: number;
@@ -17,7 +17,7 @@ class TaskCreationRow extends React.Component<
 > {
   constructor(props: CreateTaskProps) {
     super(props);
-    this.state = { taskName: '' };
+    this.state = { taskName: "" };
 
     this.handleNameChange = this.handleNameChange.bind(this);
     this.handleNameKey = this.handleNameKey.bind(this);
@@ -34,13 +34,13 @@ class TaskCreationRow extends React.Component<
 
   addTask = () => {
     this.props.createTask(this.state.taskName);
-    this.setState({ taskName: '' });
+    this.setState({ taskName: "" });
   };
 
   render() {
     return (
       <TableRow>
-        <TableCell className='icon' />
+        <TableCell className="icon" />
         <TableCell>
           <Input
             style={{ fontSize: 13 }}

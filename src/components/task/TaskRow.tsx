@@ -1,10 +1,10 @@
-import React, { ChangeEvent, KeyboardEvent } from 'react';
-import './TaskRow.css';
-import { Task, Time } from '../../app/redux';
-import { TableRow, Input, Button, TableCell } from '@mui/material';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import TimeRowCell from '../time/TimeRow';
-import TimeSummaryCell from '../time/TimeSummaryCell';
+import React, { ChangeEvent, KeyboardEvent } from "react";
+import "./TaskRow.css";
+import { Task, Time } from "../../app/redux";
+import { TableRow, Input, Button, TableCell } from "@mui/material";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import TimeRowCell from "../time/TimeRow";
+import TimeSummaryCell from "../time/TimeSummaryCell";
 
 interface TaskRowProps {
   task: Task;
@@ -23,7 +23,7 @@ interface TaskRowState {
 class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
   constructor(props: TaskRowProps) {
     super(props);
-    this.state = { editing: false, taskName: '' };
+    this.state = { editing: false, taskName: "" };
 
     this.handleNameChange = this.handleNameChange.bind(this);
     this.handleNameKey = this.handleNameKey.bind(this);
@@ -43,7 +43,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
 
   updateTask = () => {
     this.props.updateTask(this.props.task.id, this.state.taskName);
-    this.setState({ editing: false, taskName: '' });
+    this.setState({ editing: false, taskName: "" });
   };
 
   deleteTask = () => this.props.deleteTask(this.props.task.id);
@@ -58,7 +58,7 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
   renderViewRow(task: Task) {
     return (
       <TableRow className="taskRow cell">
-        <TableCell className='icon'>
+        <TableCell className="icon">
           <HighlightOffIcon
             onClick={this.deleteTask}
             className="taskDelete"
@@ -87,8 +87,8 @@ class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
   renderEditRow(task: Task) {
     return (
       <TableRow>
-        <TableCell className='icon' />
-        <TableCell component="th" scope="row" className='cell'>
+        <TableCell className="icon" />
+        <TableCell component="th" scope="row" className="cell">
           <Input
             style={{ fontSize: 13 }}
             value={this.state.taskName}

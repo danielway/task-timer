@@ -1,13 +1,13 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore } from "@reduxjs/toolkit";
 
 // Action IDs
 
-export const CREATE_TASK = 'CREATE_TASK';
-export const UPDATE_TASK = 'UPDATE_TASK';
-export const DELETE_TASK = 'DELETE_TASK';
+export const CREATE_TASK = "CREATE_TASK";
+export const UPDATE_TASK = "UPDATE_TASK";
+export const DELETE_TASK = "DELETE_TASK";
 
-export const LOG_TIME = 'LOG_TIME';
-export const REMOVE_TIME = 'REMOVE_TIME';
+export const LOG_TIME = "LOG_TIME";
+export const REMOVE_TIME = "REMOVE_TIME";
 
 // Action types
 
@@ -151,8 +151,8 @@ export function taskReducer(
 
 // Store
 
-const persistedState: AppState = localStorage['state']
-  ? JSON.parse(localStorage['state'])
+const persistedState: AppState = localStorage["state"]
+  ? JSON.parse(localStorage["state"])
   : undefined;
 if (persistedState) {
   largestId = persistedState.tasks[persistedState.tasks.length - 1].id;
@@ -164,5 +164,5 @@ export const store = configureStore({
 });
 
 store.subscribe(
-  () => (localStorage['state'] = JSON.stringify(store.getState()))
+  () => (localStorage["state"] = JSON.stringify(store.getState()))
 );

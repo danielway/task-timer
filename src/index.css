@@ -1,40 +1,40 @@
 body {
-    background-color: #fafafa !important;
+  background-color: #fafafa !important;
 }
 
 @media (min-width: 1280px) {
-    #root .MuiContainer-root {
-        max-width: 1280px;
-    }
+  #root .MuiContainer-root {
+    max-width: 1280px;
+  }
 }
 
 th.header {
-    font-weight: bold;
-    font-size: 15px;
+  font-weight: bold;
+  font-size: 15px;
 }
 
 th.time {
-    font-weight: bold;
-    text-align: center;
-    width: 55px;
-    font-size: 13px;
-    padding: 0;
+  font-weight: bold;
+  text-align: center;
+  width: 55px;
+  font-size: 13px;
+  padding: 0;
 }
 
 td.cell {
-    font-size: 14px;
-    padding-left: 5px;
-    padding-right: 5px;
+  font-size: 14px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 td.increment-cell {
-    border-left: 1px solid #e0e0e0;
+  border-left: 1px solid #e0e0e0;
 }
 
 td.icon {
-    color: var(--mui-palette-primary-light);
-    padding-top: 10px;
-    padding-right: 0;
-    width: 10px;
-    font-size: 14px;
+  color: var(--mui-palette-primary-light);
+  padding-top: 10px;
+  padding-right: 0;
+  width: 10px;
+  font-size: 14px;
 }
