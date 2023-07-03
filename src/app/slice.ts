@@ -70,7 +70,7 @@ export const taskSlice = createSlice({
 export const { createTask, updateTask, deleteTask, logTime, removeTime } =
   taskSlice.actions;
 
-export const selectTasks = (state: RootState) => state.task.tasks;
-export const selectTime = (state: RootState) => state.task.time;
+export const selectTasks = (state: RootState) => state.tasks.tasks;
+export const selectTime = (state: RootState) => state.tasks.time;
 
 export default taskSlice.reducer;
