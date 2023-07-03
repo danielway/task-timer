@@ -8,7 +8,7 @@ import {
   createTheme,
 } from "@mui/material";
 
-function Layout(props: any) {
+export const Layout = (props: any) => {
   const theme = createTheme({
     palette: {
       primary: { main: "#173040" },
@@ -26,6 +26,4 @@ function Layout(props: any) {
       </Container>
     </ThemeProvider>
   );
-}
-
-export default Layout;
+};

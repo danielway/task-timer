@@ -7,7 +7,7 @@ import {
   Paper,
   TableCell,
 } from "@mui/material";
-import Layout from "./layout/Layout";
+import { Layout } from "./layout/Layout";
 import TaskCreationRow from "./task/TaskCreationRow";
 import TaskRow from "./task/TaskRow";
 import { TimeHeaderCells } from "./time/TimeHeaderCell";
