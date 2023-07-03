@@ -4,7 +4,7 @@ import task from "./slice";
 const persistedStateJson = localStorage.getItem("state");
 const persistedState = persistedStateJson
   ? JSON.parse(persistedStateJson)
-  : null;
+  : undefined;
 
 export const store = configureStore({
   preloadedState: persistedState,
