@@ -1,13 +1,3 @@
-import React, { Dispatch } from "react";
-import { connect } from "react-redux";
-import {
-  AppState,
-  createTask,
-  updateTask,
-  deleteTask,
-  logTime,
-  removeTime,
-} from "../app/redux";
 import {
   TableContainer,
   Table,
@@ -21,65 +11,59 @@ import Layout from "./layout/Layout";
 import TaskCreationRow from "./task/TaskCreationRow";
 import TaskRow from "./task/TaskRow";
 import { TimeHeaderCells } from "./time/TimeHeaderCell";
+import { useAppDispatch } from "../app/hooks";
+import { useSelector } from "react-redux";
+import {
+  createTask,
+  deleteTask,
+  logTime,
+  removeTime,
+  selectTasks,
+  selectTime,
+  updateTask,
+} from "../app/slice";
 
-interface AppActions {
-  createTask: (name: string) => any;
-  updateTask: (id: number, name: string) => any;
-  deleteTask: (id: number) => any;
-  logTime: (taskId: number, timeSeg: number) => any;
-  removeTime: (taskId: number, timeSeg: number) => any;
-}
+export const App = () => {
+  const tasks = useSelector(selectTasks);
+  const time = useSelector(selectTime);
 
-type AppProps = AppActions & AppState;
+  const dispatch = useAppDispatch();
 
-class App extends React.Component<AppProps> {
-  render() {
-    const tasks = this.props.tasks;
-    const time = this.props.time;
-
-    return (
-      <Layout>
-        <TableContainer component={Paper}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell className="icon" />
-                <TableCell className="header">Task</TableCell>
-                <TimeHeaderCells></TimeHeaderCells>
-                <TableCell className="header">Total</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {tasks.map((task) => (
-                <TaskRow
-                  task={task}
-                  time={time.filter((time) => time.taskId === task.id)}
-                  key={task.id}
-                  updateTask={this.props.updateTask}
-                  deleteTask={this.props.deleteTask}
-                  logTime={this.props.logTime}
-                  removeTime={this.props.removeTime}
-                />
-              ))}
-              <TaskCreationRow
-                timeCount={this.props.time.length}
-                createTask={this.props.createTask}
+  return (
+    <Layout>
+      <TableContainer component={Paper}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell className="icon" />
+              <TableCell className="header">Task</TableCell>
+              <TimeHeaderCells></TimeHeaderCells>
+              <TableCell className="header">Total</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {tasks.map((task) => (
+              <TaskRow
+                task={task}
+                time={time.filter((time) => time.taskId === task.id)}
+                key={task.id}
+                updateTask={(id, name) => dispatch(updateTask({ id, name }))}
+                deleteTask={(id) => dispatch(deleteTask(id))}
+                logTime={(taskId, timeSegment) =>
+                  dispatch(logTime({ taskId, timeSegment }))
+                }
+                removeTime={(taskId, timeSegment) =>
+                  dispatch(removeTime({ taskId, timeSegment }))
+                }
               />
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Layout>
-    );
-  }
-}
-
-export default connect(
-  (state: AppState) => state,
-  (dispatch: Dispatch<any>): AppActions => ({
-    createTask: (name) => dispatch(createTask(name)),
-    updateTask: (id, name) => dispatch(updateTask(id, name)),
-    deleteTask: (id) => dispatch(deleteTask(id)),
-    logTime: (taskId, timeSeg) => dispatch(logTime(taskId, timeSeg)),
-    removeTime: (taskId, timeSeg) => dispatch(removeTime(taskId, timeSeg)),
-  })
-)(App);
+            ))}
+            <TaskCreationRow
+              timeCount={time.length}
+              createTask={(name) => dispatch(createTask(name))}
+            />
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Layout>
+  );
+};

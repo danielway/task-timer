@@ -1,10 +1,10 @@
 import React, { ChangeEvent, KeyboardEvent } from "react";
 import "./TaskRow.css";
-import { Task, Time } from "../../app/redux";
 import { TableRow, Input, Button, TableCell } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import TimeRowCell from "../time/TimeRow";
 import TimeSummaryCell from "../time/TimeSummaryCell";
+import { Task, Time } from "../../app/slice";
 
 interface TaskRowProps {
   task: Task;

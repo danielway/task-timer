@@ -1,6 +1,6 @@
 import React from "react";
 import "./TimeRow.css";
-import { Time, Task } from "../../app/redux";
+import { Time, Task } from "../../app/slice";
 import TimeIncrement from "./TimeIncrement";
 import { TableCell } from "@mui/material";
 
