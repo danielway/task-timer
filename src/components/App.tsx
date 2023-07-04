@@ -28,49 +28,25 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export const App = () => {
   const dispatch = useAppDispatch();
 
-  const [hoursPosition, setHoursPosition] = useState<{
-    hoursLeftPosition: number;
-    hoursRightPosition: number;
-  } | null>(null);
+  const dates = useAppSelector(selectDates);
+  const selectedDate = dates[1];
 
-  const [timeHeight, setTimeHeight] = useState<number>(0);
+  const tasks = useAppSelector((state) => selectTasks(state, selectedDate));
+  const times = useAppSelector((state) => selectTimes(state, selectedDate));
 
   const tableRef = useRef<HTMLTableElement>(null);
 
-  const dates = useAppSelector(selectDates);
-  const date = dates[1];
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayStamp = today.getTime();
-
-  const tasks = useAppSelector((state) => selectTasks(state, date));
-  const times = useAppSelector((state) => selectTimes(state, date));
+  const [timeHeight, setTimeHeight] = useState<number>(0);
 
   useEffect(
     () => setTimeHeight(tableRef.current?.getBoundingClientRect().height ?? 0),
     [tableRef, tasks]
   );
 
-  const timeCursor = useCallback(() => {
-    if (date !== todayStamp) {
-      return null;
-    }
-
-    if (!hoursPosition) {
-      return null;
-    }
-
-    const { hoursLeftPosition, hoursRightPosition } = hoursPosition;
-
-    return (
-      <TimeCursor
-        hoursLeftPosition={hoursLeftPosition}
-        hoursRightPosition={hoursRightPosition}
-        tableHeight={timeHeight}
-      />
-    );
-  }, [hoursPosition, timeHeight, date, todayStamp]);
+  const [hoursPosition, setHoursPosition] = useState<{
+    hoursLeftPosition: number;
+    hoursRightPosition: number;
+  } | null>(null);
 
   const handleNewHoursPosition = useCallback(
     (hoursLeft: number, hoursRight: number) => {
@@ -92,7 +68,11 @@ export const App = () => {
         ref={tableRef}
         style={{ marginBottom: "10px", position: "relative" }}
       >
-        {timeCursor()}
+        <TimeCursor
+          hoursPositionLeft={hoursPosition?.hoursLeftPosition}
+          hoursPositionRight={hoursPosition?.hoursRightPosition}
+          hoursHeight={timeHeight}
+        />
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -109,20 +89,26 @@ export const App = () => {
                 time={times.filter((time) => time.taskId === task.id)}
                 key={task.id}
                 updateTask={(id, name) =>
-                  dispatch(updateTask({ date, id, name }))
+                  dispatch(updateTask({ date: selectedDate, id, name }))
                 }
-                deleteTask={(task) => dispatch(deleteTask({ date, task }))}
+                deleteTask={(task) =>
+                  dispatch(deleteTask({ date: selectedDate, task }))
+                }
                 logTime={(taskId, timeSegment) =>
-                  dispatch(logTime({ date, taskId, timeSegment }))
+                  dispatch(logTime({ date: selectedDate, taskId, timeSegment }))
                 }
                 removeTime={(taskId, timeSegment) =>
-                  dispatch(removeTime({ date, taskId, timeSegment }))
+                  dispatch(
+                    removeTime({ date: selectedDate, taskId, timeSegment })
+                  )
                 }
               />
             ))}
             <TaskCreationRow
               timeCount={times.length}
-              createTask={(name) => dispatch(createTask({ date, name }))}
+              createTask={(name) =>
+                dispatch(createTask({ date: selectedDate, name }))
+              }
             />
           </TableBody>
         </Table>

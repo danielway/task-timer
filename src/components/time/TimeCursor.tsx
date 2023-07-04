@@ -1,28 +1,41 @@
 import { useCallback, useEffect, useState } from "react";
-import { useInterval } from "../../app/hooks";
+import { useAppSelector, useInterval } from "../../app/hooks";
 import "./TimeCursor.css";
 import { HOUR_COUNT, START_HOUR } from "../../app/constants";
+import { selectDates } from "../../app/slice";
 
 interface TimeCursorProps {
-  hoursLeftPosition: number;
-  hoursRightPosition: number;
-  tableHeight: number;
+  hoursPositionLeft?: number;
+  hoursPositionRight?: number;
+  hoursHeight?: number;
 }
 
 export const TimeCursor = (props: TimeCursorProps) => {
-  const { hoursLeftPosition: left, hoursRightPosition: right } = props;
-  const [currentTimePosition, setCurrentTimePosition] = useState<number>(0);
-  const [currentTime, setCurrentTime] = useState<string>("");
+  const { hoursPositionLeft, hoursPositionRight, hoursHeight } = props;
+
+  const dates = useAppSelector(selectDates);
+  const selectedDate = dates[1];
+
+  const [showCursor, setShowCursor] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<{
+    text: string;
+    position: number;
+  } | null>(null);
 
   const updateCurrentTime = useCallback(() => {
-    const currentTime = new Date();
-    setCurrentTime(
-      currentTime.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    );
+    if (!hoursPositionLeft || !hoursPositionRight) {
+      return;
+    }
 
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    if (currentDate.getTime() !== selectedDate) {
+      setShowCursor(false);
+      return;
+    }
+
+    const currentTime = new Date();
     const currentHourDecimal =
       currentTime.getHours() +
       currentTime.getMinutes() / 60 +
@@ -30,30 +43,41 @@ export const TimeCursor = (props: TimeCursorProps) => {
 
     const currentTimeRatio = (currentHourDecimal - START_HOUR) / HOUR_COUNT;
 
-    const dimensionRange = right - left;
-    setCurrentTimePosition(left + dimensionRange * currentTimeRatio);
-  }, [left, right]);
+    const hoursWidth = hoursPositionRight - hoursPositionLeft;
+
+    setCurrentTime({
+      text: currentTime.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      position: hoursPositionLeft + hoursWidth * currentTimeRatio,
+    });
+  }, [hoursPositionLeft, hoursPositionRight]);
 
   useEffect(() => updateCurrentTime(), [updateCurrentTime]);
   useInterval(() => updateCurrentTime(), 1000);
+
+  if (!showCursor || !currentTime || !hoursHeight) {
+    return null;
+  }
 
   return (
     <>
       <div
         className="cursor"
         style={{
-          left: currentTimePosition,
-          height: props.tableHeight - 65,
+          left: currentTime.position,
+          height: hoursHeight - 65,
         }}
       />
       <div
         className="cursor-time"
         style={{
-          top: props.tableHeight - 30,
-          left: currentTimePosition - 20,
+          top: hoursHeight - 30,
+          left: currentTime.position - 20,
         }}
       >
-        {currentTime}
+        {currentTime.text}
       </div>
     </>
   );
