@@ -28,7 +28,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export const App = () => {
   const dispatch = useAppDispatch();
 
-  const [[left, right], setTimeDims] = useState<[number, number]>([0, 0]);
+  const [hoursPosition, setHoursPosition] = useState<{
+    hoursLeftPosition: number;
+    hoursRightPosition: number;
+  } | null>(null);
+
   const [timeHeight, setTimeHeight] = useState<number>(0);
 
   const tableRef = useRef<HTMLTableElement>(null);
@@ -53,18 +57,29 @@ export const App = () => {
       return null;
     }
 
-    return <TimeCursor left={left} right={right} height={timeHeight} />;
-  }, [left, right, timeHeight, date, todayStamp]);
+    if (!hoursPosition) {
+      return null;
+    }
 
-  const onNewDimensions = useCallback(
-    (dimensions: number[]) => {
-      const [headerLeft, headerRight] = dimensions;
+    const { hoursLeftPosition, hoursRightPosition } = hoursPosition;
+
+    return (
+      <TimeCursor
+        hoursLeftPosition={hoursLeftPosition}
+        hoursRightPosition={hoursRightPosition}
+        tableHeight={timeHeight}
+      />
+    );
+  }, [hoursPosition, timeHeight, date, todayStamp]);
+
+  const handleNewHoursPosition = useCallback(
+    (hoursLeft: number, hoursRight: number) => {
       if (tableRef.current) {
         const tableRect = tableRef.current.getBoundingClientRect();
-        setTimeDims([
-          headerLeft - tableRect.left,
-          headerRight - tableRect.left,
-        ]);
+        setHoursPosition({
+          hoursLeftPosition: hoursLeft - tableRect.left,
+          hoursRightPosition: hoursRight - tableRect.left,
+        });
       }
     },
     [tableRef]
@@ -83,7 +98,7 @@ export const App = () => {
             <TableRow>
               <TableCell className="icon" />
               <TableCell className="header">Task</TableCell>
-              <TimeHeaderCells onNewDimensions={onNewDimensions} />
+              <TimeHeaderCells onNewPosition={handleNewHoursPosition} />
               <TableCell className="header">Total</TableCell>
             </TableRow>
           </TableHead>

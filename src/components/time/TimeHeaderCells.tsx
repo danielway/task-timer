@@ -1,12 +1,13 @@
 import { TableCell } from "@mui/material";
 import { useCallback, useEffect, useRef } from "react";
+import { END_HOUR, HOUR_COUNT, START_HOUR } from "../../app/constants";
 
 interface TimeHeaderCellsProps {
-  onNewDimensions: (bounds: [number, number]) => void;
+  onNewPosition: (left: number, right: number) => void;
 }
 
 export const TimeHeaderCells = (props: TimeHeaderCellsProps) => {
-  const { onNewDimensions } = props;
+  const { onNewPosition } = props;
 
   const firstHourRef = useRef<HTMLDivElement>(null);
   const lastHourRef = useRef<HTMLDivElement>(null);
@@ -17,9 +18,9 @@ export const TimeHeaderCells = (props: TimeHeaderCellsProps) => {
     if (firstHour && lastHour) {
       const firstHourBounds = firstHour.getBoundingClientRect();
       const lastHourBounds = lastHour.getBoundingClientRect();
-      onNewDimensions([firstHourBounds.left, lastHourBounds.right]);
+      onNewPosition(firstHourBounds.left, lastHourBounds.right);
     }
-  }, [onNewDimensions]);
+  }, [onNewPosition]);
 
   // React to the window being resized
   useEffect(() => {
@@ -35,16 +36,28 @@ export const TimeHeaderCells = (props: TimeHeaderCellsProps) => {
     [handleDimensionUpdate, firstHourRef, lastHourRef]
   );
 
-  const hours = [7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5];
+  // Retain a ref for the first and last hour
+  const getCorrespondingRef = (hour: number) => {
+    if (hour === START_HOUR) {
+      return firstHourRef;
+    }
+
+    if (hour === END_HOUR - 13) {
+      return lastHourRef;
+    }
+
+    return null;
+  };
+
+  const hours = Array.from(
+    { length: HOUR_COUNT },
+    (_, i) => ((i + START_HOUR - 1) % 12) + 1
+  );
+
   return (
     <>
-      {hours.map((hour, index) => {
-        const hourRef =
-          index === 0
-            ? firstHourRef
-            : index === hours.length - 1
-            ? lastHourRef
-            : null;
+      {hours.map((hour) => {
+        const hourRef = getCorrespondingRef(hour);
         return (
           <TableCell key={hour} className="time" ref={hourRef}>
             {hour}:00
