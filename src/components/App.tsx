@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Layout } from "./layout/Layout";
 import { TaskCreationRow } from "./task/TaskCreationRow";
-import TaskRow from "./task/TaskRow";
+import { TaskRow } from "./task/TaskRow";
 import { TimeHeaderCells } from "./time/TimeHeaderCell";
 import { useAppDispatch } from "../app/hooks";
 import { useSelector } from "react-redux";

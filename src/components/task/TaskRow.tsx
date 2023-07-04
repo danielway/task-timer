@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent } from "react";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 import "./TaskRow.css";
 import { TableRow, Input, Button, TableCell } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
@@ -15,106 +15,88 @@ interface TaskRowProps {
   removeTime: (taskId: number, timeSegment: number) => any;
 }
 
-interface TaskRowState {
-  editing: boolean;
-  taskName: string;
-}
+export const TaskRow = (props: TaskRowProps) => {
+  const [editing, setEditing] = useState(false);
+  const [taskName, setTaskName] = useState("");
 
-class TaskRow extends React.Component<TaskRowProps, TaskRowState> {
-  constructor(props: TaskRowProps) {
-    super(props);
-    this.state = { editing: false, taskName: "" };
+  const handleNameChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setTaskName(event.target.value);
 
-    this.handleNameChange = this.handleNameChange.bind(this);
-    this.handleNameKey = this.handleNameKey.bind(this);
-  }
-
-  handleNameChange = (event: ChangeEvent<HTMLInputElement>) =>
-    this.setState({ ...this.state, taskName: event.target.value });
-
-  handleNameKey = (event: KeyboardEvent<HTMLInputElement>) => {
+  const handleNameKey = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === 13) {
-      this.updateTask();
+      updateTask();
     }
   };
 
-  startEditing = () =>
-    this.setState({ editing: true, taskName: this.props.task.name });
-
-  updateTask = () => {
-    this.props.updateTask(this.props.task.id, this.state.taskName);
-    this.setState({ editing: false, taskName: "" });
+  const startEditing = () => {
+    setEditing(true);
+    setTaskName(props.task.name);
   };
 
-  deleteTask = () => this.props.deleteTask(this.props.task.id);
+  const updateTask = () => {
+    props.updateTask(props.task.id, taskName);
+    setEditing(false);
+    setTaskName("");
+  };
 
-  render() {
-    const task = this.props.task;
-    return this.state.editing
-      ? this.renderEditRow(task)
-      : this.renderViewRow(task);
-  }
+  const deleteTask = () => props.deleteTask(props.task.id);
 
-  renderViewRow(task: Task) {
-    return (
-      <TableRow className="taskRow cell">
-        <TableCell className="icon">
-          <HighlightOffIcon
-            onClick={this.deleteTask}
-            className="taskDelete"
-            fontSize="small"
-          />
-        </TableCell>
-        <TableCell
-          onClick={this.startEditing}
-          component="th"
-          scope="row"
-          className="taskName"
+  const renderViewRow = () => (
+    <TableRow className="taskRow cell">
+      <TableCell className="icon">
+        <HighlightOffIcon
+          onClick={deleteTask}
+          className="taskDelete"
+          fontSize="small"
+        />
+      </TableCell>
+      <TableCell
+        onClick={startEditing}
+        component="th"
+        scope="row"
+        className="taskName"
+      >
+        {props.task.name}
+      </TableCell>
+      <TimeRowCell
+        task={props.task}
+        time={props.time}
+        logTime={props.logTime}
+        removeTime={props.removeTime}
+      />
+      <TimeSummaryCell timeCount={props.time.length} />
+    </TableRow>
+  );
+
+  const renderEditRow = () => (
+    <TableRow>
+      <TableCell className="icon" />
+      <TableCell component="th" scope="row" className="cell">
+        <Input
+          style={{ fontSize: 13 }}
+          value={taskName}
+          onChange={handleNameChange}
+          onKeyUp={handleNameKey}
+        />
+        <Button
+          color="secondary"
+          size="small"
+          variant="contained"
+          style={{ marginLeft: 10 }}
+          onClick={updateTask}
         >
-          {task.name}
-        </TableCell>
-        <TimeRowCell
-          task={task}
-          time={this.props.time}
-          logTime={this.props.logTime}
-          removeTime={this.props.removeTime}
-        />
-        <TimeSummaryCell timeCount={this.props.time.length} />
-      </TableRow>
-    );
-  }
+          Update Task
+        </Button>
+      </TableCell>
+      <TimeRowCell
+        task={props.task}
+        time={props.time}
+        logTime={props.logTime}
+        removeTime={props.removeTime}
+      />
+      <TimeSummaryCell timeCount={props.time.length} />
+    </TableRow>
+  );
 
-  renderEditRow(task: Task) {
-    return (
-      <TableRow>
-        <TableCell className="icon" />
-        <TableCell component="th" scope="row" className="cell">
-          <Input
-            style={{ fontSize: 13 }}
-            value={this.state.taskName}
-            onChange={this.handleNameChange}
-            onKeyUp={this.handleNameKey}
-          />
-          <Button
-            color="secondary"
-            size="small"
-            variant="contained"
-            style={{ marginLeft: 10 }}
-            onClick={this.updateTask}
-          >
-            Update Task
-          </Button>
-        </TableCell>
-        <TimeRowCell
-          task={task}
-          time={this.props.time}
-          logTime={this.props.logTime}
-          removeTime={this.props.removeTime}
-        />
-        <TimeSummaryCell timeCount={this.props.time.length} />
-      </TableRow>
-    );
-  }
-}
-
-export default TaskRow;
+  return editing ? renderEditRow() : renderViewRow();
+};
