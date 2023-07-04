@@ -43,6 +43,7 @@ export const taskSlice = createSlice({
     },
     deleteTask: (state, action: PayloadAction<number>) => {
       state.tasks = state.tasks.filter((task) => task.id !== action.payload);
+      state.time = state.time.filter((time) => time.taskId !== action.payload);
     },
     logTime: (
       state,
