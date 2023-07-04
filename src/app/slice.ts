@@ -35,16 +35,16 @@ export const taskSlice = createSlice({
   name: "task",
   initialState,
   reducers: {
-    createDay: (state, action: PayloadAction<number>) => {
-      if (state.days.find((day) => day.date === action.payload)) {
-        return;
+    selectDay: (state, action: PayloadAction<number>) => {
+      if (!state.days.find((day) => day.date === action.payload)) {
+        state.days.push({
+          date: action.payload,
+          tasks: [],
+          times: [],
+        });
       }
 
-      state.days.push({
-        date: action.payload,
-        tasks: [],
-        times: [],
-      });
+      state.currentDate = action.payload;
     },
     createTask: (
       state,
@@ -122,7 +122,7 @@ export const taskSlice = createSlice({
 });
 
 export const {
-  createDay,
+  selectDay,
   createTask,
   updateTask,
   deleteTask,

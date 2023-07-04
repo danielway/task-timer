@@ -1,6 +1,6 @@
 import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
-import { useAppSelector } from "../../app/hooks";
-import { selectDates } from "../../app/slice";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { selectDates, selectDay } from "../../app/slice";
 
 const dateOptions: Intl.DateTimeFormatOptions = {
   weekday: "long",
@@ -15,6 +15,7 @@ const otherDateOptions: Intl.DateTimeFormatOptions = {
 };
 
 export const Header = () => {
+  const dispatch = useAppDispatch();
   const dates = useAppSelector(selectDates);
   return (
     <AppBar position="static">
@@ -31,6 +32,7 @@ export const Header = () => {
                 color: "#fff",
                 fontWeight: index === 1 ? "bold" : "normal",
               }}
+              onClick={() => dispatch(selectDay(date))}
             >
               {new Date(date).toLocaleDateString(
                 "en-US",

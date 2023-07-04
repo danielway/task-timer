@@ -13,25 +13,21 @@ import { TaskRow } from "./task/TaskRow";
 import { TimeHeaderCells } from "./time/TimeHeaderCell";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import {
-  createDay,
   createTask,
   deleteTask,
   logTime,
   removeTime,
+  selectDates,
   selectTasks,
   selectTimes,
   updateTask,
 } from "../app/slice";
-import { useState } from "react";
 
 export const App = () => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const [date, setDate] = useState(today.getTime());
-
   const dispatch = useAppDispatch();
-  dispatch(createDay(date));
+
+  const dates = useAppSelector(selectDates);
+  const date = dates[1];
 
   const tasks = useAppSelector((state) => selectTasks(state, date));
   const times = useAppSelector((state) => selectTimes(state, date));
