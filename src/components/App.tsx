@@ -8,7 +8,7 @@ import {
   TableCell,
 } from "@mui/material";
 import { Layout } from "./layout/Layout";
-import TaskCreationRow from "./task/TaskCreationRow";
+import { TaskCreationRow } from "./task/TaskCreationRow";
 import TaskRow from "./task/TaskRow";
 import { TimeHeaderCells } from "./time/TimeHeaderCell";
 import { useAppDispatch } from "../app/hooks";

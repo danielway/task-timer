@@ -1,69 +1,52 @@
-import React, { ChangeEvent, KeyboardEvent } from "react";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { TableRow, Input, Button, TableCell } from "@mui/material";
 import TimeSummaryCell from "../time/TimeSummaryCell";
 
-interface CreateTaskProps {
+interface TaskCreationRowProps {
   timeCount: number;
   createTask: (name: string) => any;
 }
 
-interface CreateTaskState {
-  taskName: string;
-}
+export const TaskCreationRow = (props: TaskCreationRowProps) => {
+  const [taskName, setTaskName] = useState("");
 
-class TaskCreationRow extends React.Component<
-  CreateTaskProps,
-  CreateTaskState
-> {
-  constructor(props: CreateTaskProps) {
-    super(props);
-    this.state = { taskName: "" };
+  const handleNameChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setTaskName(event.target.value);
 
-    this.handleNameChange = this.handleNameChange.bind(this);
-    this.handleNameKey = this.handleNameKey.bind(this);
-  }
-
-  handleNameChange = (event: ChangeEvent<HTMLInputElement>) =>
-    this.setState({ taskName: event.target.value });
-
-  handleNameKey = (event: KeyboardEvent<HTMLInputElement>) => {
+  const handleNameKey = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === 13) {
-      this.addTask();
+      addTask();
     }
   };
 
-  addTask = () => {
-    this.props.createTask(this.state.taskName);
-    this.setState({ taskName: "" });
+  const addTask = () => {
+    props.createTask(taskName);
+    setTaskName("");
   };
 
-  render() {
-    return (
-      <TableRow>
-        <TableCell className="icon" />
-        <TableCell>
-          <Input
-            style={{ fontSize: 13 }}
-            placeholder="Task name/description"
-            value={this.state.taskName}
-            onChange={this.handleNameChange}
-            onKeyUp={this.handleNameKey}
-          />
-          <Button
-            color="secondary"
-            size="small"
-            variant="contained"
-            style={{ marginLeft: 10 }}
-            onClick={this.addTask}
-          >
-            Add Task
-          </Button>
-        </TableCell>
-        <TableCell colSpan={11}></TableCell>
-        <TimeSummaryCell timeCount={this.props.timeCount} />
-      </TableRow>
-    );
-  }
-}
-
-export default TaskCreationRow;
+  return (
+    <TableRow>
+      <TableCell className="icon" />
+      <TableCell>
+        <Input
+          style={{ fontSize: 13 }}
+          placeholder="Task name/description"
+          value={taskName}
+          onChange={handleNameChange}
+          onKeyUp={handleNameKey}
+        />
+        <Button
+          color="secondary"
+          size="small"
+          variant="contained"
+          style={{ marginLeft: 10 }}
+          onClick={addTask}
+        >
+          Add Task
+        </Button>
+      </TableCell>
+      <TableCell colSpan={11}></TableCell>
+      <TimeSummaryCell timeCount={props.timeCount} />
+    </TableRow>
+  );
+};
