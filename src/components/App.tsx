@@ -22,25 +22,68 @@ import {
   selectTimes,
   updateTask,
 } from "../app/slice";
+import { TimeCursor } from "./time/TimeCursor";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export const App = () => {
   const dispatch = useAppDispatch();
 
+  const [[left, right], setTimeDims] = useState<[number, number]>([0, 0]);
+  const [timeHeight, setTimeHeight] = useState<number>(0);
+
+  const tableRef = useRef<HTMLTableElement>(null);
+
   const dates = useAppSelector(selectDates);
   const date = dates[1];
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayStamp = today.getTime();
 
   const tasks = useAppSelector((state) => selectTasks(state, date));
   const times = useAppSelector((state) => selectTimes(state, date));
 
+  useEffect(
+    () => setTimeHeight(tableRef.current?.getBoundingClientRect().height ?? 0),
+    [tableRef, tasks]
+  );
+
+  const timeCursor = useCallback(() => {
+    if (date !== todayStamp) {
+      return null;
+    }
+
+    return <TimeCursor left={left} right={right} height={timeHeight} />;
+  }, [left, right, timeHeight, date, todayStamp]);
+
+  const onNewDimensions = useCallback(
+    (dimensions: number[]) => {
+      const [headerLeft, headerRight] = dimensions;
+      if (tableRef.current) {
+        const tableRect = tableRef.current.getBoundingClientRect();
+        setTimeDims([
+          headerLeft - tableRect.left,
+          headerRight - tableRect.left,
+        ]);
+      }
+    },
+    [tableRef]
+  );
+
   return (
     <Layout>
-      <TableContainer component={Paper}>
+      <TableContainer
+        component={Paper}
+        ref={tableRef}
+        style={{ marginBottom: "10px", position: "relative" }}
+      >
+        {timeCursor()}
         <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell className="icon" />
               <TableCell className="header">Task</TableCell>
-              <TimeHeaderCells></TimeHeaderCells>
+              <TimeHeaderCells onNewDimensions={onNewDimensions} />
               <TableCell className="header">Total</TableCell>
             </TableRow>
           </TableHead>

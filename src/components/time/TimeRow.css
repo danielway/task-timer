@@ -11,6 +11,7 @@
   border: 1px solid #c1c1c1;
   background-color: #f7f7f7;
   margin: 0 1px;
+  z-index: 200;
 }
 
 .increment:hover {
