@@ -10,7 +10,7 @@ import {
 import { Layout } from "./layout/Layout";
 import { TaskCreationRow } from "./task/TaskCreationRow";
 import { TaskRow } from "./task/TaskRow";
-import { TimeHeaderCells } from "./time/TimeHeaderCell";
+import { TimeHeaderCells } from "./time/TimeHeaderCells";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import {
   createTask,
