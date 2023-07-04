@@ -19,10 +19,17 @@ export interface Day {
 }
 
 interface TaskState {
+  currentDate: number;
   days: Day[];
 }
 
-const initialState: TaskState = { days: [] };
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const initialState: TaskState = {
+  currentDate: today.getTime(),
+  days: [{ date: today.getTime(), tasks: [], times: [] }],
+};
 
 export const taskSlice = createSlice({
   name: "task",
@@ -122,6 +129,19 @@ export const {
   logTime,
   removeTime,
 } = taskSlice.actions;
+
+export const selectDates = (state: RootState) => {
+  const currentDate = new Date(state.tasks.currentDate);
+  currentDate.setHours(0, 0, 0, 0);
+
+  const previousDate = new Date(currentDate);
+  previousDate.setDate(previousDate.getDate() - 1);
+
+  const nextDate = new Date(currentDate);
+  nextDate.setDate(nextDate.getDate() + 1);
+
+  return [previousDate.getTime(), currentDate.getTime(), nextDate.getTime()];
+};
 
 export const selectTasks = (state: RootState, date: number) =>
   state.tasks.days.find((day) => day.date === date)!.tasks;
