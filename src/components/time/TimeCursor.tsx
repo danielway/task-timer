@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useInterval } from "../../app/hooks";
+import "./TimeCursor.css";
 
 interface TimeCursorProps {
   left: number;
@@ -35,22 +36,17 @@ export const TimeCursor = (props: TimeCursorProps) => {
   return (
     <>
       <div
+        className="cursor"
         style={{
-          position: "absolute",
-          top: 30,
           left: currentTimePosition,
-          width: "2px",
           height: props.height - 65,
-          backgroundColor: "#173041",
-          zIndex: 100,
         }}
       />
       <div
+        className="cursor-time"
         style={{
-          position: "absolute",
           top: props.height - 30,
           left: currentTimePosition - 20,
-          fontSize: "12px",
         }}
       >
         {currentTime}

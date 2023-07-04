@@ -1,0 +1,14 @@
+.cursor {
+  position: absolute;
+  top: 30px;
+
+  width: 2px;
+
+  background-color: #173041;
+  z-index: 100;
+}
+
+.cursor-time {
+  position: absolute;
+  font-size: 12px;
+}
