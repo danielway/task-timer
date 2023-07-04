@@ -11,23 +11,30 @@ import { Layout } from "./layout/Layout";
 import { TaskCreationRow } from "./task/TaskCreationRow";
 import { TaskRow } from "./task/TaskRow";
 import { TimeHeaderCells } from "./time/TimeHeaderCell";
-import { useAppDispatch } from "../app/hooks";
-import { useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import {
+  createDay,
   createTask,
   deleteTask,
   logTime,
   removeTime,
   selectTasks,
-  selectTime,
+  selectTimes,
   updateTask,
 } from "../app/slice";
+import { useState } from "react";
 
 export const App = () => {
-  const tasks = useSelector(selectTasks);
-  const time = useSelector(selectTime);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const [date, setDate] = useState(today.getTime());
 
   const dispatch = useAppDispatch();
+  dispatch(createDay(date));
+
+  const tasks = useAppSelector((state) => selectTasks(state, date));
+  const times = useAppSelector((state) => selectTimes(state, date));
 
   return (
     <Layout>
@@ -45,21 +52,23 @@ export const App = () => {
             {tasks.map((task) => (
               <TaskRow
                 task={task}
-                time={time.filter((time) => time.taskId === task.id)}
+                time={times.filter((time) => time.taskId === task.id)}
                 key={task.id}
-                updateTask={(id, name) => dispatch(updateTask({ id, name }))}
-                deleteTask={(id) => dispatch(deleteTask(id))}
+                updateTask={(id, name) =>
+                  dispatch(updateTask({ date, id, name }))
+                }
+                deleteTask={(task) => dispatch(deleteTask({ date, task }))}
                 logTime={(taskId, timeSegment) =>
-                  dispatch(logTime({ taskId, timeSegment }))
+                  dispatch(logTime({ date, taskId, timeSegment }))
                 }
                 removeTime={(taskId, timeSegment) =>
-                  dispatch(removeTime({ taskId, timeSegment }))
+                  dispatch(removeTime({ date, taskId, timeSegment }))
                 }
               />
             ))}
             <TaskCreationRow
-              timeCount={time.length}
-              createTask={(name) => dispatch(createTask(name))}
+              timeCount={times.length}
+              createTask={(name) => dispatch(createTask({ date, name }))}
             />
           </TableBody>
         </Table>

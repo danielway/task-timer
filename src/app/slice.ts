@@ -12,66 +12,120 @@ export interface Time {
   timeSegment: number; // 11 hours * 4 segments, 0 indexed
 }
 
-interface TaskState {
+export interface Day {
+  date: number;
   tasks: Task[];
-  time: Time[];
+  times: Time[];
 }
 
-const initialState: TaskState = {
-  tasks: [],
-  time: [],
-};
+interface TaskState {
+  days: Day[];
+}
+
+const initialState: TaskState = { days: [] };
 
 export const taskSlice = createSlice({
   name: "task",
   initialState,
   reducers: {
-    createTask: (state, action: PayloadAction<string>) => {
-      state.tasks.push({
-        id: state.tasks.length + 1,
-        name: action.payload,
+    createDay: (state, action: PayloadAction<number>) => {
+      if (state.days.find((day) => day.date === action.payload)) {
+        return;
+      }
+
+      state.days.push({
+        date: action.payload,
+        tasks: [],
+        times: [],
       });
+    },
+    createTask: (
+      state,
+      action: PayloadAction<{ date: number; name: string }>
+    ) => {
+      const day = state.days.find((day) => day.date === action.payload.date);
+      if (day) {
+        day.tasks.push({
+          id: day.tasks.length,
+          name: action.payload.name,
+        });
+      }
     },
     updateTask: (
       state,
-      action: PayloadAction<{ id: number; name: string }>
+      action: PayloadAction<{ date: number; id: number; name: string }>
     ) => {
-      const task = state.tasks.find((task) => task.id === action.payload.id);
-      if (task) {
-        task.name = action.payload.name;
+      const day = state.days.find((day) => day.date === action.payload.date);
+      if (day) {
+        const task = day.tasks.find((task) => task.id === action.payload.id);
+        if (task) {
+          task.name = action.payload.name;
+        }
       }
     },
-    deleteTask: (state, action: PayloadAction<number>) => {
-      state.tasks = state.tasks.filter((task) => task.id !== action.payload);
-      state.time = state.time.filter((time) => time.taskId !== action.payload);
+    deleteTask: (
+      state,
+      action: PayloadAction<{ date: number; task: number }>
+    ) => {
+      const day = state.days.find((day) => day.date === action.payload.date);
+      if (day) {
+        const task = day.tasks.find((task) => task.id === action.payload.task);
+        if (task) {
+          day.times = day.times.filter((time) => time.taskId !== task.id);
+          day.tasks = day.tasks.filter(
+            (task) => task.id !== action.payload.task
+          );
+        }
+      }
     },
     logTime: (
       state,
-      action: PayloadAction<{ taskId: number; timeSegment: number }>
+      action: PayloadAction<{
+        date: Number;
+        taskId: number;
+        timeSegment: number;
+      }>
     ) => {
-      state.time.push({
-        taskId: action.payload.taskId,
-        timeSegment: action.payload.timeSegment,
-      });
+      const day = state.days.find((day) => day.date === action.payload.date);
+      if (day) {
+        day.times.push({
+          taskId: action.payload.taskId,
+          timeSegment: action.payload.timeSegment,
+        });
+      }
     },
     removeTime: (
       state,
-      action: PayloadAction<{ taskId: number; timeSegment: number }>
+      action: PayloadAction<{
+        date: number;
+        taskId: number;
+        timeSegment: number;
+      }>
     ) => {
-      state.time = state.time.filter((time) => {
-        return !(
-          time.taskId === action.payload.taskId &&
-          time.timeSegment === action.payload.timeSegment
+      const day = state.days.find((day) => day.date === action.payload.date);
+      if (day) {
+        day.times = day.times.filter(
+          (time) =>
+            time.taskId !== action.payload.taskId ||
+            time.timeSegment !== action.payload.timeSegment
         );
-      });
+      }
     },
   },
 });
 
-export const { createTask, updateTask, deleteTask, logTime, removeTime } =
-  taskSlice.actions;
+export const {
+  createDay,
+  createTask,
+  updateTask,
+  deleteTask,
+  logTime,
+  removeTime,
+} = taskSlice.actions;
 
-export const selectTasks = (state: RootState) => state.tasks.tasks;
-export const selectTime = (state: RootState) => state.tasks.time;
+export const selectTasks = (state: RootState, date: number) =>
+  state.tasks.days.find((day) => day.date === date)!.tasks;
+export const selectTimes = (state: RootState, date: number) =>
+  state.tasks.days.find((day) => day.date === date)!.times;
 
 export default taskSlice.reducer;
