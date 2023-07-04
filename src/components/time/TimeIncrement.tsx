@@ -1,28 +1,25 @@
-import React from "react";
-
-class TimeIncrement extends React.Component<any> {
-  constructor(props: any) {
-    super(props);
-
-    this.logTime = this.logTime.bind(this);
-    this.removeTime = this.removeTime.bind(this);
-  }
-
-  logTime() {
-    this.props.logTime(this.props.taskId, this.props.timeSegment);
-  }
-
-  removeTime() {
-    this.props.removeTime(this.props.taskId, this.props.timeSegment);
-  }
-
-  render() {
-    if (this.props.logged) {
-      return <div className="increment logged" onClick={this.removeTime} />;
-    } else {
-      return <div className="increment" onClick={this.logTime} />;
-    }
-  }
+interface TimeIncrementProps {
+  taskId: number;
+  timeSegment: number;
+  logged: boolean;
+  logTime: (taskId: number, timeSegment: number) => void;
+  removeTime: (taskId: number, timeSegment: number) => void;
 }
 
-export default TimeIncrement;
+export const TimeIncrement = (props: TimeIncrementProps) => {
+  if (props.logged) {
+    return (
+      <div
+        className="increment logged"
+        onClick={() => props.removeTime(props.taskId, props.timeSegment)}
+      />
+    );
+  } else {
+    return (
+      <div
+        className="increment"
+        onClick={() => props.logTime(props.taskId, props.timeSegment)}
+      />
+    );
+  }
+};

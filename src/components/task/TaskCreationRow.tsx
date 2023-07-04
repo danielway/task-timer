@@ -1,6 +1,6 @@
-import { ChangeEvent, KeyboardEvent, useState } from "react";
+import { useState } from "react";
 import { TableRow, Input, Button, TableCell } from "@mui/material";
-import TimeSummaryCell from "../time/TimeSummaryCell";
+import { TimeSummaryCell } from "../time/TimeSummaryCell";
 
 interface TaskCreationRowProps {
   timeCount: number;
@@ -9,15 +9,6 @@ interface TaskCreationRowProps {
 
 export const TaskCreationRow = (props: TaskCreationRowProps) => {
   const [taskName, setTaskName] = useState("");
-
-  const handleNameChange = (event: ChangeEvent<HTMLInputElement>) =>
-    setTaskName(event.target.value);
-
-  const handleNameKey = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.keyCode === 13) {
-      addTask();
-    }
-  };
 
   const addTask = () => {
     props.createTask(taskName);
@@ -32,8 +23,12 @@ export const TaskCreationRow = (props: TaskCreationRowProps) => {
           style={{ fontSize: 13 }}
           placeholder="Task name/description"
           value={taskName}
-          onChange={handleNameChange}
-          onKeyUp={handleNameKey}
+          onChange={(event) => setTaskName(event.target.value)}
+          onKeyUp={(event) => {
+            if (event.keyCode === 13) {
+              addTask();
+            }
+          }}
         />
         <Button
           color="secondary"
