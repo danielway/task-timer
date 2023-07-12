@@ -12,7 +12,9 @@ export const useInterval = (callback: () => void, delay: number) => {
   const intervalRef = useRef<number | null>(null);
   const savedCallback = useRef(callback);
 
-  useEffect(() => (savedCallback.current = callback), [callback]);
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
 
   useEffect(() => {
     const tick = () => savedCallback.current();
