@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAppSelector, useInterval } from "../../app/hooks";
 import "./TimeCursor.css";
-import { HOUR_COUNT, START_HOUR } from "../../app/constants";
+import { END_HOUR, HOUR_COUNT, START_HOUR } from "../../app/constants";
 import { selectDates } from "../../app/slice";
 
 interface TimeCursorProps {
@@ -30,8 +30,14 @@ export const TimeCursor = (props: TimeCursorProps) => {
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
 
-    if (currentDate.getTime() !== selectedDate) {
-      setShowCursor(false);
+    const currentDateSelected = currentDate.getTime() === selectedDate;
+    setShowCursor(currentDateSelected);
+
+    const timeInBounds =
+      currentDate.getHours() >= START_HOUR &&
+      currentDate.getHours() <= END_HOUR;
+
+    if (!currentDateSelected || !timeInBounds) {
       return;
     }
 
@@ -52,7 +58,7 @@ export const TimeCursor = (props: TimeCursorProps) => {
       }),
       position: hoursPositionLeft + hoursWidth * currentTimeRatio,
     });
-  }, [hoursPositionLeft, hoursPositionRight]);
+  }, [hoursPositionLeft, hoursPositionRight, selectedDate]);
 
   useEffect(() => updateCurrentTime(), [updateCurrentTime]);
   useInterval(() => updateCurrentTime(), 1000);
