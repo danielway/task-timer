@@ -1,7 +1,7 @@
 # Task Timer
 
 [![React CI](https://github.com/danielway/task-timer/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/danielway/task-timer/actions/workflows/ci-workflow.yml)
-[![GitHub Pages Deploy](https://github.com/danielway/task-timer/actions/workflows/cd-workflow.yml/badge.svg?branch=master)](https://github.com/danielway/task-timer/actions/workflows/cd-workflow.yml)
+[![GitHub Pages Deploy](https://github.com/danielway/task-timer/actions/workflows/cd-workflow.yml/badge.svg?event=release)](https://github.com/danielway/task-timer/actions/workflows/cd-workflow.yml)
 
 This is a simple client-side web application for tracking time spent on tasks.
 
