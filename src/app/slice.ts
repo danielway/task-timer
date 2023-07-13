@@ -19,6 +19,7 @@ export interface Day {
 }
 
 interface TaskState {
+  version: string;
   currentDate: number;
   days: Day[];
 }
@@ -27,6 +28,7 @@ const today = new Date();
 today.setHours(0, 0, 0, 0);
 
 const initialState: TaskState = {
+  version: "REPLACE_WITH_RELEASE",
   currentDate: today.getTime(),
   days: [{ date: today.getTime(), tasks: [], times: [] }],
 };
