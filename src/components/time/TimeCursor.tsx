@@ -31,13 +31,14 @@ export const TimeCursor = (props: TimeCursorProps) => {
     currentDate.setHours(0, 0, 0, 0);
 
     const currentDateSelected = currentDate.getTime() === selectedDate;
-    setShowCursor(currentDateSelected);
 
     const timeInBounds =
       currentDate.getHours() >= START_HOUR &&
       currentDate.getHours() <= END_HOUR;
 
-    if (!currentDateSelected || !timeInBounds) {
+    setShowCursor(currentDateSelected && timeInBounds);
+
+    if (!showCursor) {
       return;
     }
 
@@ -58,7 +59,7 @@ export const TimeCursor = (props: TimeCursorProps) => {
       }),
       position: hoursPositionLeft + hoursWidth * currentTimeRatio,
     });
-  }, [hoursPositionLeft, hoursPositionRight, selectedDate]);
+  }, [hoursPositionLeft, hoursPositionRight, selectedDate, showCursor]);
 
   useEffect(() => updateCurrentTime(), [updateCurrentTime]);
   useInterval(() => updateCurrentTime(), 1000);
