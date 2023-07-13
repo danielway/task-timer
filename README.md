@@ -7,6 +7,8 @@ This is a simple client-side web application for tracking time spent on tasks.
 
 Access the application [here](https://danieldway.com/task-timer).
 
+<img src="https://raw.githubusercontent.com/danielway/task-timer/master/images/task_timer.png" width="800" />
+
 ## Notable features
 
 - Create tasks and log time spent on those tasks in 15 minute increments
