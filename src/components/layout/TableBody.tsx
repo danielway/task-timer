@@ -24,8 +24,9 @@ export const TableBody = () => {
 
   return (
     <MuiTableBody>
-      {tasks.map((task) => (
+      {tasks.map((task, row) => (
         <TaskRow
+          row={row}
           task={task}
           time={times.filter((time) => time.taskId === task.id)}
           key={task.id}

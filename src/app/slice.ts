@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "./store";
+import { HOUR_COUNT } from "./constants";
 
 export interface Task {
   id: number;
@@ -12,6 +13,11 @@ export interface Time {
   timeSegment: number; // 11 hours * 4 segments, 0 indexed
 }
 
+export interface CursorSelection {
+  row: number;
+  column: number; // 0 is description
+}
+
 export interface Day {
   date: number;
   tasks: Task[];
@@ -20,6 +26,7 @@ export interface Day {
 
 interface TaskState {
   version: string;
+  cursor?: CursorSelection;
   currentDate: number;
   days: Day[];
 }
@@ -120,6 +127,51 @@ export const taskSlice = createSlice({
         );
       }
     },
+    updateCursor: (
+      state,
+      action: PayloadAction<{
+        row?: number;
+        rowDelta?: number;
+        column?: number;
+        columnDelta?: number;
+      }>
+    ) => {
+      const day = state.days.find((day) => day.date === state.currentDate);
+      if (!day) {
+        return;
+      }
+
+      const cursor = state.cursor ?? { row: 0, column: 0 };
+
+      var newRow = cursor.row;
+      var newColumn = cursor.column;
+
+      if (action.payload.row) {
+        newRow = action.payload.row;
+      }
+
+      if (action.payload.column) {
+        newColumn = action.payload.column;
+      }
+
+      if (action.payload.rowDelta) {
+        newRow += action.payload.rowDelta;
+      }
+
+      if (action.payload.columnDelta) {
+        newColumn += action.payload.columnDelta;
+      }
+
+      if (newRow < 0) return;
+      if (newRow >= day.tasks.length) return;
+      cursor.row = newRow;
+
+      if (newColumn < 0) return;
+      if (newColumn >= HOUR_COUNT * 4 + 1) return;
+      cursor.column = newColumn;
+
+      state.cursor = cursor;
+    },
   },
 });
 
@@ -130,6 +182,7 @@ export const {
   deleteTask,
   logTime,
   removeTime,
+  updateCursor,
 } = taskSlice.actions;
 
 export const selectDates = (state: RootState) => {
@@ -158,6 +211,15 @@ export const selectDatesWithTasks = (state: RootState) => {
     }
   });
   return dates;
+};
+
+export const selectCursor = (state: RootState) => {
+  const cursor = state.tasks.cursor;
+  if (!cursor) {
+    return null;
+  }
+
+  return [cursor.row, cursor.column];
 };
 
 export default taskSlice.reducer;

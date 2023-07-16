@@ -1,4 +1,5 @@
 interface TimeIncrementProps {
+  selected: boolean;
   taskId: number;
   timeSegment: number;
   logged: boolean;
@@ -7,19 +8,21 @@ interface TimeIncrementProps {
 }
 
 export const TimeIncrement = (props: TimeIncrementProps) => {
-  if (props.logged) {
-    return (
-      <div
-        className="increment logged"
-        onClick={() => props.removeTime(props.taskId, props.timeSegment)}
-      />
-    );
-  } else {
-    return (
-      <div
-        className="increment"
-        onClick={() => props.logTime(props.taskId, props.timeSegment)}
-      />
-    );
-  }
+  const classes = props.logged ? "increment logged" : "increment";
+
+  return (
+    <div
+      style={{
+        border: props.selected ? "2px dashed #173040" : undefined,
+      }}
+      className={classes}
+      onClick={() => {
+        if (props.logged) {
+          props.removeTime(props.taskId, props.timeSegment);
+        } else {
+          props.logTime(props.taskId, props.timeSegment);
+        }
+      }}
+    />
+  );
 };
