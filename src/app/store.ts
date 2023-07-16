@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import app from "./appSlice";
-import edit from "./editSlice";
-import date from "./dateSlice";
-import task from "./taskSlice";
-import time from "./timeSlice";
+import app from "./slices/appSlice";
+import edit from "./slices/editSlice";
+import date from "./slices/dateSlice";
+import task from "./slices/taskSlice";
+import time from "./slices/timeSlice";
 
 const loadState = () => {
   const persistedStateJson = localStorage.getItem("state");
