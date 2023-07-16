@@ -1,7 +1,13 @@
-import { Button } from "@mui/material";
+import { Button, styled } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectDates, selectDay } from "../../app/slice";
 import { DatePopover } from "./DatePopover";
+import { useCallback } from "react";
+
+const DateButton = styled(Button)(() => ({
+  marginLeft: "10px",
+  color: "#fff",
+}));
 
 export const DatePicker = () => {
   const dispatch = useAppDispatch();
@@ -11,30 +17,26 @@ export const DatePicker = () => {
   const currentDate = dates[1];
   const nextDate = dates[2];
 
-  const dateButton = (date: number) => (
-    <Button
-      key={date}
-      sx={{
-        marginLeft: "10px",
-        color: "#fff",
-      }}
-      onClick={() => dispatch(selectDay(date))}
-    >
-      {new Date(date).toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-      })}
-    </Button>
+  const dateSelectionButton = useCallback(
+    (date: number) => (
+      <DateButton key={date} onClick={() => dispatch(selectDay(date))}>
+        {new Date(date).toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+        })}
+      </DateButton>
+    ),
+    [dispatch]
   );
 
   return (
     <>
-      {dateButton(previousDate)}
+      {dateSelectionButton(previousDate)}
       <DatePopover
         currentDate={currentDate}
         onSelectDate={(date) => dispatch(selectDay(date))}
       />
-      {dateButton(nextDate)}
+      {dateSelectionButton(nextDate)}
     </>
   );
 };

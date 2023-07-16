@@ -1,4 +1,4 @@
-import { Button, Popover } from "@mui/material";
+import { Button, Popover, styled } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import {
   DateCalendar,
@@ -18,79 +18,96 @@ interface DatePopoverProps {
 }
 
 export const DatePopover = (props: DatePopoverProps) => {
-  const datesWithTasks = useAppSelector(selectDatesWithTasks);
-
-  const Day = (props: PickersDayProps<Dayjs>) => {
-    const { day, ...other } = props;
-
-    const hasTasks = datesWithTasks.includes(day.valueOf());
-
-    return (
-      <PickersDay
-        {...other}
-        day={day}
-        sx={{ fontWeight: hasTasks ? "bold" : "normal" }}
-      />
-    );
-  };
-
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-  const openPopover = (event: React.MouseEvent<HTMLButtonElement>) =>
-    setAnchorEl(event.currentTarget);
-
-  const closePopover = () => setAnchorEl(null);
-
-  const open = Boolean(anchorEl);
+  const [buttonEl, setButtonEl] = useState<HTMLButtonElement | null>(null);
 
   return (
     <>
-      <Button
+      <CurrentDateButton
         variant="contained"
         color="secondary"
-        onClick={openPopover}
-        sx={{
-          marginLeft: "10px",
-        }}
+        onClick={(event) => setButtonEl(event.currentTarget)}
       >
-        {new Date(props.currentDate).toLocaleDateString("en-US", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
-        <CalendarTodayIcon
-          sx={{
-            fontSize: "1.1rem",
-            marginLeft: "10px",
-          }}
-        />
-      </Button>
-      <Popover
-        open={open}
-        anchorEl={anchorEl}
-        onClose={closePopover}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-      >
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DateCalendar
-            value={dayjs(props.currentDate)}
-            showDaysOutsideCurrentMonth={true}
-            slots={{
-              day: Day,
-            }}
-            onChange={(value: any, selection) => {
-              if (selection !== "finish") return;
+        {getDateString(props.currentDate)}
+        <CalendarIcon />
+      </CurrentDateButton>
 
-              props.onSelectDate(value.valueOf());
-              closePopover();
-            }}
-          />
-        </LocalizationProvider>
-      </Popover>
+      {CalendarPopover(
+        Boolean(buttonEl),
+        buttonEl,
+        props.currentDate,
+        () => setButtonEl(null),
+        props.onSelectDate
+      )}
     </>
   );
 };
+
+const CalendarPopover = (
+  isOpen: boolean,
+  buttonEl: HTMLButtonElement | null,
+  currentDate: number,
+  closePopover: () => void,
+  onSelectDate: (date: number) => void
+) => {
+  const daysWithTasks = useAppSelector(selectDatesWithTasks);
+
+  return (
+    <Popover
+      open={isOpen}
+      anchorEl={buttonEl}
+      onClose={closePopover}
+      anchorOrigin={{
+        vertical: "bottom",
+        horizontal: "left",
+      }}
+    >
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DateCalendar
+          value={dayjs(currentDate)}
+          showDaysOutsideCurrentMonth={true}
+          slots={{ day: Day }}
+          slotProps={{ day: { daysWithTasks } as any }}
+          onChange={(value: any, selection) => {
+            if (selection !== "finish") return;
+
+            onSelectDate(value.valueOf());
+            closePopover();
+          }}
+        />
+      </LocalizationProvider>
+    </Popover>
+  );
+};
+
+const Day = (props: PickersDayProps<Dayjs> & { daysWithTasks?: number[] }) => {
+  const { day, daysWithTasks, ...other } = props;
+
+  const hasTasks = daysWithTasks?.includes(day.valueOf()) ?? false;
+
+  return (
+    <PickersDay
+      {...other}
+      day={day}
+      sx={{ fontWeight: hasTasks ? "bold" : "normal" }}
+    />
+  );
+};
+
+const getDateString = (dateEpoch: number) => {
+  const date = new Date(dateEpoch);
+  return date.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
+const CalendarIcon = styled(CalendarTodayIcon)(() => ({
+  fontSize: "1.1rem",
+  marginLeft: "10px",
+}));
+
+const CurrentDateButton = styled(Button)(() => ({
+  marginLeft: "10px",
+}));

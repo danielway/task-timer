@@ -21,7 +21,7 @@ export const Layout = (props: any) => {
       <CssBaseline />
       <Header />
       <Container>
-        <Box padding="20px">{props.children}</Box>
+        <Box p="20px">{props.children}</Box>
         <Footer />
       </Container>
     </ThemeProvider>
