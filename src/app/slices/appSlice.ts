@@ -29,6 +29,7 @@ export const appSlice = createSlice({
 
 export const { selectDate } = appSlice.actions;
 
-// todo: app selectors
+export const getSelectedDate = (state: { app: AppState }) =>
+  state.app.selectedDate;
 
 export default appSlice.reducer;

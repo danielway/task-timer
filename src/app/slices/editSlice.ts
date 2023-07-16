@@ -31,7 +31,6 @@ export const editSlice = createSlice({
         taskId: number;
       }>
     ) => {
-      state.activeEditTaskId = action.payload.taskId;
       state.selection = {
         taskId: action.payload.taskId,
         description: true,
@@ -44,19 +43,38 @@ export const editSlice = createSlice({
         timeSegment: number;
       }>
     ) => {
-      state.activeEditTaskId = undefined;
       state.selection = {
         taskId: action.payload.taskId,
         description: false,
         timeSegment: action.payload.timeSegment,
       };
     },
+    beginTaskEdit: (
+      state,
+      action: PayloadAction<{
+        taskId: number;
+      }>
+    ) => {
+      state.activeEditTaskId = action.payload.taskId;
+      state.selection = {
+        taskId: action.payload.taskId,
+        description: true,
+      };
+    },
+    endTaskEdit: (state) => {
+      state.activeEditTaskId = undefined;
+    },
   },
 });
 
-export const { selectTaskDescription, selectTaskTimeSegment } =
-  editSlice.actions;
+export const {
+  selectTaskDescription,
+  selectTaskTimeSegment,
+  beginTaskEdit,
+  endTaskEdit,
+} = editSlice.actions;
 
-// todo: edit selectors
+export const getSelection = (state: { edit: EditState }) =>
+  state.edit.selection;
 
 export default editSlice.reducer;

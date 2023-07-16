@@ -2,60 +2,143 @@ import { useCallback, useEffect } from "react";
 import { Layout } from "./layout/Layout";
 import { Table } from "./layout/Table";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { getSelectedDate } from "../app/slices/appSlice";
+import { getTasksForDate } from "../app/slices/dateSlice";
 import {
-  selectCursor,
-  updateRowBeingEdited,
-  updateCursor,
-  toggleTime,
-  selectDates,
-  selectTasks,
-} from "../app/slice";
+  beginTaskEdit,
+  getSelection,
+  selectTaskDescription,
+  selectTaskTimeSegment,
+} from "../app/slices/editSlice";
+import { HOUR_COUNT, START_HOUR } from "../app/constants";
+import { recordTime } from "../app/slices/timeSlice";
 
 export const App = () => {
   const dispatch = useAppDispatch();
 
-  const currentDate = useAppSelector(selectDates)[1];
-  const tasks = useAppSelector((state) => selectTasks(state, currentDate));
-  const cursor = useAppSelector(selectCursor);
+  const uiSelection = useAppSelector(getSelection);
+  const selectedDate = useAppSelector(getSelectedDate);
+  const tasksForDate = useAppSelector((state) =>
+    getTasksForDate(state, selectedDate)
+  );
 
-  const handleKeyPress = useCallback(
-    (event: KeyboardEvent) => {
-      switch (event.key) {
-        case "ArrowUp":
-          dispatch(updateCursor({ rowDelta: -1 }));
-          break;
-        case "ArrowDown":
-          dispatch(updateCursor({ rowDelta: 1 }));
-          break;
-        case "ArrowLeft":
-          dispatch(updateCursor({ columnDelta: -1 }));
-          break;
-        case "ArrowRight":
-          dispatch(updateCursor({ columnDelta: 1 }));
-          break;
-        case " ":
-        case "Enter":
-          if (!cursor) break;
+  const getTaskIndex = useCallback(
+    (taskId: number) => tasksForDate.findIndex((task) => task === taskId),
+    [tasksForDate]
+  );
 
-          const [selectedRow, selectedColumn] = cursor;
-          if (selectedColumn === 0) {
-            dispatch(updateRowBeingEdited(selectedRow));
+  const handleKeyPress = (event: KeyboardEvent) => {
+    // If the user doesn't have a selection, select the first task and time segment
+    if (!uiSelection) {
+      dispatch(
+        selectTaskTimeSegment({
+          taskId: tasksForDate[0],
+          timeSegment: 0,
+        })
+      );
+      return;
+    }
+
+    const taskIndex = getTaskIndex(uiSelection.taskId);
+
+    switch (event.key) {
+      case "ArrowUp":
+        if (taskIndex > 0) {
+          const newTaskId = tasksForDate[taskIndex - 1];
+          if (uiSelection.description) {
+            dispatch(selectTaskDescription({ taskId: newTaskId }));
           } else {
-            const task = tasks[selectedRow];
             dispatch(
-              toggleTime({
-                date: currentDate,
-                taskId: task.id,
-                timeSegment: selectedColumn - 1,
+              selectTaskTimeSegment({
+                taskId: newTaskId,
+                timeSegment: uiSelection.timeSegment!,
               })
             );
           }
+        }
+        break;
+      case "ArrowDown":
+        if (taskIndex < tasksForDate.length - 1) {
+          const newTaskId = tasksForDate[taskIndex + 1];
+          if (uiSelection.description) {
+            dispatch(selectTaskDescription({ taskId: newTaskId }));
+          } else {
+            dispatch(
+              selectTaskTimeSegment({
+                taskId: newTaskId,
+                timeSegment: uiSelection.timeSegment!,
+              })
+            );
+          }
+        }
+        break;
+      case "ArrowLeft":
+        if (uiSelection.timeSegment) {
+          dispatch(
+            selectTaskTimeSegment({
+              taskId: uiSelection.taskId,
+              timeSegment: uiSelection.timeSegment - 1,
+            })
+          );
+        }
+        break;
+      case "ArrowRight":
+        if (uiSelection.description) {
+          dispatch(
+            selectTaskTimeSegment({
+              taskId: uiSelection.taskId,
+              timeSegment: 0,
+            })
+          );
+        } else if (uiSelection.timeSegment! < HOUR_COUNT * 4) {
+          dispatch(
+            selectTaskTimeSegment({
+              taskId: uiSelection.taskId,
+              timeSegment: uiSelection.timeSegment! + 1,
+            })
+          );
+        }
+        break;
+      case " ":
+      case "Enter":
+        if (uiSelection.description) {
+          dispatch(beginTaskEdit({ taskId: uiSelection.taskId }));
+        } else {
+          const timeSegment = uiSelection.timeSegment!;
+          const hour = Math.floor(timeSegment / 4) + START_HOUR;
+          const minute = (timeSegment % 4) * 15;
 
-          break;
-      }
-    },
-    [dispatch, currentDate, cursor, tasks]
-  );
+          const selectedDateObj = new Date(selectedDate);
+
+          const start = new Date(
+            selectedDateObj.getFullYear(),
+            selectedDateObj.getMonth(),
+            selectedDateObj.getDate(),
+            hour,
+            minute
+          );
+
+          const end = new Date(
+            selectedDateObj.getFullYear(),
+            selectedDateObj.getMonth(),
+            selectedDateObj.getDate(),
+            hour,
+            minute + 15
+          );
+
+          dispatch(
+            recordTime({
+              date: selectedDate,
+              taskId: uiSelection.taskId,
+              start: start.getTime(),
+              end: end.getTime(),
+            })
+          );
+        }
+
+        break;
+    }
+  };
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyPress);

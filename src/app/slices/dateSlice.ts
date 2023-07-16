@@ -1,4 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../store";
+import { AppState } from "./appSlice";
 
 export interface DateState {
   dates: Map<number, Date>;
@@ -59,6 +61,9 @@ export const dateSlice = createSlice({
 
 export const { createDate } = dateSlice.actions;
 
-// todo: date selectors
+export const getTasksForDate = (
+  state: { app: AppState; date: DateState },
+  date: number
+) => state.date.dates.get(date)!.tasks;
 
 export default dateSlice.reducer;
