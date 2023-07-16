@@ -150,4 +150,14 @@ export const selectTasks = (state: RootState, date: number) =>
 export const selectTimes = (state: RootState, date: number) =>
   state.tasks.days.find((day) => day.date === date)!.times;
 
+export const selectDatesWithTasks = (state: RootState) => {
+  const dates: number[] = [];
+  state.tasks.days.forEach((day) => {
+    if (day.tasks.length > 0) {
+      dates.push(day.date);
+    }
+  });
+  return dates;
+};
+
 export default taskSlice.reducer;
