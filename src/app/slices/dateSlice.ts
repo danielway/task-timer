@@ -1,5 +1,4 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { RootState } from "../store";
 import { AppState } from "./appSlice";
 
 export interface DateState {
