@@ -27,6 +27,7 @@ export interface Day {
 interface TaskState {
   version: string;
   cursor?: CursorSelection;
+  rowBeingEdited?: number;
   currentDate: number;
   days: Day[];
 }
@@ -127,6 +128,35 @@ export const taskSlice = createSlice({
         );
       }
     },
+    toggleTime: (
+      state,
+      action: PayloadAction<{
+        date: number;
+        taskId: number;
+        timeSegment: number;
+      }>
+    ) => {
+      const day = state.days.find((day) => day.date === action.payload.date);
+      if (day) {
+        const time = day.times.find(
+          (time) =>
+            time.taskId === action.payload.taskId &&
+            time.timeSegment === action.payload.timeSegment
+        );
+        if (time) {
+          day.times = day.times.filter(
+            (time) =>
+              time.taskId !== action.payload.taskId ||
+              time.timeSegment !== action.payload.timeSegment
+          );
+        } else {
+          day.times.push({
+            taskId: action.payload.taskId,
+            timeSegment: action.payload.timeSegment,
+          });
+        }
+      }
+    },
     updateCursor: (
       state,
       action: PayloadAction<{
@@ -172,6 +202,12 @@ export const taskSlice = createSlice({
 
       state.cursor = cursor;
     },
+    updateRowBeingEdited: (
+      state,
+      action: PayloadAction<number | undefined>
+    ) => {
+      state.rowBeingEdited = action.payload;
+    },
   },
 });
 
@@ -182,7 +218,9 @@ export const {
   deleteTask,
   logTime,
   removeTime,
+  toggleTime,
   updateCursor,
+  updateRowBeingEdited,
 } = taskSlice.actions;
 
 export const selectDates = (state: RootState) => {
@@ -220,6 +258,10 @@ export const selectCursor = (state: RootState) => {
   }
 
   return [cursor.row, cursor.column];
+};
+
+export const selectRowBeingEdited = (state: RootState) => {
+  return state.tasks.rowBeingEdited;
 };
 
 export default taskSlice.reducer;

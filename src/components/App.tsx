@@ -2,10 +2,21 @@ import { useCallback, useEffect } from "react";
 import { Layout } from "./layout/Layout";
 import { Table } from "./layout/Table";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { selectCursor, updateCursor } from "../app/slice";
+import {
+  selectCursor,
+  updateRowBeingEdited,
+  updateCursor,
+  toggleTime,
+  selectDates,
+  selectTasks,
+} from "../app/slice";
 
 export const App = () => {
   const dispatch = useAppDispatch();
+
+  const currentDate = useAppSelector(selectDates)[1];
+  const tasks = useAppSelector((state) => selectTasks(state, currentDate));
+  const cursor = useAppSelector(selectCursor);
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
@@ -22,9 +33,28 @@ export const App = () => {
         case "ArrowRight":
           dispatch(updateCursor({ columnDelta: 1 }));
           break;
+        case " ":
+        case "Enter":
+          if (!cursor) break;
+
+          const [selectedRow, selectedColumn] = cursor;
+          if (selectedColumn === 0) {
+            dispatch(updateRowBeingEdited(selectedRow));
+          } else {
+            const task = tasks[selectedRow];
+            dispatch(
+              toggleTime({
+                date: currentDate,
+                taskId: task.id,
+                timeSegment: selectedColumn - 1,
+              })
+            );
+          }
+
+          break;
       }
     },
-    [dispatch]
+    [dispatch, currentDate, cursor, tasks]
   );
 
   useEffect(() => {
@@ -34,12 +64,9 @@ export const App = () => {
     };
   }, [handleKeyPress]);
 
-  const cursor = useAppSelector(selectCursor);
-
   return (
     <Layout>
       <Table />
-      DEBUG: {cursor ? `${cursor[0]},${cursor[1]}` : "null"}
     </Layout>
   );
 };

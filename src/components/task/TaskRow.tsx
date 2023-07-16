@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./TaskRow.css";
 import { TableRow, Input, Button, TableCell } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { TimeRowCell } from "../time/TimeRow";
 import { TimeSummaryCell } from "../time/TimeSummaryCell";
-import { Task, Time, selectCursor, updateCursor } from "../../app/slice";
+import {
+  Task,
+  Time,
+  selectCursor,
+  selectRowBeingEdited,
+  updateRowBeingEdited,
+  updateCursor,
+} from "../../app/slice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 interface TaskRowProps {
@@ -20,8 +27,14 @@ interface TaskRowProps {
 export const TaskRow = (props: TaskRowProps) => {
   const dispatch = useAppDispatch();
 
-  const [editing, setEditing] = useState(false);
   const [taskName, setTaskName] = useState("");
+  useEffect(() => setTaskName(props.task.name), [props.task.name]);
+
+  const rowBeingEdited = useAppSelector(selectRowBeingEdited);
+  const editing = rowBeingEdited === props.row;
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => inputRef.current?.focus(), [inputRef, editing]);
 
   const cursor = useAppSelector(selectCursor);
   const descriptionSelected =
@@ -35,7 +48,7 @@ export const TaskRow = (props: TaskRowProps) => {
 
   const updateTask = () => {
     props.updateTask(props.task.id, taskName);
-    setEditing(false);
+    dispatch(updateRowBeingEdited(undefined));
     setTaskName("");
   };
 
@@ -73,9 +86,8 @@ export const TaskRow = (props: TaskRowProps) => {
           textDecoration: descriptionSelected ? "underline" : undefined,
         }}
         onClick={() => {
-          setEditing(true);
+          dispatch(updateRowBeingEdited(props.row));
           selectDescription();
-          setTaskName(props.task.name);
         }}
         component="th"
         scope="row"
@@ -92,11 +104,12 @@ export const TaskRow = (props: TaskRowProps) => {
       <TableCell className="icon" />
       <TableCell component="th" scope="row" className="cell">
         <Input
+          ref={inputRef}
           style={{ fontSize: 13 }}
           value={taskName}
           onChange={(event) => setTaskName(event.target.value)}
           onKeyUp={(event) => {
-            if (event.keyCode === 13) {
+            if (event.key === "Enter") {
               updateTask();
             }
           }}
