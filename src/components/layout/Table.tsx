@@ -8,16 +8,16 @@ import {
 } from "@mui/material";
 import { TimeHeaderCells } from "../time/TimeHeaderCells";
 import { useAppSelector } from "../../app/hooks";
-import { selectDates, selectTasks } from "../../app/slice";
 import { TimeCursor } from "../time/TimeCursor";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TableBody } from "./TableBody";
+import { getSelectedDate } from "../../app/slices/appSlice";
+import { getTasksForDate } from "../../app/slices/dateSlice";
 
 export const Table = () => {
-  const dates = useAppSelector(selectDates);
-  const selectedDate = dates[1];
+  const selectedDate = useAppSelector(getSelectedDate);
+  const tasks = useAppSelector((state) => getTasksForDate(state, selectedDate));
 
-  const tasks = useAppSelector((state) => selectTasks(state, selectedDate));
   const tableRef = useRef<HTMLTableElement>(null);
 
   const [timeHeight, setTimeHeight] = useState<number>(0);

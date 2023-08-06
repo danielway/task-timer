@@ -1,26 +1,81 @@
+import { START_HOUR } from "../../app/constants";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { getSelectedDate } from "../../app/slices/appSlice";
+import { getSelection } from "../../app/slices/editSlice";
+import {
+  getTimesForTask,
+  recordTime,
+  removeTime,
+} from "../../app/slices/timeSlice";
+
 interface TimeIncrementProps {
-  selected: boolean;
   taskId: number;
-  timeSegment: number;
-  logged: boolean;
-  logTime: (taskId: number, timeSegment: number) => void;
-  removeTime: (taskId: number, timeSegment: number) => void;
+  segment: number;
 }
 
 export const TimeIncrement = (props: TimeIncrementProps) => {
-  const classes = props.logged ? "increment logged" : "increment";
+  const dispatch = useAppDispatch();
+
+  const selectedDate = new Date(useAppSelector(getSelectedDate));
+
+  const start = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    selectedDate.getDate(),
+    START_HOUR + props.segment / 4,
+    (props.segment % 4) * 15
+  ).getTime();
+
+  const end = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    selectedDate.getDate(),
+    START_HOUR + (props.segment + 1) / 4,
+    ((props.segment + 1) % 4) * 15
+  ).getTime();
+
+  const taskTimes = useAppSelector((state) =>
+    getTimesForTask(state.time, selectedDate.getTime(), props.taskId)
+  );
+
+  const matchingTimes = taskTimes.filter(
+    (time) => time.start < end && (!time.end || time.end! > start)
+  );
+
+  const logged = matchingTimes.length > 0;
+
+  const uiSelection = useAppSelector(getSelection);
+  const selected =
+    uiSelection &&
+    uiSelection.taskId === props.taskId &&
+    uiSelection.timeSegment === props.segment;
 
   return (
     <div
       style={{
-        border: props.selected ? "2px dashed #173040" : undefined,
+        border: selected ? "2px dashed #173040" : undefined,
       }}
-      className={classes}
+      className={logged ? "increment logged" : "increment"}
       onClick={() => {
-        if (props.logged) {
-          props.removeTime(props.taskId, props.timeSegment);
+        if (logged) {
+          matchingTimes.forEach((time) => {
+            dispatch(
+              removeTime({
+                date: selectedDate.getTime(),
+                taskId: props.taskId,
+                start: time.start,
+              })
+            );
+          });
         } else {
-          props.logTime(props.taskId, props.timeSegment);
+          dispatch(
+            recordTime({
+              date: selectedDate.getTime(),
+              taskId: props.taskId,
+              start,
+              end,
+            })
+          );
         }
       }}
     />

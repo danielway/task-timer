@@ -1,30 +1,50 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export interface TimeState {
-  // Map of dates to recorded times for that date
-  timesByDate: Map<number, DateTimes>;
+  dateTimes: DateTimes[];
 }
 
 export interface DateTimes {
   date: number;
-
-  // Map of task ID to recorded times
-  taskTimes: Map<number, Time[]>;
+  taskTimes: TaskTime[];
 }
 
-export interface Time {
+export interface TaskTime {
+  task: number;
   start: number;
   end?: number;
 }
 
+const today = new Date();
+today.setHours(0, 0, 0, 0);
 const initialState: TimeState = {
-  timesByDate: new Map(),
+  dateTimes: [
+    {
+      date: today.getTime(),
+      taskTimes: [],
+    },
+  ],
 };
 
 export const timeSlice = createSlice({
   name: "time",
   initialState,
   reducers: {
+    createDate: (
+      state,
+      action: PayloadAction<{
+        date: number;
+      }>
+    ) => {
+      if (state.dateTimes.find((date) => date.date === action.payload.date)) {
+        return;
+      }
+
+      state.dateTimes.push({
+        date: action.payload.date,
+        taskTimes: [],
+      });
+    },
     startTime: (
       state,
       action: PayloadAction<{
@@ -32,14 +52,14 @@ export const timeSlice = createSlice({
         taskId: number;
       }>
     ) => {
-      const dateTimes = state.timesByDate.get(action.payload.date);
+      const dateTimes = state.dateTimes.find(
+        (dateTimes) => dateTimes.date === action.payload.date
+      );
       if (dateTimes) {
-        const taskTimes = dateTimes.taskTimes.get(action.payload.taskId);
-        if (taskTimes) {
-          taskTimes.push({
-            start: Date.now(),
-          });
-        }
+        dateTimes.taskTimes.push({
+          task: action.payload.taskId,
+          start: Date.now(),
+        });
       }
     },
     stopTime: (
@@ -50,16 +70,17 @@ export const timeSlice = createSlice({
         start: number;
       }>
     ) => {
-      const dateTimes = state.timesByDate.get(action.payload.date);
+      const dateTimes = state.dateTimes.find(
+        (dateTimes) => dateTimes.date === action.payload.date
+      );
       if (dateTimes) {
-        const taskTimes = dateTimes.taskTimes.get(action.payload.taskId);
-        if (taskTimes) {
-          const time = taskTimes.find(
-            (time) => time.start === action.payload.start
-          );
-          if (time) {
-            time.end = Date.now();
-          }
+        const taskTime = dateTimes.taskTimes.find(
+          (taskTime) =>
+            taskTime.task === action.payload.taskId &&
+            taskTime.start === action.payload.start
+        );
+        if (taskTime) {
+          taskTime.end = Date.now();
         }
       }
     },
@@ -72,15 +93,15 @@ export const timeSlice = createSlice({
         end: number;
       }>
     ) => {
-      const dateTimes = state.timesByDate.get(action.payload.date);
+      const dateTimes = state.dateTimes.find(
+        (dateTimes) => dateTimes.date === action.payload.date
+      );
       if (dateTimes) {
-        const taskTimes = dateTimes.taskTimes.get(action.payload.taskId);
-        if (taskTimes) {
-          taskTimes.push({
-            start: action.payload.start,
-            end: action.payload.end,
-          });
-        }
+        dateTimes.taskTimes.push({
+          task: action.payload.taskId,
+          start: action.payload.start,
+          end: action.payload.end,
+        });
       }
     },
     removeTime: (
@@ -91,25 +112,36 @@ export const timeSlice = createSlice({
         start: number;
       }>
     ) => {
-      const dateTimes = state.timesByDate.get(action.payload.date);
+      const dateTimes = state.dateTimes.find(
+        (dateTimes) => dateTimes.date === action.payload.date
+      );
       if (dateTimes) {
-        const taskTimes = dateTimes.taskTimes.get(action.payload.taskId);
-        if (taskTimes) {
-          const timeIndex = taskTimes.findIndex(
-            (time) => time.start === action.payload.start
-          );
-          if (timeIndex !== -1) {
-            taskTimes.splice(timeIndex, 1);
-          }
+        const taskTimeIndex = dateTimes.taskTimes.findIndex(
+          (taskTime) =>
+            taskTime.task === action.payload.taskId &&
+            taskTime.start === action.payload.start
+        );
+        if (taskTimeIndex !== -1) {
+          dateTimes.taskTimes.splice(taskTimeIndex, 1);
         }
       }
     },
   },
 });
 
-export const { startTime, stopTime, recordTime, removeTime } =
+export const { createDate, startTime, stopTime, recordTime, removeTime } =
   timeSlice.actions;
 
-// todo: time selectors
+export const getTimesForDate = (state: TimeState, date: number): TaskTime[] =>
+  state.dateTimes.find((dateTimes) => dateTimes.date === date)!.taskTimes;
+
+export const getTimesForTask = (
+  state: TimeState,
+  date: number,
+  taskId: number
+): TaskTime[] =>
+  state.dateTimes
+    .find((dateTimes) => dateTimes.date === date)!
+    .taskTimes.filter((taskTime) => taskTime.task === taskId);
 
 export default timeSlice.reducer;

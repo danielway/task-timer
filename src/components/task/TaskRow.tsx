@@ -4,96 +4,108 @@ import { TableRow, Input, Button, TableCell } from "@mui/material";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { TimeRowCell } from "../time/TimeRow";
 import { TimeSummaryCell } from "../time/TimeSummaryCell";
-import {
-  Task,
-  Time,
-  selectCursor,
-  selectRowBeingEdited,
-  updateRowBeingEdited,
-  updateCursor,
-} from "../../app/slice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { deleteTask, getTask, updateTask } from "../../app/slices/taskSlice";
+import {
+  beginTaskEdit,
+  endTaskEdit,
+  getActiveEditTaskId,
+  getSelection,
+} from "../../app/slices/editSlice";
+import { getSelectedDate } from "../../app/slices/appSlice";
+import {
+  TaskTime,
+  getTimesForTask,
+  removeTime,
+} from "../../app/slices/timeSlice";
+import { removeTaskFromDate } from "../../app/slices/dateSlice";
 
 interface TaskRowProps {
-  row: number;
-  task: Task;
-  time: Time[];
-  updateTask: (id: number, name: string) => any;
-  deleteTask: (id: number) => any;
-  logTime: (taskId: number, timeSegment: number) => any;
-  removeTime: (taskId: number, timeSegment: number) => any;
+  taskId: number;
 }
 
 export const TaskRow = (props: TaskRowProps) => {
   const dispatch = useAppDispatch();
 
-  const [taskName, setTaskName] = useState("");
-  useEffect(() => setTaskName(props.task.name), [props.task.name]);
+  const task = useAppSelector((state) => getTask(state.task, props.taskId));
 
-  const rowBeingEdited = useAppSelector(selectRowBeingEdited);
-  const editing = rowBeingEdited === props.row;
+  const [description, setDescription] = useState("");
+  useEffect(() => setDescription(task.description), [task.description]);
+
+  const uiSelection = useAppSelector(getSelection);
+  const selected = uiSelection?.taskId === props.taskId;
+
+  const activeEditTaskId = useAppSelector(getActiveEditTaskId);
+  const editing = activeEditTaskId === props.taskId;
 
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => inputRef.current?.focus(), [inputRef, editing]);
 
-  const cursor = useAppSelector(selectCursor);
-  const descriptionSelected =
-    cursor && cursor[0] === props.row && cursor[1] === 0;
-
-  const selectDescription = () =>
-    dispatch(updateCursor({ row: props.row, column: 0 }));
-
-  const selectSegment = (segment: number) =>
-    dispatch(updateCursor({ row: props.row, column: segment + 1 }));
-
-  const updateTask = () => {
-    props.updateTask(props.task.id, taskName);
-    dispatch(updateRowBeingEdited(undefined));
-    setTaskName("");
+  const doUpdateTask = () => {
+    dispatch(updateTask({ id: props.taskId, description: description }));
+    dispatch(endTaskEdit());
   };
 
-  const taskRowTime = () => (
-    <>
-      <TimeRowCell
-        row={props.row}
-        task={props.task}
-        time={props.time}
-        logTime={(taskId, timeSeg) => {
-          props.logTime(taskId, timeSeg);
-          selectSegment(timeSeg);
-        }}
-        removeTime={(taskId, timeSeg) => {
-          props.removeTime(taskId, timeSeg);
-          selectSegment(timeSeg);
-        }}
-      />
-      <TimeSummaryCell timeCount={props.time.length} />
-    </>
+  const selectedDate = useAppSelector(getSelectedDate);
+  const times = useAppSelector((state) =>
+    getTimesForTask(state.time, selectedDate, props.taskId)
   );
+
+  const taskRowTime = () => {
+    const totalMinutes = times.reduce(
+      (acc, cur) => acc + getDurationMinutes(cur),
+      0
+    );
+
+    return (
+      <>
+        <TimeRowCell taskId={props.taskId} />
+        <TimeSummaryCell totalMinutes={totalMinutes} />
+      </>
+    );
+  };
+
+  const getDurationMinutes = (time: TaskTime) => {
+    const end = time.end ?? new Date().getTime();
+    return end / 1000 / 60 - time.start / 1000 / 60;
+  };
 
   const renderViewRow = () => (
     <TableRow className="taskRow cell">
       <TableCell className="icon">
         <HighlightOffIcon
-          onClick={() => props.deleteTask(props.task.id)}
+          onClick={() => {
+            dispatch(
+              removeTaskFromDate({ date: selectedDate, taskId: props.taskId })
+            );
+            dispatch(deleteTask({ id: props.taskId }));
+            times.forEach((time) =>
+              dispatch(
+                removeTime({
+                  date: selectedDate,
+                  taskId: props.taskId,
+                  start: time.start,
+                })
+              )
+            );
+          }}
           className="taskDelete"
           fontSize="small"
         />
       </TableCell>
       <TableCell
         sx={{
-          fontWeight: descriptionSelected ? "bold" : undefined,
-          textDecoration: descriptionSelected ? "underline" : undefined,
+          fontWeight: selected ? "bold" : undefined,
+          textDecoration: selected ? "underline" : undefined,
         }}
         onClick={() => {
-          dispatch(updateRowBeingEdited(props.row));
-          selectDescription();
+          dispatch(beginTaskEdit({ taskId: props.taskId }));
         }}
         component="th"
         scope="row"
         className="taskName"
       >
-        {props.task.name}
+        {task.description}
       </TableCell>
       {taskRowTime()}
     </TableRow>
@@ -106,11 +118,11 @@ export const TaskRow = (props: TaskRowProps) => {
         <Input
           ref={inputRef}
           style={{ fontSize: 13 }}
-          value={taskName}
-          onChange={(event) => setTaskName(event.target.value)}
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
           onKeyUp={(event) => {
             if (event.key === "Enter") {
-              updateTask();
+              doUpdateTask();
             }
           }}
         />
@@ -119,7 +131,7 @@ export const TaskRow = (props: TaskRowProps) => {
           size="small"
           variant="contained"
           style={{ marginLeft: 10 }}
-          onClick={updateTask}
+          onClick={doUpdateTask}
         >
           Update Task
         </Button>

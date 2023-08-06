@@ -2,16 +2,23 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { AppState } from "./appSlice";
 
 export interface DateState {
-  dates: Map<number, Date>;
+  dateTasks: DateTasks[];
 }
 
-export interface Date {
+export interface DateTasks {
   date: number;
   tasks: number[];
 }
 
+const today = new Date();
+today.setHours(0, 0, 0, 0);
 const initialState: DateState = {
-  dates: new Map(),
+  dateTasks: [
+    {
+      date: today.getTime(),
+      tasks: [],
+    },
+  ],
 };
 
 export const dateSlice = createSlice({
@@ -24,7 +31,11 @@ export const dateSlice = createSlice({
         date: number;
       }>
     ) => {
-      state.dates.set(action.payload.date, {
+      if (state.dateTasks.find((date) => date.date === action.payload.date)) {
+        return;
+      }
+
+      state.dateTasks.push({
         date: action.payload.date,
         tasks: [],
       });
@@ -36,7 +47,9 @@ export const dateSlice = createSlice({
         taskId: number;
       }>
     ) => {
-      const date = state.dates.get(action.payload.date);
+      const date = state.dateTasks.find(
+        (date) => date.date === action.payload.date
+      );
       if (date) {
         date.tasks.push(action.payload.taskId);
       }
@@ -48,7 +61,9 @@ export const dateSlice = createSlice({
         taskId: number;
       }>
     ) => {
-      const date = state.dates.get(action.payload.date);
+      const date = state.dateTasks.find(
+        (date) => date.date === action.payload.date
+      );
       if (date) {
         date.tasks = date.tasks.filter(
           (taskId) => taskId !== action.payload.taskId
@@ -58,11 +73,15 @@ export const dateSlice = createSlice({
   },
 });
 
-export const { createDate } = dateSlice.actions;
+export const { createDate, addTaskToDate, removeTaskFromDate } =
+  dateSlice.actions;
 
 export const getTasksForDate = (
   state: { app: AppState; date: DateState },
   date: number
-) => state.date.dates.get(date)!.tasks;
+) => state.date.dateTasks.find((dateObj) => dateObj.date === date)!.tasks;
+
+export const getDatesWithTasks = (state: { date: DateState }) =>
+  Array.from(state.date.dateTasks.values());
 
 export default dateSlice.reducer;

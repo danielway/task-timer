@@ -5,6 +5,9 @@ import { Provider } from "react-redux";
 import { createRoot } from "react-dom/client";
 import * as serviceWorker from "./serviceWorker";
 import { store } from "./app/store";
+import { enableMapSet } from "immer";
+
+enableMapSet();
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

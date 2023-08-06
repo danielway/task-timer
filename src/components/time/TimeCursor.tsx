@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAppSelector, useInterval } from "../../app/hooks";
 import "./TimeCursor.css";
 import { END_HOUR, HOUR_COUNT, START_HOUR } from "../../app/constants";
-import { selectDates } from "../../app/slice";
+import { getSelectedDate } from "../../app/slices/appSlice";
 
 interface TimeCursorProps {
   hoursPositionLeft?: number;
@@ -13,8 +13,7 @@ interface TimeCursorProps {
 export const TimeCursor = (props: TimeCursorProps) => {
   const { hoursPositionLeft, hoursPositionRight, hoursHeight } = props;
 
-  const dates = useAppSelector(selectDates);
-  const selectedDate = dates[1];
+  const selectedDate = useAppSelector(getSelectedDate);
 
   const [showCursor, setShowCursor] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<{

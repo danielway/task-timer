@@ -77,4 +77,7 @@ export const {
 export const getSelection = (state: { edit: EditState }) =>
   state.edit.selection;
 
+export const getActiveEditTaskId = (state: { edit: EditState }) =>
+  state.edit.activeEditTaskId;
+
 export default editSlice.reducer;

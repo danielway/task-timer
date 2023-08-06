@@ -1,16 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface TaskState {
-  tasks: Map<string, Task>;
+  nextTaskId: number;
+  tasks: Task[];
 }
 
 export interface Task {
-  id: string;
+  id: number;
   description: string;
 }
 
 const initialState: TaskState = {
-  tasks: new Map(),
+  nextTaskId: 1,
+  tasks: [],
 };
 
 export const taskSlice = createSlice({
@@ -20,23 +22,24 @@ export const taskSlice = createSlice({
     createTask: (
       state,
       action: PayloadAction<{
-        id: string;
+        id: number;
         description: string;
       }>
     ) => {
-      state.tasks.set(action.payload.id, {
+      state.tasks.push({
         id: action.payload.id,
         description: action.payload.description,
       });
+      state.nextTaskId = action.payload.id + 1;
     },
     updateTask: (
       state,
       action: PayloadAction<{
-        id: string;
+        id: number;
         description: string;
       }>
     ) => {
-      const task = state.tasks.get(action.payload.id);
+      const task = state.tasks.find((task) => task.id === action.payload.id);
       if (task) {
         task.description = action.payload.description;
       }
@@ -44,16 +47,24 @@ export const taskSlice = createSlice({
     deleteTask: (
       state,
       action: PayloadAction<{
-        id: string;
+        id: number;
       }>
     ) => {
-      state.tasks.delete(action.payload.id);
+      const index = state.tasks.findIndex(
+        (task) => task.id === action.payload.id
+      );
+      if (index !== -1) {
+        state.tasks.splice(index, 1);
+      }
     },
   },
 });
 
 export const { createTask, updateTask, deleteTask } = taskSlice.actions;
 
-// todo: task selectors
+export const getTask = (state: TaskState, id: number) =>
+  state.tasks.find((task) => task.id === id)!;
+
+export const getNextTaskId = (state: TaskState) => state.nextTaskId;
 
 export default taskSlice.reducer;

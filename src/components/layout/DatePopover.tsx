@@ -10,10 +10,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { useAppSelector } from "../../app/hooks";
-import { selectDatesWithTasks } from "../../app/slice";
+import { getDatesWithTasks } from "../../app/slices/dateSlice";
 
 interface DatePopoverProps {
-  currentDate: number;
+  selectedDate: number;
   onSelectDate: (date: number) => void;
 }
 
@@ -27,14 +27,14 @@ export const DatePopover = (props: DatePopoverProps) => {
         color="secondary"
         onClick={(event) => setButtonEl(event.currentTarget)}
       >
-        {getDateString(props.currentDate)}
+        {getDateString(props.selectedDate)}
         <CalendarIcon />
       </CurrentDateButton>
 
       {CalendarPopover(
         Boolean(buttonEl),
         buttonEl,
-        props.currentDate,
+        props.selectedDate,
         () => setButtonEl(null),
         props.onSelectDate
       )}
@@ -49,7 +49,7 @@ const CalendarPopover = (
   closePopover: () => void,
   onSelectDate: (date: number) => void
 ) => {
-  const daysWithTasks = useAppSelector(selectDatesWithTasks);
+  const daysWithTasks = useAppSelector(getDatesWithTasks);
 
   return (
     <Popover

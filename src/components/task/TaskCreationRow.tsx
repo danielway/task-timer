@@ -1,19 +1,34 @@
 import { useState } from "react";
 import { TableRow, Input, Button, TableCell } from "@mui/material";
 import { TimeSummaryCell } from "../time/TimeSummaryCell";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { createTask, getNextTaskId } from "../../app/slices/taskSlice";
+import { TaskTime, getTimesForDate } from "../../app/slices/timeSlice";
+import { getSelectedDate } from "../../app/slices/appSlice";
+import { addTaskToDate } from "../../app/slices/dateSlice";
 
-interface TaskCreationRowProps {
-  timeCount: number;
-  createTask: (name: string) => any;
-}
+export const TaskCreationRow = () => {
+  const dispatch = useAppDispatch();
 
-export const TaskCreationRow = (props: TaskCreationRowProps) => {
-  const [taskName, setTaskName] = useState("");
+  const [description, setDescription] = useState("");
+
+  const selectedDate = useAppSelector(getSelectedDate);
+  const timesForDate = useAppSelector((state) =>
+    getTimesForDate(state.time, selectedDate)
+  );
+
+  const nextId = useAppSelector((state) => getNextTaskId(state.task));
 
   const addTask = () => {
-    props.createTask(taskName);
-    setTaskName("");
+    dispatch(createTask({ id: nextId, description }));
+    dispatch(addTaskToDate({ date: selectedDate, taskId: nextId }));
+    setDescription("");
   };
+
+  const totalMinutes = timesForDate.reduce(
+    (acc, cur) => acc + getDurationMinutes(cur),
+    0
+  );
 
   return (
     <TableRow>
@@ -22,10 +37,10 @@ export const TaskCreationRow = (props: TaskCreationRowProps) => {
         <Input
           style={{ fontSize: 13 }}
           placeholder="Task name/description"
-          value={taskName}
-          onChange={(event) => setTaskName(event.target.value)}
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
           onKeyUp={(event) => {
-            if (event.keyCode === 13) {
+            if (event.key === "Enter") {
               addTask();
             }
           }}
@@ -41,7 +56,12 @@ export const TaskCreationRow = (props: TaskCreationRowProps) => {
         </Button>
       </TableCell>
       <TableCell colSpan={11}></TableCell>
-      <TimeSummaryCell timeCount={props.timeCount} />
+      <TimeSummaryCell totalMinutes={totalMinutes} />
     </TableRow>
   );
+};
+
+const getDurationMinutes = (time: TaskTime) => {
+  const end = time.end ?? new Date().getTime();
+  return end / 1000 / 60 - time.start / 1000 / 60;
 };
