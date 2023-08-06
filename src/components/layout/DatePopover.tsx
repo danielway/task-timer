@@ -49,7 +49,9 @@ const CalendarPopover = (
   closePopover: () => void,
   onSelectDate: (date: number) => void
 ) => {
-  const daysWithTasks = useAppSelector(getDatesWithTasks);
+  const daysWithTasks = useAppSelector(getDatesWithTasks).map(
+    (date) => date.date
+  );
 
   return (
     <Popover
@@ -82,7 +84,7 @@ const CalendarPopover = (
 const Day = (props: PickersDayProps<Dayjs> & { daysWithTasks?: number[] }) => {
   const { day, daysWithTasks, ...other } = props;
 
-  const hasTasks = daysWithTasks?.includes(day.valueOf()) ?? false;
+  const hasTasks = daysWithTasks?.includes(day.valueOf());
 
   return (
     <PickersDay

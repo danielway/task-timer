@@ -82,6 +82,6 @@ export const getTasksForDate = (
 ) => state.date.dateTasks.find((dateObj) => dateObj.date === date)!.tasks;
 
 export const getDatesWithTasks = (state: { date: DateState }) =>
-  Array.from(state.date.dateTasks.values());
+  state.date.dateTasks.filter((dateObj) => dateObj.tasks.length > 0);
 
 export default dateSlice.reducer;
