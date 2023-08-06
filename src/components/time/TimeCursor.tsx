@@ -31,9 +31,10 @@ export const TimeCursor = (props: TimeCursorProps) => {
 
     const currentDateSelected = currentDate.getTime() === selectedDate;
 
+    const currentTime = new Date();
     const timeInBounds =
-      currentDate.getHours() >= START_HOUR &&
-      currentDate.getHours() <= END_HOUR;
+      currentTime.getHours() >= START_HOUR &&
+      currentTime.getHours() <= END_HOUR;
 
     setShowCursor(currentDateSelected && timeInBounds);
 
@@ -41,7 +42,6 @@ export const TimeCursor = (props: TimeCursorProps) => {
       return;
     }
 
-    const currentTime = new Date();
     const currentHourDecimal =
       currentTime.getHours() +
       currentTime.getMinutes() / 60 +
