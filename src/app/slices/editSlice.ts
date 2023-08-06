@@ -64,6 +64,9 @@ export const editSlice = createSlice({
     endTaskEdit: (state) => {
       state.activeEditTaskId = undefined;
     },
+    clearSelection: (state) => {
+      state.selection = undefined;
+    },
   },
 });
 
@@ -72,6 +75,7 @@ export const {
   selectTaskTimeSegment,
   beginTaskEdit,
   endTaskEdit,
+  clearSelection,
 } = editSlice.actions;
 
 export const getSelection = (state: { edit: EditState }) =>

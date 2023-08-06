@@ -6,6 +6,7 @@ type taskTimeSegmentSelector = (payload: {
   taskId: number;
   timeSegment: number;
 }) => void;
+type selectionClearer = () => void;
 
 type taskEditStarter = (payload: { taskId: number }) => void;
 type timeRecorder = (payload: {
@@ -22,10 +23,14 @@ export const handleKeyboardInput = (
   tasksForDate: number[],
   selectTaskDescription: taskDescriptionSelector,
   selectTaskTimeSegment: taskTimeSegmentSelector,
+  clearSelection: selectionClearer,
   beginTaskEdit: taskEditStarter,
   recordTime: timeRecorder
 ) => {
-  // If the user doesn't have a selection, select the first task and time segment
+  if (event.key === "Escape") {
+    clearSelection();
+  }
+
   if (!uiSelection) {
     selectTaskTimeSegment({
       taskId: tasksForDate[0],
@@ -92,32 +97,29 @@ export const handleKeyboardInput = (
         beginTaskEdit({ taskId: uiSelection.taskId });
       } else {
         const timeSegment = uiSelection.timeSegment!;
-        const hour = Math.floor(timeSegment / 4) + START_HOUR;
-        const minute = (timeSegment % 4) * 15;
-
         const selectedDateObj = new Date(selectedDate);
 
         const start = new Date(
           selectedDateObj.getFullYear(),
           selectedDateObj.getMonth(),
           selectedDateObj.getDate(),
-          hour,
-          minute
-        );
+          START_HOUR + timeSegment / 4,
+          (timeSegment % 4) * 15
+        ).getTime();
 
         const end = new Date(
           selectedDateObj.getFullYear(),
           selectedDateObj.getMonth(),
           selectedDateObj.getDate(),
-          hour,
-          minute + 15
-        );
+          START_HOUR + (timeSegment + 1) / 4,
+          ((timeSegment + 1) % 4) * 15
+        ).getTime();
 
         recordTime({
           date: selectedDate,
           taskId: uiSelection.taskId,
-          start: start.getTime(),
-          end: end.getTime(),
+          start: start,
+          end: end,
         });
       }
 

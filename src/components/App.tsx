@@ -6,6 +6,8 @@ import { getSelectedDate } from "../app/slices/appSlice";
 import { getTasksForDate } from "../app/slices/dateSlice";
 import {
   beginTaskEdit,
+  clearSelection,
+  getActiveEditTaskId,
   getSelection,
   selectTaskDescription,
   selectTaskTimeSegment,
@@ -21,9 +23,15 @@ export const App = () => {
   const tasksForDate = useAppSelector((state) =>
     getTasksForDate(state, selectedDate)
   );
+  const activeEditTaskId = useAppSelector(getActiveEditTaskId);
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
+      // If a task's description is being edited, don't handle keyboard input for selections
+      if (activeEditTaskId !== undefined) {
+        return;
+      }
+
       handleKeyboardInput(
         event,
         selectedDate,
@@ -31,11 +39,12 @@ export const App = () => {
         tasksForDate,
         (payload) => dispatch(selectTaskDescription(payload)),
         (payload) => dispatch(selectTaskTimeSegment(payload)),
+        () => dispatch(clearSelection()),
         (payload) => dispatch(beginTaskEdit(payload)),
         (payload) => dispatch(recordTime(payload))
       );
     },
-    [dispatch, selectedDate, tasksForDate, uiSelection]
+    [dispatch, selectedDate, tasksForDate, uiSelection, activeEditTaskId]
   );
 
   useEffect(() => {
