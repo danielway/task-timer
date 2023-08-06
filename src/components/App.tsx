@@ -22,18 +22,21 @@ export const App = () => {
     getTasksForDate(state, selectedDate)
   );
 
-  const handleKeyPress = useCallback((event: KeyboardEvent) => {
-    handleKeyboardInput(
-      event,
-      selectedDate,
-      uiSelection,
-      tasksForDate,
-      (payload) => dispatch(selectTaskDescription(payload)),
-      (payload) => dispatch(selectTaskTimeSegment(payload)),
-      (payload) => dispatch(beginTaskEdit(payload)),
-      (payload) => dispatch(recordTime(payload))
-    );
-  }, []);
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      handleKeyboardInput(
+        event,
+        selectedDate,
+        uiSelection,
+        tasksForDate,
+        (payload) => dispatch(selectTaskDescription(payload)),
+        (payload) => dispatch(selectTaskTimeSegment(payload)),
+        (payload) => dispatch(beginTaskEdit(payload)),
+        (payload) => dispatch(recordTime(payload))
+      );
+    },
+    [dispatch, selectedDate, tasksForDate, uiSelection]
+  );
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyPress);
