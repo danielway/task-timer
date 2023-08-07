@@ -18,7 +18,10 @@ import {
   getTimesForTask,
   removeTime,
 } from "../../app/slices/timeSlice";
-import { removeTaskFromDate } from "../../app/slices/dateSlice";
+import {
+  removeTaskFromDate,
+  swapTasksForDate,
+} from "../../app/slices/dateSlice";
 
 interface TaskRowProps {
   taskId: number;
@@ -71,8 +74,36 @@ export const TaskRow = (props: TaskRowProps) => {
     return end / 1000 / 60 - time.start / 1000 / 60;
   };
 
+  const handleDragStart = (event: React.DragEvent<HTMLTableRowElement>) => {
+    event.dataTransfer.setData("text", props.taskId.toString());
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLTableRowElement>) => {
+    const otherTaskId = parseInt(
+      event.dataTransfer.getData("text/plain").toString()
+    );
+
+    if (otherTaskId === props.taskId) {
+      return;
+    }
+
+    dispatch(
+      swapTasksForDate({
+        date: selectedDate,
+        firstTaskId: otherTaskId,
+        secondTaskId: props.taskId,
+      })
+    );
+  };
+
   const renderViewRow = () => (
-    <TableRow className="taskRow cell">
+    <TableRow
+      className="taskRow cell"
+      draggable="true"
+      onDragStart={handleDragStart}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={handleDrop}
+    >
       <TableCell className="icon">
         <HighlightOffIcon
           onClick={() => {

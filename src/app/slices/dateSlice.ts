@@ -70,11 +70,38 @@ export const dateSlice = createSlice({
         );
       }
     },
+    swapTasksForDate: (
+      state,
+      action: PayloadAction<{
+        date: number;
+        firstTaskId: number;
+        secondTaskId: number;
+      }>
+    ) => {
+      const date = state.dateTasks.find(
+        (date) => date.date === action.payload.date
+      );
+      if (date) {
+        const firstTaskIndex = date.tasks.findIndex(
+          (taskId) => taskId === action.payload.firstTaskId
+        );
+        const secondTaskIndex = date.tasks.findIndex(
+          (taskId) => taskId === action.payload.secondTaskId
+        );
+        const temp = date.tasks[firstTaskIndex];
+        date.tasks[firstTaskIndex] = date.tasks[secondTaskIndex];
+        date.tasks[secondTaskIndex] = temp;
+      }
+    },
   },
 });
 
-export const { createDate, addTaskToDate, removeTaskFromDate } =
-  dateSlice.actions;
+export const {
+  createDate,
+  addTaskToDate,
+  removeTaskFromDate,
+  swapTasksForDate,
+} = dateSlice.actions;
 
 export const getTasksForDate = (
   state: { app: AppState; date: DateState },
