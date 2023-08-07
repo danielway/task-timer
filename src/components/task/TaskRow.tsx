@@ -152,7 +152,7 @@ export const TaskRow = (props: TaskRowProps) => {
           style={{ fontSize: 13 }}
           value={description}
           onChange={(event) => setDescription(event.target.value)}
-          onKeyUp={(event) => {
+          onKeyDown={(event) => {
             if (!editing) {
               return;
             }

@@ -42,7 +42,7 @@ export const TaskCreationRow = () => {
           placeholder="Task name/description"
           value={description}
           onChange={(event) => setDescription(event.target.value)}
-          onKeyUp={(event) => {
+          onKeyDown={(event) => {
             if (event.key === "Enter") {
               addTask();
             } else if (event.key === "Escape") {

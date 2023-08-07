@@ -58,9 +58,9 @@ export const App = () => {
   );
 
   useEffect(() => {
-    document.addEventListener("keyup", handleKeyPress);
+    document.addEventListener("keydown", handleKeyPress);
     return () => {
-      document.removeEventListener("keyup", handleKeyPress);
+      document.removeEventListener("keydown", handleKeyPress);
     };
   }, [handleKeyPress]);
 
