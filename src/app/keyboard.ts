@@ -98,6 +98,7 @@ export const handleKeyboardInput = (
     case "Enter":
       if (uiSelection.description) {
         beginTaskEdit({ taskId: uiSelection.taskId });
+        clearSelection();
       } else {
         const timeSegment = uiSelection.timeSegment!;
         toggleSegment({

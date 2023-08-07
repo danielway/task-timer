@@ -122,8 +122,15 @@ export const TaskRow = (props: TaskRowProps) => {
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           onKeyUp={(event) => {
+            if (!editing) {
+              return;
+            }
+
             if (event.key === "Enter") {
               doUpdateTask();
+            } else if (event.key === "Escape") {
+              dispatch(endTaskEdit());
+              setDescription(task.description);
             }
           }}
         />
