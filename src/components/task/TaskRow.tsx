@@ -117,7 +117,7 @@ export const TaskRow = (props: TaskRowProps) => {
       <TableCell className="icon" />
       <TableCell component="th" scope="row" className="cell">
         <Input
-          ref={inputRef}
+          inputRef={inputRef}
           style={{ fontSize: 13 }}
           value={description}
           onChange={(event) => setDescription(event.target.value)}
