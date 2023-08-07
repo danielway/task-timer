@@ -12,7 +12,7 @@ import {
   selectTaskDescription,
   selectTaskTimeSegment,
 } from "../app/slices/editSlice";
-import { recordTime } from "../app/slices/timeSlice";
+import { toggleSegment } from "../app/slices/timeSlice";
 import { handleKeyboardInput } from "../app/keyboard";
 
 export const App = () => {
@@ -41,7 +41,7 @@ export const App = () => {
         (payload) => dispatch(selectTaskTimeSegment(payload)),
         () => dispatch(clearSelection()),
         (payload) => dispatch(beginTaskEdit(payload)),
-        (payload) => dispatch(recordTime(payload))
+        (payload) => dispatch(toggleSegment(payload))
       );
     },
     [dispatch, selectedDate, tasksForDate, uiSelection, activeEditTaskId]

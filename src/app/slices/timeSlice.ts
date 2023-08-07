@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { START_HOUR } from "../constants";
 
 export interface TimeState {
   dateTimes: DateTimes[];
@@ -126,11 +127,90 @@ export const timeSlice = createSlice({
         }
       }
     },
+    toggleSegment: (
+      state,
+      action: PayloadAction<{
+        date: number;
+        taskId: number;
+        segment: number;
+      }>
+    ) => {
+      const { start, end, logged } = getSegment(
+        state,
+        action.payload.date,
+        action.payload.taskId,
+        action.payload.segment
+      );
+
+      const dateTimes = state.dateTimes.find(
+        (dateTimes) => dateTimes.date === action.payload.date
+      )!;
+
+      const matchingTimes = dateTimes.taskTimes.filter(
+        (time) => time.start < end && (!time.end || time.end > start)
+      );
+
+      if (!logged) {
+        dateTimes.taskTimes.push({
+          task: action.payload.taskId,
+          start,
+          end,
+        });
+      } else {
+        dateTimes.taskTimes = dateTimes.taskTimes.filter(
+          (time) => !matchingTimes.includes(time)
+        );
+      }
+    },
   },
 });
 
-export const { createDate, startTime, stopTime, recordTime, removeTime } =
-  timeSlice.actions;
+export const {
+  createDate,
+  startTime,
+  stopTime,
+  recordTime,
+  removeTime,
+  toggleSegment,
+} = timeSlice.actions;
+
+export const getSegment = (
+  state: TimeState,
+  date: number,
+  taskId: number,
+  segment: number
+) => {
+  const dateObj = new Date(date);
+
+  const start = new Date(
+    dateObj.getFullYear(),
+    dateObj.getMonth(),
+    dateObj.getDate(),
+    START_HOUR + segment / 4,
+    (segment % 4) * 15
+  ).getTime();
+
+  const end = new Date(
+    dateObj.getFullYear(),
+    dateObj.getMonth(),
+    dateObj.getDate(),
+    START_HOUR + (segment + 1) / 4,
+    ((segment + 1) % 4) * 15
+  ).getTime();
+
+  const dateTimes = state.dateTimes.find(
+    (dateTimes) => dateTimes.date === date
+  )!;
+
+  const matchingTimes = dateTimes.taskTimes.filter(
+    (time) =>
+      time.task === taskId &&
+      time.start < end &&
+      (!time.end || time.end > start)
+  );
+
+  return { start, end, logged: matchingTimes.length > 0 };
+};
 
 export const getTimesForDate = (state: TimeState, date: number): TaskTime[] =>
   state.dateTimes.find((dateTimes) => dateTimes.date === date)!.taskTimes;
