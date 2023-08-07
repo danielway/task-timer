@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react";
 import { Layout } from "./layout/Layout";
 import { Table } from "./layout/Table";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { getSelectedDate } from "../app/slices/appSlice";
+import { getSelectedDate, selectDate } from "../app/slices/appSlice";
 import { getTasksForDate } from "../app/slices/dateSlice";
 import {
   beginTaskEdit,
@@ -17,6 +17,16 @@ import { handleKeyboardInput } from "../app/keyboard";
 
 export const App = () => {
   const dispatch = useAppDispatch();
+
+  const date = (() => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    return date.getTime();
+  })();
+
+  useEffect(() => {
+    dispatch(selectDate(date));
+  }, [date, dispatch]);
 
   const uiSelection = useAppSelector(getSelection);
   const selectedDate = useAppSelector(getSelectedDate);
