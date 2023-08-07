@@ -70,11 +70,15 @@ export const handleKeyboardInput = (
       }
       break;
     case "ArrowLeft":
-      if (uiSelection.timeSegment) {
-        selectTaskTimeSegment({
-          taskId: uiSelection.taskId,
-          timeSegment: uiSelection.timeSegment - 1,
-        });
+      if (uiSelection.timeSegment !== undefined) {
+        if (uiSelection.timeSegment === 0) {
+          selectTaskDescription({ taskId: uiSelection.taskId });
+        } else {
+          selectTaskTimeSegment({
+            taskId: uiSelection.taskId,
+            timeSegment: uiSelection.timeSegment - 1,
+          });
+        }
       }
       break;
     case "ArrowRight":

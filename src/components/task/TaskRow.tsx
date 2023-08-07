@@ -33,7 +33,8 @@ export const TaskRow = (props: TaskRowProps) => {
   useEffect(() => setDescription(task.description), [task.description]);
 
   const uiSelection = useAppSelector(getSelection);
-  const selected = uiSelection?.taskId === props.taskId;
+  const descriptionSelected =
+    uiSelection?.taskId === props.taskId && uiSelection?.description;
 
   const activeEditTaskId = useAppSelector(getActiveEditTaskId);
   const editing = activeEditTaskId === props.taskId;
@@ -95,8 +96,8 @@ export const TaskRow = (props: TaskRowProps) => {
       </TableCell>
       <TableCell
         sx={{
-          fontWeight: selected ? "bold" : undefined,
-          textDecoration: selected ? "underline" : undefined,
+          fontWeight: descriptionSelected ? "bold" : undefined,
+          textDecoration: descriptionSelected ? "underline" : undefined,
         }}
         onClick={() => {
           dispatch(beginTaskEdit({ taskId: props.taskId }));

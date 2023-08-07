@@ -56,10 +56,6 @@ export const editSlice = createSlice({
       }>
     ) => {
       state.activeEditTaskId = action.payload.taskId;
-      state.selection = {
-        taskId: action.payload.taskId,
-        description: true,
-      };
     },
     endTaskEdit: (state) => {
       state.activeEditTaskId = undefined;
