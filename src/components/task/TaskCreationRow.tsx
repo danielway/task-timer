@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { TableRow, Input, Button, TableCell } from "@mui/material";
 import { TimeSummaryCell } from "../time/TimeSummaryCell";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
@@ -30,11 +30,14 @@ export const TaskCreationRow = () => {
     0
   );
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   return (
     <TableRow>
       <TableCell className="icon" />
       <TableCell>
         <Input
+          inputRef={inputRef}
           style={{ fontSize: 13 }}
           placeholder="Task name/description"
           value={description}
@@ -42,6 +45,9 @@ export const TaskCreationRow = () => {
           onKeyUp={(event) => {
             if (event.key === "Enter") {
               addTask();
+            } else if (event.key === "Escape") {
+              setDescription("");
+              inputRef.current?.blur();
             }
           }}
         />
