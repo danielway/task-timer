@@ -1,16 +1,16 @@
-import { Button, Popover, styled } from "@mui/material";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import { Button, Popover, styled } from '@mui/material';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import {
   DateCalendar,
   LocalizationProvider,
   PickersDay,
-  PickersDayProps,
-} from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
-import { useAppSelector } from "../../app/hooks";
-import { getDatesWithTasks } from "../../app/slices/dateSlice";
+  type PickersDayProps,
+} from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { useState } from 'react';
+import dayjs from 'dayjs';
+import { useAppSelector } from '../../app/hooks';
+import { getDatesWithTasks } from '../../app/slices/dateSlice';
 
 interface DatePopoverProps {
   selectedDate: number;
@@ -59,8 +59,8 @@ const CalendarPopover = (
       anchorEl={buttonEl}
       onClose={closePopover}
       anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "left",
+        vertical: 'bottom',
+        horizontal: 'left',
       }}
     >
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -68,9 +68,11 @@ const CalendarPopover = (
           value={dayjs(currentDate)}
           showDaysOutsideCurrentMonth={true}
           slots={{ day: Day }}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           slotProps={{ day: { daysWithTasks } as any }}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onChange={(value: any, selection) => {
-            if (selection !== "finish") return;
+            if (selection !== 'finish') return;
 
             onSelectDate(value.valueOf());
             closePopover();
@@ -81,7 +83,7 @@ const CalendarPopover = (
   );
 };
 
-const Day = (props: PickersDayProps<Dayjs> & { daysWithTasks?: number[] }) => {
+const Day = (props: PickersDayProps & { daysWithTasks?: number[] }) => {
   const { day, daysWithTasks, ...other } = props;
 
   const hasTasks = daysWithTasks?.includes(day.valueOf());
@@ -90,26 +92,26 @@ const Day = (props: PickersDayProps<Dayjs> & { daysWithTasks?: number[] }) => {
     <PickersDay
       {...other}
       day={day}
-      sx={{ fontWeight: hasTasks ? "bold" : "normal" }}
+      sx={{ fontWeight: hasTasks ? 'bold' : 'normal' }}
     />
   );
 };
 
 const getDateString = (dateEpoch: number) => {
   const date = new Date(dateEpoch);
-  return date.toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 };
 
 const CalendarIcon = styled(CalendarTodayIcon)(() => ({
-  fontSize: "1.1rem",
-  marginLeft: "10px",
+  fontSize: '1.1rem',
+  marginLeft: '10px',
 }));
 
 const CurrentDateButton = styled(Button)(() => ({
-  marginLeft: "10px",
+  marginLeft: '10px',
 }));

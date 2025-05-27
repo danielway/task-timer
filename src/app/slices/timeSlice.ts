@@ -1,5 +1,5 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { START_HOUR } from "../constants";
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { START_HOUR } from '../constants';
 
 export interface TimeState {
   dateTimes: DateTimes[];
@@ -28,7 +28,7 @@ const initialState: TimeState = {
 };
 
 export const timeSlice = createSlice({
-  name: "time",
+  name: 'time',
   initialState,
   reducers: {
     createDate: (

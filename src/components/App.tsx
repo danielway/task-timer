@@ -1,9 +1,9 @@
-import { useCallback, useEffect } from "react";
-import { Layout } from "./layout/Layout";
-import { Table } from "./layout/Table";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { getSelectedDate, selectDate } from "../app/slices/appSlice";
-import { getTasksForDate } from "../app/slices/dateSlice";
+import { useCallback, useEffect } from 'react';
+import { Layout } from './layout/Layout';
+import { Table } from './layout/Table';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { getSelectedDate, selectDate } from '../app/slices/appSlice';
+import { getTasksForDate } from '../app/slices/dateSlice';
 import {
   beginTaskEdit,
   clearSelection,
@@ -11,9 +11,9 @@ import {
   getSelection,
   selectTaskDescription,
   selectTaskTimeSegment,
-} from "../app/slices/editSlice";
-import { toggleSegment } from "../app/slices/timeSlice";
-import { handleKeyboardInput } from "../app/keyboard";
+} from '../app/slices/editSlice';
+import { toggleSegment } from '../app/slices/timeSlice';
+import { handleKeyboardInput } from '../app/keyboard';
 
 export const App = () => {
   const dispatch = useAppDispatch();
@@ -58,9 +58,9 @@ export const App = () => {
   );
 
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyPress);
+    document.addEventListener('keydown', handleKeyPress);
     return () => {
-      document.removeEventListener("keydown", handleKeyPress);
+      document.removeEventListener('keydown', handleKeyPress);
     };
   }, [handleKeyPress]);
 

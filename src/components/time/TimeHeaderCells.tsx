@@ -1,6 +1,6 @@
-import { TableCell } from "@mui/material";
-import { useCallback, useEffect, useRef } from "react";
-import { END_HOUR, HOUR_COUNT, START_HOUR } from "../../app/constants";
+import { TableCell } from '@mui/material';
+import { useCallback, useEffect, useRef } from 'react';
+import { END_HOUR, HOUR_COUNT, START_HOUR } from '../../app/constants';
 
 interface TimeHeaderCellsProps {
   onNewPosition: (left: number, right: number) => void;
@@ -24,9 +24,9 @@ export const TimeHeaderCells = (props: TimeHeaderCellsProps) => {
 
   // React to the window being resized
   useEffect(() => {
-    window.addEventListener("resize", handleDimensionUpdate);
+    window.addEventListener('resize', handleDimensionUpdate);
     return () => {
-      window.removeEventListener("resize", handleDimensionUpdate);
+      window.removeEventListener('resize', handleDimensionUpdate);
     };
   }, [handleDimensionUpdate]);
 

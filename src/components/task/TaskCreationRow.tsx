@@ -1,16 +1,16 @@
-import { useRef, useState } from "react";
-import { TableRow, Input, Button, TableCell } from "@mui/material";
-import { TimeSummaryCell } from "../time/TimeSummaryCell";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { createTask, getNextTaskId } from "../../app/slices/taskSlice";
-import { TaskTime, getTimesForDate } from "../../app/slices/timeSlice";
-import { getSelectedDate } from "../../app/slices/appSlice";
-import { addTaskToDate } from "../../app/slices/dateSlice";
+import { useRef, useState } from 'react';
+import { TableRow, Input, Button, TableCell } from '@mui/material';
+import { TimeSummaryCell } from '../time/TimeSummaryCell';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { createTask, getNextTaskId } from '../../app/slices/taskSlice';
+import { TaskTime, getTimesForDate } from '../../app/slices/timeSlice';
+import { getSelectedDate } from '../../app/slices/appSlice';
+import { addTaskToDate } from '../../app/slices/dateSlice';
 
 export const TaskCreationRow = () => {
   const dispatch = useAppDispatch();
 
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState('');
 
   const selectedDate = useAppSelector(getSelectedDate);
   const timesForDate = useAppSelector((state) =>
@@ -22,7 +22,7 @@ export const TaskCreationRow = () => {
   const addTask = () => {
     dispatch(createTask({ id: nextId, description }));
     dispatch(addTaskToDate({ date: selectedDate, taskId: nextId }));
-    setDescription("");
+    setDescription('');
   };
 
   const totalMinutes = timesForDate.reduce(
@@ -43,10 +43,10 @@ export const TaskCreationRow = () => {
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           onKeyDown={(event) => {
-            if (event.key === "Enter") {
+            if (event.key === 'Enter') {
               addTask();
-            } else if (event.key === "Escape") {
-              setDescription("");
+            } else if (event.key === 'Escape') {
+              setDescription('');
               inputRef.current?.blur();
             }
           }}

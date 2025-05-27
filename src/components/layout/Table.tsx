@@ -5,14 +5,14 @@ import {
   TableRow,
   Paper,
   TableCell,
-} from "@mui/material";
-import { TimeHeaderCells } from "../time/TimeHeaderCells";
-import { useAppSelector } from "../../app/hooks";
-import { TimeCursor } from "../time/TimeCursor";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { TableBody } from "./TableBody";
-import { getSelectedDate } from "../../app/slices/appSlice";
-import { getTasksForDate } from "../../app/slices/dateSlice";
+} from '@mui/material';
+import { TimeHeaderCells } from '../time/TimeHeaderCells';
+import { useAppSelector } from '../../app/hooks';
+import { TimeCursor } from '../time/TimeCursor';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { TableBody } from './TableBody';
+import { getSelectedDate } from '../../app/slices/appSlice';
+import { getTasksForDate } from '../../app/slices/dateSlice';
 
 export const Table = () => {
   const selectedDate = useAppSelector(getSelectedDate);
@@ -49,7 +49,7 @@ export const Table = () => {
     <TableContainer
       component={Paper}
       ref={tableRef}
-      style={{ marginBottom: "10px", position: "relative" }}
+      style={{ marginBottom: '10px', position: 'relative' }}
     >
       <TimeCursor
         hoursPositionLeft={hoursPosition?.hoursLeftPosition}

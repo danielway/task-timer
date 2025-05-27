@@ -1,5 +1,5 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { AppState } from "./appSlice";
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { AppState } from './appSlice';
 
 export interface DateState {
   dateTasks: DateTasks[];
@@ -22,7 +22,7 @@ const initialState: DateState = {
 };
 
 export const dateSlice = createSlice({
-  name: "date",
+  name: 'date',
   initialState,
   reducers: {
     createDate: (

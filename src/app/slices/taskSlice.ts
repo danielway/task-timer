@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface TaskState {
   nextTaskId: number;
@@ -16,7 +16,7 @@ const initialState: TaskState = {
 };
 
 export const taskSlice = createSlice({
-  name: "task",
+  name: 'task',
   initialState,
   reducers: {
     createTask: (

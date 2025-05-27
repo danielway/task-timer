@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 export interface KeyboardSelection {
   // The task selected
@@ -22,7 +22,7 @@ export interface EditState {
 const initialState: EditState = {};
 
 export const editSlice = createSlice({
-  name: "edit",
+  name: 'edit',
   initialState,
   reducers: {
     selectTaskDescription: (
