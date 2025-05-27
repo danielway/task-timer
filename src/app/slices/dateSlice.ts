@@ -1,5 +1,10 @@
-import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
+import {
+  type PayloadAction,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
 import type { AppState } from './appSlice';
+import type { RootState } from '../store';
 
 export interface DateState {
   dateTasks: DateTasks[];
@@ -106,9 +111,18 @@ export const {
 export const getTasksForDate = (
   state: { app: AppState; date: DateState },
   date: number
-) => state.date.dateTasks.find((dateObj) => dateObj.date === date)!.tasks;
+) => state.date.dateTasks.find((dateObj) => dateObj.date === date)?.tasks || [];
 
-export const getDatesWithTasks = (state: { date: DateState }) =>
-  state.date.dateTasks.filter((dateObj) => dateObj.tasks.length > 0);
+const selectDateState = (state: RootState) => state.date;
+
+export const selectDateTasks = createSelector(
+  [selectDateState],
+  (date) => date.dateTasks
+);
+
+export const getDatesWithTasks = createSelector(
+  [selectDateTasks],
+  (dateTasks) => dateTasks.filter((dateObj) => dateObj.tasks.length > 0)
+);
 
 export default dateSlice.reducer;
