@@ -1,8 +1,8 @@
-import "./TimeRow.css";
-import { TimeIncrement } from "./TimeIncrement";
-import { TableCell } from "@mui/material";
-import { HOUR_COUNT } from "../../app/constants";
-import { useCallback } from "react";
+import './TimeRow.css';
+import { TimeIncrement } from './TimeIncrement';
+import { TableCell } from '@mui/material';
+import { HOUR_COUNT } from '../../app/constants';
+import { useCallback } from 'react';
 
 interface TimeRowProps {
   taskId: number;
@@ -25,7 +25,7 @@ export const TimeRowCell = (props: TimeRowProps) => {
   );
 
   const hours = [];
-  for (var i = 0; i < HOUR_COUNT; i++) {
+  for (let i = 0; i < HOUR_COUNT; i++) {
     hours.push(renderHour(i));
   }
 

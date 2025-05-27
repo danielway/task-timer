@@ -1,7 +1,7 @@
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { getSelectedDate } from "../../app/slices/appSlice";
-import { getSelection } from "../../app/slices/editSlice";
-import { getSegment, toggleSegment } from "../../app/slices/timeSlice";
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { getSelectedDate } from '../../app/slices/appSlice';
+import { getSelection } from '../../app/slices/editSlice';
+import { getSegment, toggleSegment } from '../../app/slices/timeSlice';
 
 interface TimeIncrementProps {
   taskId: number;
@@ -26,9 +26,9 @@ export const TimeIncrement = (props: TimeIncrementProps) => {
   return (
     <div
       style={{
-        border: selected ? "2px dashed #173040" : undefined,
+        border: selected ? '2px dashed #173040' : undefined,
       }}
-      className={logged ? "increment logged" : "increment"}
+      className={logged ? 'increment logged' : 'increment'}
       onClick={() =>
         dispatch(
           toggleSegment({

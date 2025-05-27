@@ -1,18 +1,19 @@
-import { Header } from "./Header";
-import { Footer } from "./Footer";
+import { Header } from './Header';
+import { Footer } from './Footer';
 import {
   ThemeProvider,
   CssBaseline,
   Container,
   Box,
   createTheme,
-} from "@mui/material";
+} from '@mui/material';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const Layout = (props: any) => {
   const theme = createTheme({
     palette: {
-      primary: { main: "#173040" },
-      secondary: { main: "#bf3111" },
+      primary: { main: '#173040' },
+      secondary: { main: '#bf3111' },
     },
   });
 

@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 export interface AppState {
   // The version of the app which last saved state
@@ -9,7 +9,7 @@ export interface AppState {
 }
 
 const initialState: AppState = {
-  version: "REPLACE_WITH_RELEASE",
+  version: 'REPLACE_WITH_RELEASE',
   selectedDate: (() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -18,7 +18,7 @@ const initialState: AppState = {
 };
 
 export const appSlice = createSlice({
-  name: "app",
+  name: 'app',
   initialState,
   reducers: {
     selectDate: (state, action: PayloadAction<number>) => {

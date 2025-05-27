@@ -1,27 +1,27 @@
-import { useEffect, useRef, useState } from "react";
-import "./TaskRow.css";
-import { TableRow, Input, Button, TableCell } from "@mui/material";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import { TimeRowCell } from "../time/TimeRow";
-import { TimeSummaryCell } from "../time/TimeSummaryCell";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { deleteTask, getTask, updateTask } from "../../app/slices/taskSlice";
+import { useEffect, useRef, useState } from 'react';
+import './TaskRow.css';
+import { TableRow, Input, Button, TableCell } from '@mui/material';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import { TimeRowCell } from '../time/TimeRow';
+import { TimeSummaryCell } from '../time/TimeSummaryCell';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { deleteTask, getTask, updateTask } from '../../app/slices/taskSlice';
 import {
   beginTaskEdit,
   endTaskEdit,
   getActiveEditTaskId,
   getSelection,
-} from "../../app/slices/editSlice";
-import { getSelectedDate } from "../../app/slices/appSlice";
+} from '../../app/slices/editSlice';
+import { getSelectedDate } from '../../app/slices/appSlice';
 import {
   TaskTime,
   getTimesForTask,
   removeTime,
-} from "../../app/slices/timeSlice";
+} from '../../app/slices/timeSlice';
 import {
   removeTaskFromDate,
   swapTasksForDate,
-} from "../../app/slices/dateSlice";
+} from '../../app/slices/dateSlice';
 
 interface TaskRowProps {
   taskId: number;
@@ -32,7 +32,7 @@ export const TaskRow = (props: TaskRowProps) => {
 
   const task = useAppSelector((state) => getTask(state.task, props.taskId));
 
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState('');
   useEffect(() => setDescription(task.description), [task.description]);
 
   const uiSelection = useAppSelector(getSelection);
@@ -75,12 +75,12 @@ export const TaskRow = (props: TaskRowProps) => {
   };
 
   const handleDragStart = (event: React.DragEvent<HTMLTableRowElement>) => {
-    event.dataTransfer.setData("text", props.taskId.toString());
+    event.dataTransfer.setData('text', props.taskId.toString());
   };
 
   const handleDrop = (event: React.DragEvent<HTMLTableRowElement>) => {
     const otherTaskId = parseInt(
-      event.dataTransfer.getData("text/plain").toString()
+      event.dataTransfer.getData('text/plain').toString()
     );
 
     if (otherTaskId === props.taskId) {
@@ -127,8 +127,8 @@ export const TaskRow = (props: TaskRowProps) => {
       </TableCell>
       <TableCell
         sx={{
-          fontWeight: descriptionSelected ? "bold" : undefined,
-          textDecoration: descriptionSelected ? "underline" : undefined,
+          fontWeight: descriptionSelected ? 'bold' : undefined,
+          textDecoration: descriptionSelected ? 'underline' : undefined,
         }}
         onClick={() => {
           dispatch(beginTaskEdit({ taskId: props.taskId }));
@@ -157,9 +157,9 @@ export const TaskRow = (props: TaskRowProps) => {
               return;
             }
 
-            if (event.key === "Enter") {
+            if (event.key === 'Enter') {
               doUpdateTask();
-            } else if (event.key === "Escape") {
+            } else if (event.key === 'Escape') {
               dispatch(endTaskEdit());
               setDescription(task.description);
             }

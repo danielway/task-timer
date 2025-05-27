@@ -1,4 +1,4 @@
-import { Box, Divider, Link } from "@mui/material";
+import { Box, Divider, Link } from '@mui/material';
 
 export const Footer = () => (
   <Box>

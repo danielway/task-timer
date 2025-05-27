@@ -1,5 +1,5 @@
-import { HOUR_COUNT } from "./constants";
-import { KeyboardSelection } from "./slices/editSlice";
+import { HOUR_COUNT } from './constants';
+import { KeyboardSelection } from './slices/editSlice';
 
 type taskDescriptionSelector = (payload: { taskId: number }) => void;
 type taskTimeSegmentSelector = (payload: {
@@ -26,7 +26,7 @@ export const handleKeyboardInput = (
   beginTaskEdit: taskEditStarter,
   toggleSegment: segmentToggler
 ) => {
-  if (event.key === "Escape") {
+  if (event.key === 'Escape') {
     clearSelection();
   }
 
@@ -43,7 +43,7 @@ export const handleKeyboardInput = (
   );
 
   switch (event.key) {
-    case "ArrowUp":
+    case 'ArrowUp':
       if (taskIndex > 0) {
         const newTaskId = tasksForDate[taskIndex - 1];
         if (uiSelection.description) {
@@ -56,7 +56,7 @@ export const handleKeyboardInput = (
         }
       }
       break;
-    case "ArrowDown":
+    case 'ArrowDown':
       if (taskIndex < tasksForDate.length - 1) {
         const newTaskId = tasksForDate[taskIndex + 1];
         if (uiSelection.description) {
@@ -69,7 +69,7 @@ export const handleKeyboardInput = (
         }
       }
       break;
-    case "ArrowLeft":
+    case 'ArrowLeft':
       if (uiSelection.timeSegment !== undefined) {
         if (uiSelection.timeSegment === 0) {
           selectTaskDescription({ taskId: uiSelection.taskId });
@@ -81,7 +81,7 @@ export const handleKeyboardInput = (
         }
       }
       break;
-    case "ArrowRight":
+    case 'ArrowRight':
       if (uiSelection.description) {
         selectTaskTimeSegment({
           taskId: uiSelection.taskId,
@@ -94,8 +94,8 @@ export const handleKeyboardInput = (
         });
       }
       break;
-    case " ":
-    case "Enter":
+    case ' ':
+    case 'Enter':
       if (uiSelection.description) {
         beginTaskEdit({ taskId: uiSelection.taskId });
         clearSelection();

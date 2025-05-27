@@ -1,12 +1,12 @@
-import { configureStore } from "@reduxjs/toolkit";
-import app from "./slices/appSlice";
-import edit from "./slices/editSlice";
-import date from "./slices/dateSlice";
-import task from "./slices/taskSlice";
-import time from "./slices/timeSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import app from './slices/appSlice';
+import edit from './slices/editSlice';
+import date from './slices/dateSlice';
+import task from './slices/taskSlice';
+import time from './slices/timeSlice';
 
 const loadState = () => {
-  const persistedStateJson = localStorage.getItem("state");
+  const persistedStateJson = localStorage.getItem('state');
   const persistedState = persistedStateJson
     ? JSON.parse(persistedStateJson)
     : undefined;
@@ -17,7 +17,7 @@ const loadState = () => {
 };
 
 const saveState = (state: RootState) => {
-  localStorage.setItem("state", JSON.stringify(state));
+  localStorage.setItem('state', JSON.stringify(state));
 };
 
 export const store = configureStore({

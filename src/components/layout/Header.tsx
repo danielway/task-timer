@@ -1,5 +1,5 @@
-import { AppBar, Box, Toolbar, Typography, styled } from "@mui/material";
-import { DatePicker } from "./DatePicker";
+import { AppBar, Box, Toolbar, Typography, styled } from '@mui/material';
+import { DatePicker } from './DatePicker';
 
 export const Header = () => {
   return (
@@ -16,14 +16,14 @@ export const Header = () => {
 
 const AppTitle = styled(Typography)(() => ({
   flexGrow: 1,
-  fontWeight: "bold",
+  fontWeight: 'bold',
 }));
 
 const DatePickerBox = styled(Box)`
-  ${(props) => props.theme.breakpoints.up("xs")} {
+  ${(props) => props.theme.breakpoints.up('xs')} {
     display: none;
   }
-  ${(props) => props.theme.breakpoints.up("sm")} {
+  ${(props) => props.theme.breakpoints.up('sm')} {
     display: block;
   }
 `;

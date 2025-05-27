@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
-import { useAppSelector, useInterval } from "../../app/hooks";
-import "./TimeCursor.css";
-import { END_HOUR, HOUR_COUNT, START_HOUR } from "../../app/constants";
-import { getSelectedDate } from "../../app/slices/appSlice";
+import { useCallback, useEffect, useState } from 'react';
+import { useAppSelector, useInterval } from '../../app/hooks';
+import './TimeCursor.css';
+import { END_HOUR, HOUR_COUNT, START_HOUR } from '../../app/constants';
+import { getSelectedDate } from '../../app/slices/appSlice';
 
 interface TimeCursorProps {
   hoursPositionLeft?: number;
@@ -53,8 +53,8 @@ export const TimeCursor = (props: TimeCursorProps) => {
 
     setCurrentTime({
       text: currentTime.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
+        hour: '2-digit',
+        minute: '2-digit',
       }),
       position: hoursPositionLeft + hoursWidth * currentTimeRatio,
     });
