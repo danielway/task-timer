@@ -3,7 +3,7 @@ import { TableRow, Input, Button, TableCell } from '@mui/material';
 import { TimeSummaryCell } from '../time/TimeSummaryCell';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { createTask, getNextTaskId } from '../../app/slices/taskSlice';
-import { TaskTime, getTimesForDate } from '../../app/slices/timeSlice';
+import { type TaskTime, getTimesForDate } from '../../app/slices/timeSlice';
 import { getSelectedDate } from '../../app/slices/appSlice';
 import { addTaskToDate } from '../../app/slices/dateSlice';
 

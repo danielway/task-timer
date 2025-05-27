@@ -1,5 +1,5 @@
 import { HOUR_COUNT } from './constants';
-import { KeyboardSelection } from './slices/editSlice';
+import type { KeyboardSelection } from './slices/editSlice';
 
 type taskDescriptionSelector = (payload: { taskId: number }) => void;
 type taskTimeSegmentSelector = (payload: {
