@@ -1,5 +1,5 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { AppState } from './appSlice';
+import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
+import type { AppState } from './appSlice';
 
 export interface DateState {
   dateTasks: DateTasks[];

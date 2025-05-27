@@ -14,7 +14,7 @@ import {
 } from '../../app/slices/editSlice';
 import { getSelectedDate } from '../../app/slices/appSlice';
 import {
-  TaskTime,
+  type TaskTime,
   getTimesForTask,
   removeTime,
 } from '../../app/slices/timeSlice';
