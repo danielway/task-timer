@@ -14,5 +14,9 @@ jobs:
         run: npm ci
       - name: Perform production build
         run: npm run build
+      - name: Run lint
+        run: npm run lint
+      - name: Run format check
+        run: npm run format:check
       - name: Perform unit/integration tests
         run: npm run test
