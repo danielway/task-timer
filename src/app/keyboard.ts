@@ -31,7 +31,13 @@ export const handleKeyboardInput = (
   }
 
   if (!uiSelection) {
-    const movementAttempted = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key);
+    const movementAttempted = [
+      'ArrowUp',
+      'ArrowDown',
+      'ArrowLeft',
+      'ArrowRight',
+    ].includes(event.key);
+
     if (movementAttempted) {
       selectTaskTimeSegment({
         taskId: tasksForDate[0],
