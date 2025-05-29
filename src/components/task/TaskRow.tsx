@@ -20,11 +20,15 @@ import {
 } from '../../app/slices/timeSlice';
 import {
   removeTaskFromDate,
-  swapTasksForDate,
 } from '../../app/slices/dateSlice';
 
 interface TaskRowProps {
   taskId: number;
+  dragging?: boolean;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
+  onDragOver?: () => void;
+  onDrop?: () => void;
 }
 
 export const TaskRow = (props: TaskRowProps) => {
@@ -74,58 +78,32 @@ export const TaskRow = (props: TaskRowProps) => {
     return end / 1000 / 60 - time.start / 1000 / 60;
   };
 
-  const [dragging, setDragging] = useState(false);
-  const handleDragStart = (event: React.DragEvent<HTMLTableRowElement>) => {
-    event.dataTransfer.setData('text', props.taskId.toString());
-    setDragging(true);
-
-    // Create a custom drag image with white background
-    const target = event.currentTarget;
-    const clone = target.cloneNode(true) as HTMLElement;
-    clone.style.background = '#fff';
-    clone.style.color = getComputedStyle(target).color;
-    clone.style.position = 'absolute';
-    clone.style.top = '-9999px';
-    clone.style.left = '-9999px';
-    clone.style.width = `${target.offsetWidth}px`;
-    clone.style.height = `${target.offsetHeight}px`;
-    document.body.appendChild(clone);
-    event.dataTransfer.setDragImage(clone, 0, 0);
-    
-    // Remove the clone after a short delay
-    setTimeout(() => document.body.removeChild(clone), 0);
-  };
-
-  const handleDragEnd = () => {
-    setDragging(false);
-  };
-
-  const handleDrop = (event: React.DragEvent<HTMLTableRowElement>) => {
-    const otherTaskId = parseInt(
-      event.dataTransfer.getData('text/plain').toString()
-    );
-
-    if (otherTaskId === props.taskId) {
-      return;
-    }
-
-    dispatch(
-      swapTasksForDate({
-        date: selectedDate,
-        firstTaskId: otherTaskId,
-        secondTaskId: props.taskId,
-      })
-    );
-  };
-
   const renderViewRow = () => (
     <TableRow
-      className={`taskRow cell${dragging ? ' dragging' : ''}`}
+      className={`taskRow cell${props.dragging ? ' dragging' : ''}`}
       draggable="true"
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={handleDrop}
+      onDragStart={(event) => {
+        // Custom drag image logic for white background
+        const target = event.currentTarget;
+        const clone = target.cloneNode(true) as HTMLElement;
+        clone.style.background = '#fff';
+        clone.style.color = getComputedStyle(target).color;
+        clone.style.position = 'absolute';
+        clone.style.top = '-9999px';
+        clone.style.left = '-9999px';
+        clone.style.width = `${target.offsetWidth}px`;
+        clone.style.height = `${target.offsetHeight}px`;
+        document.body.appendChild(clone);
+        event.dataTransfer.setDragImage(clone, 0, 0);
+        setTimeout(() => document.body.removeChild(clone), 0);
+        if (props.onDragStart) props.onDragStart();
+      }}
+      onDragEnd={props.onDragEnd}
+      onDragOver={(e) => {
+        e.preventDefault();
+        props.onDragOver && props.onDragOver();
+      }}
+      onDrop={props.onDrop}
     >
       <TableCell className="icon">
         <HighlightOffIcon
