@@ -18,9 +18,7 @@ import {
   getTimesForTask,
   removeTime,
 } from '../../app/slices/timeSlice';
-import {
-  removeTaskFromDate,
-} from '../../app/slices/dateSlice';
+import { removeTaskFromDate } from '../../app/slices/dateSlice';
 
 interface TaskRowProps {
   taskId: number;

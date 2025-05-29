@@ -3,7 +3,10 @@ import { TaskCreationRow } from '../task/TaskCreationRow';
 import { TaskRow } from '../task/TaskRow';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { getSelectedDate } from '../../app/slices/appSlice';
-import { getTasksForDate, reorderTasksForDate } from '../../app/slices/dateSlice';
+import {
+  getTasksForDate,
+  reorderTasksForDate,
+} from '../../app/slices/dateSlice';
 import { useState, useCallback } from 'react';
 
 export const TableBody = () => {
@@ -47,7 +50,9 @@ export const TableBody = () => {
         const temp = [...taskIds];
         temp.splice(fromIndex, 1);
         temp.splice(hoveredIndex, 0, draggedTaskId);
-        dispatch(reorderTasksForDate({ date: selectedDate, newTaskOrder: temp }));
+        dispatch(
+          reorderTasksForDate({ date: selectedDate, newTaskOrder: temp })
+        );
       }
     }
     setDraggedTaskId(null);
