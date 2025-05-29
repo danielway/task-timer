@@ -74,8 +74,14 @@ export const TaskRow = (props: TaskRowProps) => {
     return end / 1000 / 60 - time.start / 1000 / 60;
   };
 
+  const [dragging, setDragging] = useState(false);
   const handleDragStart = (event: React.DragEvent<HTMLTableRowElement>) => {
     event.dataTransfer.setData('text', props.taskId.toString());
+    setDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    setDragging(false);
   };
 
   const handleDrop = (event: React.DragEvent<HTMLTableRowElement>) => {
@@ -98,9 +104,10 @@ export const TaskRow = (props: TaskRowProps) => {
 
   const renderViewRow = () => (
     <TableRow
-      className="taskRow cell"
+      className={`taskRow cell${dragging ? ' dragging' : ''}`}
       draggable="true"
       onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
     >

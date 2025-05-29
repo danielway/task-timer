@@ -21,3 +21,9 @@
 .cell {
   font-size: 14px;
 }
+
+.taskRow.dragging {
+  background: #fff !important;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
