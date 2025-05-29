@@ -75,29 +75,6 @@ export const dateSlice = createSlice({
         );
       }
     },
-    swapTasksForDate: (
-      state,
-      action: PayloadAction<{
-        date: number;
-        firstTaskId: number;
-        secondTaskId: number;
-      }>
-    ) => {
-      const date = state.dateTasks.find(
-        (date) => date.date === action.payload.date
-      );
-      if (date) {
-        const firstTaskIndex = date.tasks.findIndex(
-          (taskId) => taskId === action.payload.firstTaskId
-        );
-        const secondTaskIndex = date.tasks.findIndex(
-          (taskId) => taskId === action.payload.secondTaskId
-        );
-        const temp = date.tasks[firstTaskIndex];
-        date.tasks[firstTaskIndex] = date.tasks[secondTaskIndex];
-        date.tasks[secondTaskIndex] = temp;
-      }
-    },
     reorderTasksForDate: (
       state,
       action: PayloadAction<{
@@ -105,7 +82,9 @@ export const dateSlice = createSlice({
         newTaskOrder: number[];
       }>
     ) => {
-      const dateObj = state.dateTasks.find((d) => d.date === action.payload.date);
+      const dateObj = state.dateTasks.find(
+        (d) => d.date === action.payload.date
+      );
       if (dateObj) {
         dateObj.tasks = [...action.payload.newTaskOrder];
       }
@@ -117,7 +96,6 @@ export const {
   createDate,
   addTaskToDate,
   removeTaskFromDate,
-  swapTasksForDate,
   reorderTasksForDate,
 } = dateSlice.actions;
 
