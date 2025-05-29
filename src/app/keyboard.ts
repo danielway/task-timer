@@ -31,10 +31,14 @@ export const handleKeyboardInput = (
   }
 
   if (!uiSelection) {
-    selectTaskTimeSegment({
-      taskId: tasksForDate[0],
-      timeSegment: 0,
-    });
+    const movementAttempted = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key);
+    if (movementAttempted) {
+      selectTaskTimeSegment({
+        taskId: tasksForDate[0],
+        timeSegment: 0,
+      });
+    }
+
     return;
   }
 
