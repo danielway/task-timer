@@ -98,6 +98,18 @@ export const dateSlice = createSlice({
         date.tasks[secondTaskIndex] = temp;
       }
     },
+    reorderTasksForDate: (
+      state,
+      action: PayloadAction<{
+        date: number;
+        newTaskOrder: number[];
+      }>
+    ) => {
+      const dateObj = state.dateTasks.find((d) => d.date === action.payload.date);
+      if (dateObj) {
+        dateObj.tasks = [...action.payload.newTaskOrder];
+      }
+    },
   },
 });
 
@@ -106,6 +118,7 @@ export const {
   addTaskToDate,
   removeTaskFromDate,
   swapTasksForDate,
+  reorderTasksForDate,
 } = dateSlice.actions;
 
 export const getTasksForDate = (

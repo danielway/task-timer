@@ -1,9 +1,9 @@
 import { TableBody as MuiTableBody } from '@mui/material';
 import { TaskCreationRow } from '../task/TaskCreationRow';
 import { TaskRow } from '../task/TaskRow';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { getSelectedDate } from '../../app/slices/appSlice';
-import { getTasksForDate } from '../../app/slices/dateSlice';
+import { getTasksForDate, reorderTasksForDate } from '../../app/slices/dateSlice';
 import { useState, useCallback } from 'react';
 
 export const TableBody = () => {
@@ -11,6 +11,7 @@ export const TableBody = () => {
   const taskIds = useAppSelector((state) =>
     getTasksForDate(state, selectedDate)
   );
+  const dispatch = useAppDispatch();
 
   // Drag-and-drop state
   const [draggedTaskId, setDraggedTaskId] = useState<number | null>(null);
@@ -40,9 +41,18 @@ export const TableBody = () => {
     setHoveredIndex(index);
   }, []);
   const handleDrop = useCallback(() => {
+    if (draggedTaskId !== null && hoveredIndex !== null) {
+      const fromIndex = taskIds.indexOf(draggedTaskId);
+      if (fromIndex !== -1) {
+        const temp = [...taskIds];
+        temp.splice(fromIndex, 1);
+        temp.splice(hoveredIndex, 0, draggedTaskId);
+        dispatch(reorderTasksForDate({ date: selectedDate, newTaskOrder: temp }));
+      }
+    }
     setDraggedTaskId(null);
     setHoveredIndex(null);
-  }, []);
+  }, [draggedTaskId, hoveredIndex, taskIds, selectedDate, dispatch]);
 
   return (
     <MuiTableBody>
