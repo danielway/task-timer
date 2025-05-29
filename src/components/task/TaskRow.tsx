@@ -78,6 +78,22 @@ export const TaskRow = (props: TaskRowProps) => {
   const handleDragStart = (event: React.DragEvent<HTMLTableRowElement>) => {
     event.dataTransfer.setData('text', props.taskId.toString());
     setDragging(true);
+
+    // Create a custom drag image with white background
+    const target = event.currentTarget;
+    const clone = target.cloneNode(true) as HTMLElement;
+    clone.style.background = '#fff';
+    clone.style.color = getComputedStyle(target).color;
+    clone.style.position = 'absolute';
+    clone.style.top = '-9999px';
+    clone.style.left = '-9999px';
+    clone.style.width = `${target.offsetWidth}px`;
+    clone.style.height = `${target.offsetHeight}px`;
+    document.body.appendChild(clone);
+    event.dataTransfer.setDragImage(clone, 0, 0);
+    
+    // Remove the clone after a short delay
+    setTimeout(() => document.body.removeChild(clone), 0);
   };
 
   const handleDragEnd = () => {
