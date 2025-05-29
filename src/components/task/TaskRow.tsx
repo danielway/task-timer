@@ -18,13 +18,15 @@ import {
   getTimesForTask,
   removeTime,
 } from '../../app/slices/timeSlice';
-import {
-  removeTaskFromDate,
-  swapTasksForDate,
-} from '../../app/slices/dateSlice';
+import { removeTaskFromDate } from '../../app/slices/dateSlice';
 
 interface TaskRowProps {
   taskId: number;
+  dragging?: boolean;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
+  onDragOver?: () => void;
+  onDrop?: () => void;
 }
 
 export const TaskRow = (props: TaskRowProps) => {
@@ -74,35 +76,38 @@ export const TaskRow = (props: TaskRowProps) => {
     return end / 1000 / 60 - time.start / 1000 / 60;
   };
 
-  const handleDragStart = (event: React.DragEvent<HTMLTableRowElement>) => {
-    event.dataTransfer.setData('text', props.taskId.toString());
-  };
-
-  const handleDrop = (event: React.DragEvent<HTMLTableRowElement>) => {
-    const otherTaskId = parseInt(
-      event.dataTransfer.getData('text/plain').toString()
-    );
-
-    if (otherTaskId === props.taskId) {
-      return;
-    }
-
-    dispatch(
-      swapTasksForDate({
-        date: selectedDate,
-        firstTaskId: otherTaskId,
-        secondTaskId: props.taskId,
-      })
-    );
-  };
-
   const renderViewRow = () => (
     <TableRow
-      className="taskRow cell"
+      className={`taskRow cell${props.dragging ? ' dragging' : ''}`}
       draggable="true"
-      onDragStart={handleDragStart}
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={handleDrop}
+      onDragStart={(event) => {
+        // Custom drag image logic for white background with cursor offset
+        const target = event.currentTarget;
+        const clone = target.cloneNode(true) as HTMLElement;
+        clone.style.background = '#fff';
+        clone.style.color = getComputedStyle(target).color;
+        clone.style.position = 'absolute';
+        clone.style.top = '-9999px';
+        clone.style.left = '-9999px';
+        clone.style.width = `${target.offsetWidth}px`;
+        clone.style.height = `${target.offsetHeight}px`;
+        document.body.appendChild(clone);
+
+        // Calculate offset between mouse and row top-left
+        const rect = target.getBoundingClientRect();
+        const offsetX = event.clientX - rect.left;
+        const offsetY = event.clientY - rect.top;
+        event.dataTransfer.setDragImage(clone, offsetX, offsetY);
+
+        setTimeout(() => document.body.removeChild(clone), 0);
+        if (props.onDragStart) props.onDragStart();
+      }}
+      onDragEnd={props.onDragEnd}
+      onDragOver={(e) => {
+        e.preventDefault();
+        props.onDragOver && props.onDragOver();
+      }}
+      onDrop={props.onDrop}
     >
       <TableCell className="icon">
         <HighlightOffIcon
