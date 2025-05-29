@@ -83,7 +83,7 @@ export const TaskRow = (props: TaskRowProps) => {
       className={`taskRow cell${props.dragging ? ' dragging' : ''}`}
       draggable="true"
       onDragStart={(event) => {
-        // Custom drag image logic for white background
+        // Custom drag image logic for white background with cursor offset
         const target = event.currentTarget;
         const clone = target.cloneNode(true) as HTMLElement;
         clone.style.background = '#fff';
@@ -94,7 +94,13 @@ export const TaskRow = (props: TaskRowProps) => {
         clone.style.width = `${target.offsetWidth}px`;
         clone.style.height = `${target.offsetHeight}px`;
         document.body.appendChild(clone);
-        event.dataTransfer.setDragImage(clone, 0, 0);
+
+        // Calculate offset between mouse and row top-left
+        const rect = target.getBoundingClientRect();
+        const offsetX = event.clientX - rect.left;
+        const offsetY = event.clientY - rect.top;
+        event.dataTransfer.setDragImage(clone, offsetX, offsetY);
+
         setTimeout(() => document.body.removeChild(clone), 0);
         if (props.onDragStart) props.onDragStart();
       }}
