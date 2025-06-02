@@ -105,7 +105,7 @@ export const TaskRow = (props: TaskRowProps) => {
       onDragEnd={props.onDragEnd}
       onDragOver={(e) => {
         e.preventDefault();
-        props.onDragOver && props.onDragOver();
+        props.onDragOver?.call(e);
       }}
       onDrop={props.onDrop}
     >
