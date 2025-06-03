@@ -1,4 +1,9 @@
-import { type PayloadAction, createSlice } from '@reduxjs/toolkit';
+import {
+  type PayloadAction,
+  createSlice,
+  createSelector,
+} from '@reduxjs/toolkit';
+import type { RootState } from '../store';
 import { START_HOUR } from '../constants';
 
 export interface TimeState {
@@ -215,13 +220,20 @@ export const getSegment = (
 export const getTimesForDate = (state: TimeState, date: number): TaskTime[] =>
   state.dateTimes.find((dateTimes) => dateTimes.date === date)!.taskTimes;
 
-export const getTimesForTask = (
-  state: TimeState,
-  date: number,
-  taskId: number
-): TaskTime[] =>
-  state.dateTimes
-    .find((dateTimes) => dateTimes.date === date)!
-    .taskTimes.filter((taskTime) => taskTime.task === taskId);
+export const selectDateTimes = (state: RootState) => state.time.dateTimes;
+
+export const getTimesForTask = createSelector(
+  [
+    selectDateTimes,
+    (_state: RootState, date: number) => date,
+    (_state: RootState, _date: number, taskId: number) => taskId,
+  ],
+  (dateTimes, date, taskId) => {
+    const dateEntry = dateTimes.find((dt) => dt.date === date);
+    return dateEntry
+      ? dateEntry.taskTimes.filter((taskTime) => taskTime.task === taskId)
+      : [];
+  }
+);
 
 export default timeSlice.reducer;
