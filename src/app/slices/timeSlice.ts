@@ -205,7 +205,7 @@ const selectSegmentTimes = createSelector(
       ((segment + 1) % 4) * 15
     ).getTime();
 
-    const dateTime = dateTimes.find(dt => dt.date === date);
+    const dateTime = dateTimes.find((dt) => dt.date === date);
     if (!dateTime) return { start, end, logged: false };
 
     const matchingTimes = dateTime.taskTimes.filter(
