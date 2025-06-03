@@ -179,42 +179,53 @@ export const {
   toggleSegment,
 } = timeSlice.actions;
 
+const selectSegmentTimes = createSelector(
+  [
+    (state: TimeState) => state.dateTimes,
+    (_: TimeState, date: number) => date,
+    (_: TimeState, _date: number, taskId: number) => taskId,
+    (_: TimeState, _date: number, _taskId: number, segment: number) => segment,
+  ],
+  (dateTimes, date, taskId, segment) => {
+    const dateObj = new Date(date);
+
+    const start = new Date(
+      dateObj.getFullYear(),
+      dateObj.getMonth(),
+      dateObj.getDate(),
+      START_HOUR + segment / 4,
+      (segment % 4) * 15
+    ).getTime();
+
+    const end = new Date(
+      dateObj.getFullYear(),
+      dateObj.getMonth(),
+      dateObj.getDate(),
+      START_HOUR + (segment + 1) / 4,
+      ((segment + 1) % 4) * 15
+    ).getTime();
+
+    const dateTime = dateTimes.find(dt => dt.date === date);
+    if (!dateTime) return { start, end, logged: false };
+
+    const matchingTimes = dateTime.taskTimes.filter(
+      (time) =>
+        time.task === taskId &&
+        time.start < end &&
+        (!time.end || time.end > start)
+    );
+
+    return { start, end, logged: matchingTimes.length > 0 };
+  }
+);
+
 export const getSegment = (
   state: TimeState,
   date: number,
   taskId: number,
   segment: number
 ) => {
-  const dateObj = new Date(date);
-
-  const start = new Date(
-    dateObj.getFullYear(),
-    dateObj.getMonth(),
-    dateObj.getDate(),
-    START_HOUR + segment / 4,
-    (segment % 4) * 15
-  ).getTime();
-
-  const end = new Date(
-    dateObj.getFullYear(),
-    dateObj.getMonth(),
-    dateObj.getDate(),
-    START_HOUR + (segment + 1) / 4,
-    ((segment + 1) % 4) * 15
-  ).getTime();
-
-  const dateTimes = state.dateTimes.find(
-    (dateTimes) => dateTimes.date === date
-  )!;
-
-  const matchingTimes = dateTimes.taskTimes.filter(
-    (time) =>
-      time.task === taskId &&
-      time.start < end &&
-      (!time.end || time.end > start)
-  );
-
-  return { start, end, logged: matchingTimes.length > 0 };
+  return selectSegmentTimes(state, date, taskId, segment);
 };
 
 export const getTimesForDate = (state: TimeState, date: number): TaskTime[] =>
