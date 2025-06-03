@@ -82,11 +82,11 @@ export const dateSlice = createSlice({
         newTaskOrder: number[];
       }>
     ) => {
-      const dateObj = state.dateTasks.find(
-        (d) => d.date === action.payload.date
+      const date = state.dateTasks.find(
+        (date) => date.date === action.payload.date
       );
-      if (dateObj) {
-        dateObj.tasks = [...action.payload.newTaskOrder];
+      if (date) {
+        date.tasks = [...action.payload.newTaskOrder];
       }
     },
   },
