@@ -54,7 +54,7 @@ export const TaskRow = (props: TaskRowProps) => {
 
   const selectedDate = useAppSelector(getSelectedDate);
   const times = useAppSelector((state) =>
-    getTimesForTask(state.time, selectedDate, props.taskId)
+    getTimesForTask(state, selectedDate, props.taskId)
   );
 
   const taskRowTime = () => {
