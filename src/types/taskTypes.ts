@@ -27,5 +27,7 @@ export const DEFAULT_TASK_TYPES: TaskType[] = [
 ];
 
 export const getTaskType = (id: string): TaskType => {
-  return DEFAULT_TASK_TYPES.find((type) => type.id === id) || DEFAULT_TASK_TYPES[0];
+  return (
+    DEFAULT_TASK_TYPES.find((type) => type.id === id) || DEFAULT_TASK_TYPES[0]
+  );
 };
