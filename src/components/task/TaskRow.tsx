@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import './TaskRow.css';
-import { TableRow, Input, Button, TableCell, Select, MenuItem, Chip } from '@mui/material';
+import {
+  TableRow,
+  Input,
+  Button,
+  TableCell,
+  Select,
+  MenuItem,
+  Chip,
+} from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { TimeRowCell } from '../time/TimeRow';
 import { TimeSummaryCell } from '../time/TimeSummaryCell';
@@ -51,7 +59,9 @@ export const TaskRow = (props: TaskRowProps) => {
   useEffect(() => inputRef.current?.focus(), [inputRef, editing]);
 
   const doUpdateTask = () => {
-    dispatch(updateTask({ id: props.taskId, description: description, type: taskType }));
+    dispatch(
+      updateTask({ id: props.taskId, description: description, type: taskType })
+    );
     dispatch(endTaskEdit());
   };
 

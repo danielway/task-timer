@@ -1,5 +1,12 @@
 import { useRef, useState } from 'react';
-import { TableRow, Input, Button, TableCell, Select, MenuItem } from '@mui/material';
+import {
+  TableRow,
+  Input,
+  Button,
+  TableCell,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import { TimeSummaryCell } from '../time/TimeSummaryCell';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { createTask, getNextTaskId } from '../../app/slices/taskSlice';
