@@ -8,6 +8,11 @@ import { START_HOUR } from '../constants';
 
 export interface TimeState {
   dateTimes: DateTimes[];
+  activeTimer?: {
+    taskId: number;
+    startTime: number;
+    date: number;
+  };
 }
 
 export interface DateTimes {
@@ -30,6 +35,7 @@ const initialState: TimeState = {
       taskTimes: [],
     },
   ],
+  activeTimer: undefined,
 };
 
 export const timeSlice = createSlice({
@@ -58,37 +64,66 @@ export const timeSlice = createSlice({
         taskId: number;
       }>
     ) => {
+      // Only allow one timer at a time
+      if (state.activeTimer) {
+        return;
+      }
+
       const dateTimes = state.dateTimes.find(
         (dateTimes) => dateTimes.date === action.payload.date
       );
       if (dateTimes) {
+        const startTime = Date.now();
         dateTimes.taskTimes.push({
           task: action.payload.taskId,
-          start: Date.now(),
+          start: startTime,
         });
+        state.activeTimer = {
+          taskId: action.payload.taskId,
+          startTime: startTime,
+          date: action.payload.date,
+        };
       }
     },
-    stopTime: (
-      state,
-      action: PayloadAction<{
-        date: number;
-        taskId: number;
-        start: number;
-      }>
-    ) => {
+    stopTime: (state) => {
+      if (!state.activeTimer) {
+        return;
+      }
+
       const dateTimes = state.dateTimes.find(
-        (dateTimes) => dateTimes.date === action.payload.date
+        (dateTimes) => dateTimes.date === state.activeTimer!.date
       );
       if (dateTimes) {
         const taskTime = dateTimes.taskTimes.find(
           (taskTime) =>
-            taskTime.task === action.payload.taskId &&
-            taskTime.start === action.payload.start
+            taskTime.task === state.activeTimer!.taskId &&
+            taskTime.start === state.activeTimer!.startTime
         );
         if (taskTime) {
           taskTime.end = Date.now();
         }
       }
+      state.activeTimer = undefined;
+    },
+    cancelTimer: (state) => {
+      if (!state.activeTimer) {
+        return;
+      }
+
+      const dateTimes = state.dateTimes.find(
+        (dateTimes) => dateTimes.date === state.activeTimer!.date
+      );
+      if (dateTimes) {
+        const taskTimeIndex = dateTimes.taskTimes.findIndex(
+          (taskTime) =>
+            taskTime.task === state.activeTimer!.taskId &&
+            taskTime.start === state.activeTimer!.startTime
+        );
+        if (taskTimeIndex !== -1) {
+          dateTimes.taskTimes.splice(taskTimeIndex, 1);
+        }
+      }
+      state.activeTimer = undefined;
     },
     recordTime: (
       state,
@@ -174,6 +209,7 @@ export const {
   createDate,
   startTime,
   stopTime,
+  cancelTimer,
   recordTime,
   removeTime,
   toggleSegment,
@@ -246,5 +282,7 @@ export const getTimesForTask = createSelector(
       : [];
   }
 );
+
+export const selectActiveTimer = (state: RootState) => state.time.activeTimer;
 
 export default timeSlice.reducer;
