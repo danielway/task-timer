@@ -51,7 +51,7 @@ describe('TaskCreationRow', () => {
     await user.type(input, 'My New Task');
     await user.click(button);
 
-    const state = store.getState();
+    const state = store.getState() as RootState;
     expect(state.task.tasks).toHaveLength(1);
     expect(state.task.tasks[0].description).toBe('My New Task');
     expect(state.task.tasks[0].id).toBe(1);
@@ -70,7 +70,7 @@ describe('TaskCreationRow', () => {
     await user.type(input, 'My New Task');
     await user.click(button);
 
-    const state = store.getState();
+    const state = store.getState() as RootState;
     expect(state.date.dateTasks[0].tasks).toContain(1);
   });
 
@@ -105,13 +105,13 @@ describe('TaskCreationRow', () => {
     await user.type(input, 'Task 1');
     await user.click(button);
 
-    let state = store.getState();
+    let state = store.getState() as RootState;
     expect(state.task.nextTaskId).toBe(2);
 
     await user.type(input, 'Task 2');
     await user.click(button);
 
-    state = store.getState();
+    state = store.getState() as RootState;
     expect(state.task.nextTaskId).toBe(3);
   });
 
@@ -126,7 +126,7 @@ describe('TaskCreationRow', () => {
 
     await user.type(input, 'Task via Enter{Enter}');
 
-    const state = store.getState();
+    const state = store.getState() as RootState;
     expect(state.task.tasks).toHaveLength(1);
     expect(state.task.tasks[0].description).toBe('Task via Enter');
   });
@@ -168,7 +168,7 @@ describe('TaskCreationRow', () => {
     await user.type(input, 'Task 3');
     await user.click(button);
 
-    const state = store.getState();
+    const state = store.getState() as RootState;
     expect(state.task.tasks).toHaveLength(3);
     expect(state.task.tasks[0].description).toBe('Task 1');
     expect(state.task.tasks[1].description).toBe('Task 2');
@@ -186,7 +186,7 @@ describe('TaskCreationRow', () => {
 
     await user.click(button);
 
-    const state = store.getState();
+    const state = store.getState() as RootState;
     expect(state.task.tasks).toHaveLength(1);
     expect(state.task.tasks[0].description).toBe('');
   });
@@ -250,7 +250,7 @@ describe('TaskCreationRow', () => {
     await user.type(input, 'New Task');
     await user.click(button);
 
-    const state = store.getState();
+    const state = store.getState() as RootState;
     expect(state.task.tasks).toHaveLength(3);
     expect(state.task.tasks[2].id).toBe(5);
   });

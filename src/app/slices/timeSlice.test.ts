@@ -528,7 +528,7 @@ describe('timeSlice', () => {
         time: {
           dateTimes: [],
         },
-      } as RootState;
+      } as unknown as RootState;
 
       const result = getTimesForTask(state, mockToday, 1);
 

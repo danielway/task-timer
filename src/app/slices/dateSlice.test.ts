@@ -337,7 +337,7 @@ describe('dateSlice', () => {
             { date: mockYesterday, tasks: [] },
           ],
         },
-      } as RootState;
+      } as unknown as RootState;
 
       const datesWithTasks = getDatesWithTasks(mockState);
 
@@ -364,7 +364,7 @@ describe('dateSlice', () => {
         date: {
           dateTasks: [],
         },
-      } as RootState;
+      } as unknown as RootState;
 
       const datesWithTasks = getDatesWithTasks(mockState);
 

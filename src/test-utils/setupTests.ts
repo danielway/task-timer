@@ -37,7 +37,7 @@ class LocalStorageMock {
   }
 }
 
-global.localStorage = new LocalStorageMock() as Storage;
+globalThis.localStorage = new LocalStorageMock() as Storage;
 
 // Mock window.matchMedia (used by Material-UI)
 Object.defineProperty(window, 'matchMedia', {
@@ -55,12 +55,15 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 // Mock IntersectionObserver (used by some MUI components)
-global.IntersectionObserver = class IntersectionObserver {
+globalThis.IntersectionObserver = class IntersectionObserver {
+  readonly root = null;
+  readonly rootMargin = '';
+  readonly thresholds = [];
   constructor() {}
   disconnect() {}
   observe() {}
-  takeRecords() {
+  takeRecords(): IntersectionObserverEntry[] {
     return [];
   }
   unobserve() {}
-} as any;
+} as unknown as typeof IntersectionObserver;

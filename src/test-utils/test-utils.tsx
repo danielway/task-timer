@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { render, RenderOptions } from '@testing-library/react';
+import { render, type RenderOptions } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import app from '../app/slices/appSlice';
 import edit from '../app/slices/editSlice';
 import date from '../app/slices/dateSlice';
