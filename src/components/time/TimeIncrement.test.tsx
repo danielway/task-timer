@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders, mockToday } from '../../test-utils/test-utils';
 import { TimeIncrement } from './TimeIncrement';
@@ -83,7 +82,7 @@ describe('TimeIncrement', () => {
 
     await user.click(increment!);
 
-    const state = store.getState();
+    const state = store.getState() as RootState;
     expect(state.time.dateTimes[0].taskTimes).toHaveLength(1);
     expect(state.time.dateTimes[0].taskTimes[0].task).toBe(1);
   });
@@ -130,7 +129,7 @@ describe('TimeIncrement', () => {
     const increment = container.querySelector('.increment');
     await user.click(increment!);
 
-    const state = store.getState();
+    const state = store.getState() as RootState;
     expect(state.time.dateTimes[0].taskTimes).toHaveLength(0);
   });
 
@@ -223,7 +222,7 @@ describe('TimeIncrement', () => {
     const increment1 = container.querySelector('.increment');
     await user.click(increment1!);
 
-    let state = store.getState();
+    let state = store.getState() as RootState;
     expect(state.time.dateTimes[0].taskTimes).toHaveLength(1);
 
     // Render and click second segment
@@ -231,7 +230,7 @@ describe('TimeIncrement', () => {
     const increment2 = container.querySelector('.increment');
     await user.click(increment2!);
 
-    state = store.getState();
+    state = store.getState() as RootState;
     expect(state.time.dateTimes[0].taskTimes).toHaveLength(2);
   });
 });

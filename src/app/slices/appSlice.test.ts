@@ -4,7 +4,11 @@ import appReducer, {
   getSelectedDate,
   type AppState,
 } from './appSlice';
-import { mockToday, mockYesterday, mockTomorrow } from '../../test-utils/test-utils';
+import {
+  mockToday,
+  mockYesterday,
+  mockTomorrow,
+} from '../../test-utils/test-utils';
 
 describe('appSlice', () => {
   const initialState: AppState = {

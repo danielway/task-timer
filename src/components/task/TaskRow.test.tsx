@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { screen, within } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders, mockToday } from '../../test-utils/test-utils';
 import { TaskRow } from './TaskRow';
@@ -69,7 +69,7 @@ describe('TaskRow', () => {
       const taskName = screen.getByText('Original Description');
       await user.click(taskName);
 
-      const state = store.getState();
+      const state = store.getState() as RootState;
       expect(state.edit.activeEditTaskId).toBe(1);
     });
 
@@ -168,7 +168,7 @@ describe('TaskRow', () => {
       const updateButton = screen.getByRole('button', { name: /update task/i });
       await user.click(updateButton);
 
-      const state = store.getState();
+      const state = store.getState() as RootState;
       expect(state.task.tasks[0].description).toBe('Updated Description');
     });
 
@@ -192,7 +192,7 @@ describe('TaskRow', () => {
       const updateButton = screen.getByRole('button', { name: /update task/i });
       await user.click(updateButton);
 
-      const state = store.getState();
+      const state = store.getState() as RootState;
       expect(state.edit.activeEditTaskId).toBeUndefined();
     });
 
@@ -214,7 +214,7 @@ describe('TaskRow', () => {
       await user.clear(input);
       await user.type(input, 'Via Enter{Enter}');
 
-      const state = store.getState();
+      const state = store.getState() as RootState;
       expect(state.task.tasks[0].description).toBe('Via Enter');
       expect(state.edit.activeEditTaskId).toBeUndefined();
     });
@@ -229,7 +229,7 @@ describe('TaskRow', () => {
         },
       };
 
-      const { store, rerender } = renderWithProviders(<TaskRow taskId={1} />, {
+      const { store } = renderWithProviders(<TaskRow taskId={1} />, {
         preloadedState: stateInEditMode,
       });
 
@@ -241,7 +241,7 @@ describe('TaskRow', () => {
 
       await user.keyboard('{Escape}');
 
-      const state = store.getState();
+      const state = store.getState() as RootState;
       expect(state.edit.activeEditTaskId).toBeUndefined();
       expect(state.task.tasks[0].description).toBe('Original');
     });
@@ -266,7 +266,7 @@ describe('TaskRow', () => {
       const updateButton = screen.getByRole('button', { name: /update task/i });
       await user.click(updateButton);
 
-      const state = store.getState();
+      const state = store.getState() as RootState;
       expect(state.task.tasks[0].description).toBe('');
     });
   });

@@ -51,13 +51,13 @@ npm test -- src/app/slices/timeSlice.test.ts
 
 ### Current Coverage by Category:
 
-| Category | Coverage | Details |
-|----------|----------|---------|
-| **Redux Slices** | 100% | All business logic fully tested |
-| **Keyboard Navigation** | 100% | All navigation paths covered |
-| **Task Components** | 90.82% | Task creation, editing, deletion |
-| **Time Components** | Partial | TimeIncrement 100%, layout components untested |
-| **Layout Components** | 0% | Presentational components (future work) |
+| Category                | Coverage | Details                                        |
+| ----------------------- | -------- | ---------------------------------------------- |
+| **Redux Slices**        | 100%     | All business logic fully tested                |
+| **Keyboard Navigation** | 100%     | All navigation paths covered                   |
+| **Task Components**     | 90.82%   | Task creation, editing, deletion               |
+| **Time Components**     | Partial  | TimeIncrement 100%, layout components untested |
+| **Layout Components**   | 0%       | Presentational components (future work)        |
 
 ### Priority Areas (100% Coverage):
 
@@ -99,6 +99,7 @@ const state = createMockState({ task: { ... } });
 ### `setupTests.ts`
 
 Global test setup including:
+
 - localStorage mock
 - Material-UI matchMedia mock
 - IntersectionObserver mock
@@ -166,7 +167,7 @@ it('should navigate between tasks with arrow keys', () => {
 
   expect(selectTaskTimeSegment).toHaveBeenCalledWith({
     taskId: 2,
-    timeSegment: 5
+    timeSegment: 5,
   });
 });
 ```
@@ -186,6 +187,7 @@ Potential areas for additional test coverage:
 ### Tests timing out
 
 If tests timeout, check for:
+
 - Missing `await` on async operations
 - Infinite loops in useEffect hooks
 - Missing date entries in test state
@@ -193,6 +195,7 @@ If tests timeout, check for:
 ### Component rendering errors
 
 Common issues:
+
 - Missing required Redux state slices
 - TableRow components need parent Table/TableBody
 - Date entries must exist in both `date` and `time` slices
@@ -200,6 +203,7 @@ Common issues:
 ### Coverage not meeting thresholds
 
 Current thresholds are set to 50% to account for untested layout components. Focus on:
+
 - 100% coverage for all business logic (slices)
 - 90%+ coverage for interactive components
 - Layout components can be tested as time permits
