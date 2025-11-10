@@ -6,6 +6,7 @@ import { mockToday } from './test-utils';
 export const createMockTask = (overrides: Partial<Task> = {}): Task => ({
   id: 1,
   description: 'Test Task',
+  type: 'task',
   ...overrides,
 });
 
@@ -63,7 +64,7 @@ export const createMockStateWithTask = (
   },
   task: {
     nextTaskId: taskId + 1,
-    tasks: [{ id: taskId, description }],
+    tasks: [{ id: taskId, description, type: 'task' }],
   },
   date: {
     dateTasks: [{ date, tasks: [taskId] }],
@@ -106,7 +107,7 @@ export const createMockStateWithTaskAndTime = (
     },
     task: {
       nextTaskId: taskId + 1,
-      tasks: [{ id: taskId, description }],
+      tasks: [{ id: taskId, description, type: 'task' }],
     },
     date: {
       dateTasks: [{ date, tasks: [taskId] }],
