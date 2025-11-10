@@ -1,35 +1,27 @@
 # Testing Documentation
 
-This project has comprehensive test coverage for all business logic and critical components using Vitest and React Testing Library.
-
-## Test Stats
-
-- **Total Tests:** 182
-- **Test Files:** 10
-- **Overall Coverage:** ~58%
-- **Business Logic Coverage:** 100% (Redux slices, keyboard navigation)
+This project uses [Vitest](https://vitest.dev/) and [React Testing Library](https://testing-library.com/react) for testing business logic and critical components.
 
 ## Test Structure
 
 ### Unit Tests (`src/app/slices/*.test.ts`)
 
-Tests for Redux slices covering all business logic:
+Tests for Redux slices covering business logic:
 
-- **timeSlice.test.ts** (26 tests) - Time tracking, segment calculation, time toggling
-- **taskSlice.test.ts** (23 tests) - Task CRUD operations
-- **dateSlice.test.ts** (29 tests) - Date-to-task mapping, task ordering
-- **editSlice.test.ts** (24 tests) - UI selection state
-- **appSlice.test.ts** (15 tests) - App-level state
-- **keyboard.test.ts** (28 tests) - Keyboard navigation logic
+- **timeSlice.test.ts** - Time tracking, segment calculation, time toggling
+- **taskSlice.test.ts** - Task CRUD operations
+- **dateSlice.test.ts** - Date-to-task mapping, task ordering
+- **editSlice.test.ts** - UI selection state
+- **appSlice.test.ts** - App-level state
+- **keyboard.test.ts** - Keyboard navigation logic
 
 ### Integration Tests (`src/components/**/*.test.tsx`)
 
 Tests for components integrated with Redux:
 
-- **TimeIncrement.test.tsx** (8 tests) - Time segment toggling with Redux
-- **TaskCreationRow.test.tsx** (12 tests) - Task creation workflow
-- **TaskRow.test.tsx** (16 tests) - Task editing, deletion, time display
-- **App.test.tsx** (1 test) - Basic rendering
+- **TimeIncrement.test.tsx** - Time segment toggling with Redux
+- **TaskCreationRow.test.tsx** - Task creation workflow
+- **TaskRow.test.tsx** - Task editing, deletion, time display
 
 ## Running Tests
 
@@ -47,27 +39,6 @@ npm test -- --coverage
 npm test -- src/app/slices/timeSlice.test.ts
 ```
 
-## Coverage Goals
-
-### Current Coverage by Category:
-
-| Category                | Coverage | Details                                        |
-| ----------------------- | -------- | ---------------------------------------------- |
-| **Redux Slices**        | 100%     | All business logic fully tested                |
-| **Keyboard Navigation** | 100%     | All navigation paths covered                   |
-| **Task Components**     | 90.82%   | Task creation, editing, deletion               |
-| **Time Components**     | Partial  | TimeIncrement 100%, layout components untested |
-| **Layout Components**   | 0%       | Presentational components (future work)        |
-
-### Priority Areas (100% Coverage):
-
-✅ **appSlice** - Date selection and app state
-✅ **dateSlice** - Task-to-date mapping and ordering
-✅ **editSlice** - UI selection and edit state
-✅ **taskSlice** - Task CRUD operations
-✅ **timeSlice** - Time tracking and segment calculations
-✅ **keyboard.ts** - Keyboard navigation state machine
-
 ## Test Utilities
 
 ### `test-utils.tsx`
@@ -81,7 +52,7 @@ const { store } = renderWithProviders(<MyComponent />, {
   preloadedState: {
     task: { nextTaskId: 1, tasks: [] },
     // ... other state
-  }
+  },
 });
 ```
 
@@ -105,15 +76,48 @@ Global test setup including:
 - IntersectionObserver mock
 - Automatic cleanup after each test
 
-## CI/CD Integration
+## Configuration
+
+### Vitest Configuration (`vite.config.ts`)
+
+```typescript
+test: {
+  environment: 'jsdom',
+  setupFiles: ['./src/test-utils/setupTests.ts'],
+  coverage: {
+    provider: 'v8',
+    reporter: ['text', 'html', 'lcov', 'json'],
+    exclude: [
+      'node_modules/',
+      'dist/',
+      'src/test-utils/',
+      '**/*.test.{ts,tsx}',
+      '**/*.spec.{ts,tsx}',
+      'src/vite-env.d.ts',
+      'src/main.tsx',
+      'src/store.ts',
+      'vite.config.ts',
+      'eslint.config.js',
+    ],
+    thresholds: {
+      branches: 80,
+      functions: 70,
+      lines: 45,
+      statements: 45,
+    },
+  },
+}
+```
+
+### CI/CD Integration
 
 Tests run automatically on every push and pull request via GitHub Actions:
 
 1. **Lint** - Code quality checks
 2. **Format Check** - Prettier formatting
 3. **Build** - Production build verification
-4. **Tests** - All 182 tests
-5. **Coverage** - Generate and upload coverage reports
+4. **Tests** - Run all test suites
+5. **Coverage** - Generate and upload coverage reports to Codecov
 
 See `.github/workflows/ci-workflow.yml` for details.
 
@@ -144,7 +148,7 @@ it('should toggle time segment when clicked', async () => {
   const increment = container.querySelector('.increment');
   await user.click(increment!);
 
-  const state = store.getState();
+  const state = store.getState() as RootState;
   expect(state.time.dateTimes[0].taskTimes).toHaveLength(1);
 });
 ```
@@ -172,41 +176,72 @@ it('should navigate between tasks with arrow keys', () => {
 });
 ```
 
-## Future Enhancements
+## Writing New Tests
 
-Potential areas for additional test coverage:
+### For Redux Slices
 
-1. **Layout Components** - DatePicker, Table, Header, Footer, etc.
-2. **Visual Regression Tests** - Playwright visual comparisons
-3. **E2E Tests** - Full user workflow tests with Playwright
-4. **Accessibility Tests** - jest-axe integration
-5. **Performance Tests** - Large dataset rendering tests
+1. Import the slice reducer and actions
+2. Test each action's state transformation
+3. Test selectors with mock state
+4. Focus on edge cases and boundary conditions
+
+### For Components
+
+1. Use `renderWithProviders()` with appropriate `preloadedState`
+2. Test user interactions with `@testing-library/user-event`
+3. Verify Redux state changes with `store.getState()`
+4. Use `container.textContent` for text assertions spanning multiple elements
+
+### Mock Data
+
+Use factories from `test-utils/factories.ts` for consistency:
+
+- `createMockTask()` - Generate mock tasks
+- `createMockTaskTime()` - Generate mock time entries
+- `createMockState()` - Generate complete Redux state
+- `createMockStateWithTaskAndTime()` - Generate state with task and time entries
+
+## Extending Test Coverage
+
+Priority areas for additional coverage:
+
+1. **Layout Components** - DatePicker, Table, Header, Footer
+2. **Visual Regression** - Playwright visual comparisons
+3. **E2E Tests** - Full user workflow tests
+4. **Accessibility** - jest-axe integration
+5. **Performance** - Large dataset rendering tests
+
+### Adding E2E Tests with Playwright
+
+```bash
+# Install Playwright
+npm install -D @playwright/test
+
+# Initialize Playwright
+npx playwright install
+```
+
+Create test files in `e2e/` directory following Playwright patterns.
 
 ## Troubleshooting
 
 ### Tests timing out
 
-If tests timeout, check for:
-
-- Missing `await` on async operations
-- Infinite loops in useEffect hooks
-- Missing date entries in test state
+- Check for missing `await` on async operations
+- Look for infinite loops in useEffect hooks
+- Ensure date entries exist in test state
 
 ### Component rendering errors
 
-Common issues:
+- Verify all required Redux state slices are provided
+- Ensure TableRow components have parent Table/TableBody
+- Check that date entries exist in both `date` and `time` slices
 
-- Missing required Redux state slices
-- TableRow components need parent Table/TableBody
-- Date entries must exist in both `date` and `time` slices
+### Type errors in tests
 
-### Coverage not meeting thresholds
-
-Current thresholds are set to 50% to account for untested layout components. Focus on:
-
-- 100% coverage for all business logic (slices)
-- 90%+ coverage for interactive components
-- Layout components can be tested as time permits
+- Use `as RootState` when calling `store.getState()`
+- Use `as unknown as RootState` for partial state objects
+- Import types with `type` keyword: `import { type MyType }`
 
 ## Resources
 
