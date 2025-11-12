@@ -13,7 +13,7 @@ describe('TaskRow', () => {
     app: { version: '1.0', selectedDate: mockToday },
     task: {
       nextTaskId: taskId + 1,
-      tasks: [{ id: taskId, description }],
+      tasks: [{ id: taskId, description, type: 'task' }],
     },
     date: { dateTasks: [{ date: mockToday, tasks: [taskId] }] },
     time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
