@@ -69,7 +69,10 @@ describe('TimeIncrement', () => {
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {},
       date: { dateTasks: [{ date: mockToday, tasks: [1] }] },
-      task: { nextTaskId: 2, tasks: [{ id: 1, description: 'Task 1' }] },
+      task: {
+        nextTaskId: 2,
+        tasks: [{ id: 1, description: 'Task 1', type: 'task' }],
+      },
     };
 
     const { store, container } = renderWithProviders(
@@ -118,7 +121,10 @@ describe('TimeIncrement', () => {
       },
       edit: {},
       date: { dateTasks: [{ date: mockToday, tasks: [1] }] },
-      task: { nextTaskId: 2, tasks: [{ id: 1, description: 'Task 1' }] },
+      task: {
+        nextTaskId: 2,
+        tasks: [{ id: 1, description: 'Task 1', type: 'task' }],
+      },
     };
 
     const { store, container } = renderWithProviders(
@@ -210,7 +216,10 @@ describe('TimeIncrement', () => {
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {},
       date: { dateTasks: [{ date: mockToday, tasks: [1] }] },
-      task: { nextTaskId: 2, tasks: [{ id: 1, description: 'Task 1' }] },
+      task: {
+        nextTaskId: 2,
+        tasks: [{ id: 1, description: 'Task 1', type: 'task' }],
+      },
     };
 
     const { store, container, rerender } = renderWithProviders(

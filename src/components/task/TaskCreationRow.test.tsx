@@ -232,8 +232,8 @@ describe('TaskCreationRow', () => {
       task: {
         nextTaskId: 5,
         tasks: [
-          { id: 1, description: 'Task 1' },
-          { id: 2, description: 'Task 2' },
+          { id: 1, description: 'Task 1', type: 'task' },
+          { id: 2, description: 'Task 2', type: 'task' },
         ],
       },
       date: { dateTasks: [{ date: mockToday, tasks: [1, 2] }] },
