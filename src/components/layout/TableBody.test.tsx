@@ -141,6 +141,110 @@ describe('TableBody', () => {
   });
 
   describe('graceful handling of missing task data', () => {
+    it('should handle opening app with tasks from previous day without crashing', () => {
+      // REAL-WORLD BUG SCENARIO:
+      // User has tasks from yesterday with time entries. When opening the app today,
+      // the app crashes because task IDs from yesterday exist in date slice but
+      // the task objects are missing from the task slice (data sync issue).
+
+      const yesterday = mockToday - 24 * 60 * 60 * 1000;
+
+      const stateWithPreviousDayTasks: Partial<RootState> = {
+        app: { version: '1.0', selectedDate: mockToday }, // App opens to today
+        task: {
+          nextTaskId: 3,
+          tasks: [], // But tasks array is empty (data corruption/migration issue)
+        },
+        date: {
+          dateTasks: [
+            { date: yesterday, tasks: [1, 2] }, // Yesterday had task IDs 1 and 2
+            { date: mockToday, tasks: [] }, // Today has no tasks yet
+          ],
+        },
+        time: {
+          dateTimes: [
+            {
+              date: yesterday,
+              taskTimes: [
+                // Time entries from yesterday
+                {
+                  task: 1,
+                  start: new Date(yesterday).setHours(9, 0, 0, 0),
+                  end: new Date(yesterday).setHours(10, 30, 0, 0),
+                },
+                {
+                  task: 2,
+                  start: new Date(yesterday).setHours(11, 0, 0, 0),
+                  end: new Date(yesterday).setHours(12, 0, 0, 0),
+                },
+              ],
+            },
+            { date: mockToday, taskTimes: [] },
+          ],
+        },
+        edit: {},
+      };
+
+      // Should render without crashing even though yesterday's tasks are missing
+      const { container } = renderWithProviders(<TableBody />, {
+        preloadedState: stateWithPreviousDayTasks,
+      });
+
+      // App should render successfully (showing today's empty task list)
+      expect(container.querySelector('tbody')).toBeTruthy();
+
+      // Today should have no tasks displayed (since we're viewing today and it's empty)
+      expect(screen.queryByText('Task 1')).toBeFalsy();
+      expect(screen.queryByText('Task 2')).toBeFalsy();
+    });
+
+    it('should handle viewing previous day when task data is missing', () => {
+      // SCENARIO: User switches to view yesterday's date, but the task objects
+      // are missing (only task IDs remain in date slice). App should not crash.
+
+      const yesterday = mockToday - 24 * 60 * 60 * 1000;
+
+      const stateViewingYesterday: Partial<RootState> = {
+        app: { version: '1.0', selectedDate: yesterday }, // User is viewing yesterday
+        task: {
+          nextTaskId: 3,
+          tasks: [], // Task objects are missing
+        },
+        date: {
+          dateTasks: [
+            { date: yesterday, tasks: [1, 2] }, // Yesterday had task IDs 1 and 2
+          ],
+        },
+        time: {
+          dateTimes: [
+            {
+              date: yesterday,
+              taskTimes: [
+                {
+                  task: 1,
+                  start: new Date(yesterday).setHours(9, 0, 0, 0),
+                  end: new Date(yesterday).setHours(10, 30, 0, 0),
+                },
+              ],
+            },
+          ],
+        },
+        edit: {},
+      };
+
+      // Should render without crashing when viewing yesterday
+      const { container } = renderWithProviders(<TableBody />, {
+        preloadedState: stateViewingYesterday,
+      });
+
+      // Table should render successfully
+      expect(container.querySelector('tbody')).toBeTruthy();
+
+      // Tasks should not appear (they're missing from task slice)
+      expect(screen.queryByText('Task 1')).toBeFalsy();
+      expect(screen.queryByText('Task 2')).toBeFalsy();
+    });
+
     it('should gracefully handle when task IDs exist in date slice but tasks are missing from task slice', () => {
       // BUG FIX VERIFICATION:
       // Previously, if localStorage had task IDs in the date slice but tasks were
