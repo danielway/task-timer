@@ -1,14 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { TimerButton } from './TimerButton';
-import {
-  renderWithProviders,
-  mockToday,
-} from '../../test-utils/test-utils';
+import { renderWithProviders, mockToday } from '../../test-utils/test-utils';
 import type { RootState } from '../../app/store';
 
 describe('TimerButton', () => {
-  const createPreloadedState = (override: Partial<RootState> = {}): Partial<RootState> => ({
+  const createPreloadedState = (
+    override: Partial<RootState> = {}
+  ): Partial<RootState> => ({
     app: {
       version: '1.0',
       selectedDate: mockToday,
@@ -19,7 +18,7 @@ describe('TimerButton', () => {
     },
     task: {
       nextTaskId: 2,
-      tasks: [{ id: 1, description: 'Test Task' }],
+      tasks: [{ id: 1, description: 'Test Task', type: 'task' }],
     },
     edit: {},
     ...override,
@@ -48,7 +47,7 @@ describe('TimerButton', () => {
 
     await user.click(button!);
 
-    const state = store.getState();
+    const state = store.getState() as RootState;
     expect(state.time.activeTimer).toBeDefined();
     expect(state.time.activeTimer?.taskId).toBe(1);
     expect(state.time.activeTimer?.date).toBe(mockToday);
@@ -112,7 +111,7 @@ describe('TimerButton', () => {
 
     await user.click(button!);
 
-    const state = store.getState();
+    const state = store.getState() as RootState;
     expect(state.time.activeTimer).toBeUndefined();
     expect(state.time.dateTimes[0].taskTimes[0].end).toBeDefined();
   });
@@ -136,8 +135,8 @@ describe('TimerButton', () => {
       task: {
         nextTaskId: 3,
         tasks: [
-          { id: 1, description: 'Test Task 1' },
-          { id: 2, description: 'Test Task 2' },
+          { id: 1, description: 'Test Task 1', type: 'task' },
+          { id: 2, description: 'Test Task 2', type: 'task' },
         ],
       },
     });

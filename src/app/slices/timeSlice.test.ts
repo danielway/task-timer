@@ -715,12 +715,12 @@ describe('timeSlice', () => {
 
   describe('selectActiveTimer', () => {
     it('should return undefined when no timer is active', () => {
-      const state: RootState = {
+      const state = {
         time: {
           dateTimes: [],
           activeTimer: undefined,
         },
-      } as RootState;
+      } as unknown as RootState;
 
       const result = selectActiveTimer(state);
 
