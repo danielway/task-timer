@@ -3,12 +3,14 @@ import timeReducer, {
   createDate,
   startTime,
   stopTime,
+  cancelTimer,
   recordTime,
   removeTime,
   toggleSegment,
   getSegment,
   getTimesForDate,
   getTimesForTask,
+  selectActiveTimer,
   type TimeState,
   type TaskTime,
 } from './timeSlice';
@@ -19,6 +21,7 @@ import type { RootState } from '../store';
 describe('timeSlice', () => {
   const initialState: TimeState = {
     dateTimes: [],
+    activeTimer: undefined,
   };
 
   describe('createDate', () => {
@@ -46,9 +49,10 @@ describe('timeSlice', () => {
   });
 
   describe('startTime', () => {
-    it('should add a time entry without an end time', () => {
+    it('should add a time entry without an end time and set activeTimer', () => {
       const stateWithDate: TimeState = {
         dateTimes: [{ date: mockToday, taskTimes: [] }],
+        activeTimer: undefined,
       };
 
       const action = startTime({ date: mockToday, taskId: 1 });
@@ -60,6 +64,12 @@ describe('timeSlice', () => {
         start: expect.any(Number),
       });
       expect(newState.dateTimes[0].taskTimes[0].end).toBeUndefined();
+      expect(newState.activeTimer).toBeDefined();
+      expect(newState.activeTimer?.taskId).toBe(1);
+      expect(newState.activeTimer?.date).toBe(mockToday);
+      expect(newState.activeTimer?.startTime).toBe(
+        newState.dateTimes[0].taskTimes[0].start
+      );
     });
 
     it('should not add time if date does not exist', () => {
@@ -67,11 +77,36 @@ describe('timeSlice', () => {
       const newState = timeReducer(initialState, action);
 
       expect(newState.dateTimes).toHaveLength(0);
+      expect(newState.activeTimer).toBeUndefined();
+    });
+
+    it('should not start a timer if another timer is already active', () => {
+      const existingStartTime = Date.now() - 5000;
+      const stateWithActiveTimer: TimeState = {
+        dateTimes: [
+          {
+            date: mockToday,
+            taskTimes: [{ task: 1, start: existingStartTime }],
+          },
+        ],
+        activeTimer: {
+          taskId: 1,
+          startTime: existingStartTime,
+          date: mockToday,
+        },
+      };
+
+      const action = startTime({ date: mockToday, taskId: 2 });
+      const newState = timeReducer(stateWithActiveTimer, action);
+
+      // Should not change state
+      expect(newState.dateTimes[0].taskTimes).toHaveLength(1);
+      expect(newState.activeTimer?.taskId).toBe(1);
     });
   });
 
   describe('stopTime', () => {
-    it('should add end time to an existing time entry', () => {
+    it('should add end time to an existing time entry and clear activeTimer', () => {
       const startTimestamp = new Date('2024-01-15T10:00:00').getTime();
       const stateWithStartedTime: TimeState = {
         dateTimes: [
@@ -80,45 +115,136 @@ describe('timeSlice', () => {
             taskTimes: [{ task: 1, start: startTimestamp }],
           },
         ],
+        activeTimer: {
+          taskId: 1,
+          startTime: startTimestamp,
+          date: mockToday,
+        },
       };
 
-      const action = stopTime({
-        date: mockToday,
-        taskId: 1,
-        start: startTimestamp,
-      });
+      const action = stopTime();
       const newState = timeReducer(stateWithStartedTime, action);
 
       expect(newState.dateTimes[0].taskTimes[0].end).toBeDefined();
       expect(newState.dateTimes[0].taskTimes[0].end).toBeGreaterThan(
         startTimestamp
       );
+      expect(newState.activeTimer).toBeUndefined();
     });
 
-    it('should not modify state if date does not exist', () => {
-      const action = stopTime({
-        date: mockToday,
-        taskId: 1,
-        start: Date.now(),
-      });
-      const newState = timeReducer(initialState, action);
-
-      expect(newState.dateTimes).toHaveLength(0);
-    });
-
-    it('should not modify state if task time does not exist', () => {
+    it('should not modify state if no active timer', () => {
       const stateWithDate: TimeState = {
         dateTimes: [{ date: mockToday, taskTimes: [] }],
+        activeTimer: undefined,
       };
 
-      const action = stopTime({
-        date: mockToday,
-        taskId: 1,
-        start: Date.now(),
-      });
+      const action = stopTime();
       const newState = timeReducer(stateWithDate, action);
 
       expect(newState.dateTimes[0].taskTimes).toHaveLength(0);
+      expect(newState.activeTimer).toBeUndefined();
+    });
+
+    it('should not modify state if date does not exist', () => {
+      const startTimestamp = Date.now();
+      const stateWithActiveTimer: TimeState = {
+        dateTimes: [],
+        activeTimer: {
+          taskId: 1,
+          startTime: startTimestamp,
+          date: mockToday,
+        },
+      };
+
+      const action = stopTime();
+      const newState = timeReducer(stateWithActiveTimer, action);
+
+      expect(newState.dateTimes).toHaveLength(0);
+      expect(newState.activeTimer).toBeUndefined();
+    });
+
+    it('should not modify state if task time does not exist', () => {
+      const startTimestamp = Date.now();
+      const stateWithDate: TimeState = {
+        dateTimes: [{ date: mockToday, taskTimes: [] }],
+        activeTimer: {
+          taskId: 1,
+          startTime: startTimestamp,
+          date: mockToday,
+        },
+      };
+
+      const action = stopTime();
+      const newState = timeReducer(stateWithDate, action);
+
+      expect(newState.dateTimes[0].taskTimes).toHaveLength(0);
+      expect(newState.activeTimer).toBeUndefined();
+    });
+  });
+
+  describe('cancelTimer', () => {
+    it('should remove the active timer entry and clear activeTimer', () => {
+      const startTimestamp = Date.now() - 5000;
+      const stateWithActiveTimer: TimeState = {
+        dateTimes: [
+          {
+            date: mockToday,
+            taskTimes: [{ task: 1, start: startTimestamp }],
+          },
+        ],
+        activeTimer: {
+          taskId: 1,
+          startTime: startTimestamp,
+          date: mockToday,
+        },
+      };
+
+      const action = cancelTimer();
+      const newState = timeReducer(stateWithActiveTimer, action);
+
+      expect(newState.dateTimes[0].taskTimes).toHaveLength(0);
+      expect(newState.activeTimer).toBeUndefined();
+    });
+
+    it('should not modify state if no active timer', () => {
+      const stateWithDate: TimeState = {
+        dateTimes: [{ date: mockToday, taskTimes: [] }],
+        activeTimer: undefined,
+      };
+
+      const action = cancelTimer();
+      const newState = timeReducer(stateWithDate, action);
+
+      expect(newState.dateTimes[0].taskTimes).toHaveLength(0);
+      expect(newState.activeTimer).toBeUndefined();
+    });
+
+    it('should not remove other time entries', () => {
+      const startTimestamp1 = Date.now() - 10000;
+      const startTimestamp2 = Date.now() - 5000;
+      const stateWithMultipleTimes: TimeState = {
+        dateTimes: [
+          {
+            date: mockToday,
+            taskTimes: [
+              { task: 1, start: startTimestamp1, end: Date.now() - 6000 },
+              { task: 1, start: startTimestamp2 },
+            ],
+          },
+        ],
+        activeTimer: {
+          taskId: 1,
+          startTime: startTimestamp2,
+          date: mockToday,
+        },
+      };
+
+      const action = cancelTimer();
+      const newState = timeReducer(stateWithMultipleTimes, action);
+
+      expect(newState.dateTimes[0].taskTimes).toHaveLength(1);
+      expect(newState.dateTimes[0].taskTimes[0].start).toBe(startTimestamp1);
+      expect(newState.activeTimer).toBeUndefined();
     });
   });
 
@@ -438,6 +564,7 @@ describe('timeSlice', () => {
     it('should handle date without entry', () => {
       const state: TimeState = {
         dateTimes: [],
+        activeTimer: undefined,
       };
 
       const result = getSegment(state, mockToday, 1, 0);
@@ -471,6 +598,7 @@ describe('timeSlice', () => {
             taskTimes: [{ task: 1, start, end }],
           },
         ],
+        activeTimer: undefined,
       };
 
       const result = getSegment(state, mockToday, 1, 0);
@@ -496,6 +624,7 @@ describe('timeSlice', () => {
 
       const state: TimeState = {
         dateTimes: [{ date: mockToday, taskTimes }],
+        activeTimer: undefined,
       };
 
       const result = getTimesForDate(state, mockToday);
@@ -538,6 +667,7 @@ describe('timeSlice', () => {
       const state: RootState = {
         time: {
           dateTimes: [{ date: mockToday, taskTimes }],
+          activeTimer: undefined,
         },
       } as RootState;
 
@@ -552,6 +682,7 @@ describe('timeSlice', () => {
       const state: RootState = {
         time: {
           dateTimes: [],
+          activeTimer: undefined,
         },
       } as unknown as RootState;
 
@@ -572,12 +703,54 @@ describe('timeSlice', () => {
       const state: RootState = {
         time: {
           dateTimes: [{ date: mockToday, taskTimes }],
+          activeTimer: undefined,
         },
       } as RootState;
 
       const result = getTimesForTask(state, mockToday, 1);
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('selectActiveTimer', () => {
+    it('should return undefined when no timer is active', () => {
+      const state = {
+        time: {
+          dateTimes: [],
+          activeTimer: undefined,
+        },
+      } as unknown as RootState;
+
+      const result = selectActiveTimer(state);
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should return the active timer when one exists', () => {
+      const startTimestamp = Date.now();
+      const state: RootState = {
+        time: {
+          dateTimes: [
+            {
+              date: mockToday,
+              taskTimes: [{ task: 1, start: startTimestamp }],
+            },
+          ],
+          activeTimer: {
+            taskId: 1,
+            startTime: startTimestamp,
+            date: mockToday,
+          },
+        },
+      } as RootState;
+
+      const result = selectActiveTimer(state);
+
+      expect(result).toBeDefined();
+      expect(result?.taskId).toBe(1);
+      expect(result?.startTime).toBe(startTimestamp);
+      expect(result?.date).toBe(mockToday);
     });
   });
 });
