@@ -3,6 +3,8 @@ import { screen } from '@testing-library/react';
 import { renderWithProviders, mockToday } from '../../test-utils/test-utils';
 import { TableBody } from './TableBody';
 import type { RootState } from '../../app/store';
+import { createTask } from '../../app/slices/taskSlice';
+import { addTaskToDate } from '../../app/slices/dateSlice';
 
 describe('TableBody', () => {
   const createDefaultState = (): Partial<RootState> => ({
@@ -60,6 +62,81 @@ describe('TableBody', () => {
         preloadedState: stateWithNoTasks,
       });
       expect(container.querySelector('tbody')).toBeTruthy();
+    });
+
+    it('should display a task after it is added via Redux actions', () => {
+      // REAL-WORLD SCENARIO TEST:
+      // This simulates the exact user workflow - starting with no tasks,
+      // then adding a task through Redux actions (like the UI does),
+      // and verifying the task appears in the rendered table.
+
+      // Start with empty state
+      const initialState: Partial<RootState> = {
+        app: { version: '1.0', selectedDate: mockToday },
+        task: {
+          nextTaskId: 1,
+          tasks: [],
+        },
+        date: { dateTasks: [{ date: mockToday, tasks: [] }] },
+        time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
+        edit: {},
+      };
+
+      const { store, rerender } = renderWithProviders(<TableBody />, {
+        preloadedState: initialState,
+      });
+
+      // Verify no tasks are displayed initially
+      expect(screen.queryByText('New Task')).toBeFalsy();
+
+      // Add a task using Redux actions (simulating what TaskCreationRow does)
+      store.dispatch(
+        createTask({ id: 1, description: 'New Task', type: 'task' })
+      );
+      store.dispatch(addTaskToDate({ date: mockToday, taskId: 1 }));
+
+      // Re-render to reflect the state change
+      rerender(<TableBody />);
+
+      // Verify the task now appears in the table
+      expect(screen.getByText('New Task')).toBeTruthy();
+    });
+
+    it('should display multiple tasks added sequentially', () => {
+      // Test adding multiple tasks one by one (real user scenario)
+      const initialState: Partial<RootState> = {
+        app: { version: '1.0', selectedDate: mockToday },
+        task: {
+          nextTaskId: 1,
+          tasks: [],
+        },
+        date: { dateTasks: [{ date: mockToday, tasks: [] }] },
+        time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
+        edit: {},
+      };
+
+      const { store, rerender } = renderWithProviders(<TableBody />, {
+        preloadedState: initialState,
+      });
+
+      // Add first task
+      store.dispatch(
+        createTask({ id: 1, description: 'First Task', type: 'task' })
+      );
+      store.dispatch(addTaskToDate({ date: mockToday, taskId: 1 }));
+      rerender(<TableBody />);
+      expect(screen.getByText('First Task')).toBeTruthy();
+
+      // Add second task
+      store.dispatch(
+        createTask({ id: 2, description: 'Second Task', type: 'meeting' })
+      );
+      store.dispatch(addTaskToDate({ date: mockToday, taskId: 2 }));
+      rerender(<TableBody />);
+
+      // Both tasks should be visible
+      expect(screen.getByText('First Task')).toBeTruthy();
+      expect(screen.getByText('Second Task')).toBeTruthy();
     });
   });
 
