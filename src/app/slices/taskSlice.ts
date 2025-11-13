@@ -70,7 +70,7 @@ export const taskSlice = createSlice({
 export const { createTask, updateTask, deleteTask } = taskSlice.actions;
 
 export const getTask = (state: TaskState, id: number) =>
-  state.tasks.find((task) => task.id === id)!;
+  state.tasks.find((task) => task.id === id);
 
 export const getNextTaskId = (state: TaskState) => state.nextTaskId;
 
