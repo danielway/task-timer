@@ -15,3 +15,12 @@ Access the application [here](https://danieldway.com/task-timer).
 - Visually-intuitive interface for reviewing tasks and logged-time for the day
 - Navigate between time/tasks across multiple days
 - Application is client-side with all data stored in `localStorage`
+
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
+
+- Setting up the development environment
+- Running pre-commit checks (format, lint, build, test)
+- Installing the automated pre-commit hook
+- Submitting pull requests

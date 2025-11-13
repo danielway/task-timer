@@ -1,0 +1,39 @@
+#!/bin/sh
+# Pre-commit hook to run style, lint, build, and test checks
+
+echo "Running pre-commit checks..."
+
+# Run format check
+echo "1/4 Checking code formatting..."
+npm run format:check
+if [ $? -ne 0 ]; then
+  echo "❌ Format check failed. Run 'npm run format' to fix formatting issues."
+  exit 1
+fi
+
+# Run linter
+echo "2/4 Running linter..."
+npm run lint
+if [ $? -ne 0 ]; then
+  echo "❌ Lint check failed. Run 'npm run lint:fix' to fix linting issues."
+  exit 1
+fi
+
+# Run build
+echo "3/4 Running build..."
+npm run build
+if [ $? -ne 0 ]; then
+  echo "❌ Build failed. Fix build errors before committing."
+  exit 1
+fi
+
+# Run tests
+echo "4/4 Running tests..."
+npm run test -- --run
+if [ $? -ne 0 ]; then
+  echo "❌ Tests failed. Fix failing tests before committing."
+  exit 1
+fi
+
+echo "✅ All pre-commit checks passed!"
+exit 0
