@@ -231,7 +231,9 @@ export const getSegment = (
 };
 
 export const getTimesForDate = (state: TimeState, date: number): TaskTime[] => {
-  const dateEntry = state.dateTimes.find((dateTimes) => dateTimes.date === date);
+  const dateEntry = state.dateTimes.find(
+    (dateTimes) => dateTimes.date === date
+  );
   return dateEntry ? dateEntry.taskTimes : [];
 };
 
