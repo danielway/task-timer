@@ -149,7 +149,9 @@ export const timeSlice = createSlice({
 
       const dateTimes = state.dateTimes.find(
         (dateTimes) => dateTimes.date === action.payload.date
-      )!;
+      );
+
+      if (!dateTimes) return;
 
       const matchingTimes = dateTimes.taskTimes.filter(
         (time) => time.start < end && (!time.end || time.end > start)
@@ -228,8 +230,10 @@ export const getSegment = (
   return selectSegmentTimes(state, date, taskId, segment);
 };
 
-export const getTimesForDate = (state: TimeState, date: number): TaskTime[] =>
-  state.dateTimes.find((dateTimes) => dateTimes.date === date)!.taskTimes;
+export const getTimesForDate = (state: TimeState, date: number): TaskTime[] => {
+  const dateEntry = state.dateTimes.find((dateTimes) => dateTimes.date === date);
+  return dateEntry ? dateEntry.taskTimes : [];
+};
 
 export const selectDateTimes = (state: RootState) => state.time.dateTimes;
 

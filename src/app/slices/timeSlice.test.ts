@@ -358,6 +358,21 @@ describe('timeSlice', () => {
       // Should remove the overlapping entry
       expect(newState.dateTimes[0].taskTimes).toHaveLength(0);
     });
+
+    it('should not modify state if date does not exist', () => {
+      const state: TimeState = {
+        dateTimes: [],
+      };
+
+      const action = toggleSegment({
+        date: mockToday,
+        taskId: 1,
+        segment: 0,
+      });
+      const newState = timeReducer(state, action);
+
+      expect(newState.dateTimes).toHaveLength(0);
+    });
   });
 
   describe('getSegment', () => {
@@ -487,6 +502,16 @@ describe('timeSlice', () => {
 
       expect(result).toHaveLength(2);
       expect(result).toEqual(taskTimes);
+    });
+
+    it('should return empty array if date does not exist', () => {
+      const state: TimeState = {
+        dateTimes: [],
+      };
+
+      const result = getTimesForDate(state, mockToday);
+
+      expect(result).toEqual([]);
     });
   });
 
