@@ -140,16 +140,15 @@ describe('TableBody', () => {
     });
   });
 
-  describe('bug reproduction: missing task data', () => {
-    it('reproduces bug where task IDs exist in date slice but tasks are missing from task slice', () => {
-      // BUG REPRODUCTION:
-      // After merging task types feature, tasks stopped showing in the table.
-      // The issue: localStorage has task IDs in the date slice (state.date.dateTasks)
-      // but the actual task objects are missing from the task slice (state.task.tasks).
+  describe('graceful handling of missing task data', () => {
+    it('should gracefully handle when task IDs exist in date slice but tasks are missing from task slice', () => {
+      // BUG FIX VERIFICATION:
+      // Previously, if localStorage had task IDs in the date slice but tasks were
+      // missing from the task slice, the app would crash with:
+      // "Cannot read properties of undefined (reading 'type')"
       //
-      // Root cause: getTask() in taskSlice.ts uses non-null assertion (!)
-      // which returns undefined instead of throwing, then TaskRow tries to
-      // access properties on undefined (e.g., task.type, task.description).
+      // Fix: getTask() now properly returns undefined, and TaskRow checks for
+      // undefined tasks and renders nothing instead of crashing.
       const stateWithMismatch: Partial<RootState> = {
         app: { version: '1.0', selectedDate: mockToday },
         task: {
@@ -165,26 +164,20 @@ describe('TableBody', () => {
         edit: {},
       };
 
-      // Expected behavior: Should throw an error when trying to render
-      let didThrow = false;
-      let errorMessage = '';
+      // Should render without throwing an error
+      const { container } = renderWithProviders(<TableBody />, {
+        preloadedState: stateWithMismatch,
+      });
 
-      try {
-        renderWithProviders(<TableBody />, {
-          preloadedState: stateWithMismatch,
-        });
-      } catch (error) {
-        didThrow = true;
-        errorMessage = error instanceof Error ? error.message : String(error);
-      }
+      // Verify it rendered successfully (tbody exists)
+      expect(container.querySelector('tbody')).toBeTruthy();
 
-      // Verify the bug is reproduced
-      expect(didThrow).toBe(true);
-      expect(errorMessage).toContain("Cannot read properties of undefined");
-      expect(errorMessage).toContain("'type'");
+      // Missing tasks should not appear in the table
+      expect(screen.queryByText('Task 1')).toBeFalsy();
+      expect(screen.queryByText('Task 2')).toBeFalsy();
     });
 
-    it('reproduces bug with partial data mismatch (some tasks missing)', () => {
+    it('should render existing tasks and skip missing ones (partial mismatch)', () => {
       // Partial mismatch: task ID 1 exists, but task ID 2 is missing
       // This simulates what happens if the task slice and date slice get out of sync
       const stateWithPartialMismatch: Partial<RootState> = {
@@ -202,21 +195,15 @@ describe('TableBody', () => {
         edit: {},
       };
 
-      let didThrow = false;
-      let errorMessage = '';
+      renderWithProviders(<TableBody />, {
+        preloadedState: stateWithPartialMismatch,
+      });
 
-      try {
-        renderWithProviders(<TableBody />, {
-          preloadedState: stateWithPartialMismatch,
-        });
-      } catch (error) {
-        didThrow = true;
-        errorMessage = error instanceof Error ? error.message : String(error);
-      }
+      // Task 1 should render (it exists)
+      expect(screen.getByText('Task 1')).toBeTruthy();
 
-      // Should throw when trying to render the missing task (ID 2)
-      expect(didThrow).toBe(true);
-      expect(errorMessage).toContain("Cannot read properties of undefined");
+      // Task 2 should NOT render (it's missing)
+      expect(screen.queryByText('Task 2')).toBeFalsy();
     });
   });
 });

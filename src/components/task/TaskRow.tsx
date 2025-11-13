@@ -44,9 +44,9 @@ export const TaskRow = (props: TaskRowProps) => {
   const task = useAppSelector((state) => getTask(state.task, props.taskId));
 
   const [description, setDescription] = useState('');
-  const [taskType, setTaskType] = useState(task.type || 'task');
-  useEffect(() => setDescription(task.description), [task.description]);
-  useEffect(() => setTaskType(task.type || 'task'), [task.type]);
+  const [taskType, setTaskType] = useState(task?.type || 'task');
+  useEffect(() => setDescription(task?.description || ''), [task?.description]);
+  useEffect(() => setTaskType(task?.type || 'task'), [task?.type]);
 
   const uiSelection = useAppSelector(getSelection);
   const descriptionSelected =
@@ -58,6 +58,11 @@ export const TaskRow = (props: TaskRowProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => inputRef.current?.focus(), [inputRef, editing]);
 
+  const selectedDate = useAppSelector(getSelectedDate);
+  const times = useAppSelector((state) =>
+    getTimesForTask(state, selectedDate, props.taskId)
+  );
+
   const doUpdateTask = () => {
     dispatch(
       updateTask({ id: props.taskId, description: description, type: taskType })
@@ -65,12 +70,12 @@ export const TaskRow = (props: TaskRowProps) => {
     dispatch(endTaskEdit());
   };
 
-  const currentTaskType = getTaskType(task.type || 'task');
+  // Handle missing task gracefully - if task doesn't exist, don't render anything
+  if (!task) {
+    return null;
+  }
 
-  const selectedDate = useAppSelector(getSelectedDate);
-  const times = useAppSelector((state) =>
-    getTimesForTask(state, selectedDate, props.taskId)
-  );
+  const currentTaskType = getTaskType(task.type || 'task');
 
   const taskRowTime = () => {
     const totalMinutes = times.reduce(
