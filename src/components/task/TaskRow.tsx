@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import './TaskRow.css';
-import { TableRow, Input, Button, TableCell } from '@mui/material';
+import {
+  TableRow,
+  Input,
+  Button,
+  TableCell,
+  Select,
+  MenuItem,
+  Chip,
+} from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { TimeRowCell } from '../time/TimeRow';
 import { TimeSummaryCell } from '../time/TimeSummaryCell';
@@ -20,6 +28,7 @@ import {
   removeTime,
 } from '../../app/slices/timeSlice';
 import { removeTaskFromDate } from '../../app/slices/dateSlice';
+import { DEFAULT_TASK_TYPES, getTaskType } from '../../types/taskTypes';
 
 interface TaskRowProps {
   taskId: number;
@@ -36,7 +45,9 @@ export const TaskRow = (props: TaskRowProps) => {
   const task = useAppSelector((state) => getTask(state.task, props.taskId));
 
   const [description, setDescription] = useState('');
+  const [taskType, setTaskType] = useState(task.type || 'task');
   useEffect(() => setDescription(task.description), [task.description]);
+  useEffect(() => setTaskType(task.type || 'task'), [task.type]);
 
   const uiSelection = useAppSelector(getSelection);
   const descriptionSelected =
@@ -49,9 +60,13 @@ export const TaskRow = (props: TaskRowProps) => {
   useEffect(() => inputRef.current?.focus(), [inputRef, editing]);
 
   const doUpdateTask = () => {
-    dispatch(updateTask({ id: props.taskId, description: description }));
+    dispatch(
+      updateTask({ id: props.taskId, description: description, type: taskType })
+    );
     dispatch(endTaskEdit());
   };
+
+  const currentTaskType = getTaskType(task.type || 'task');
 
   const selectedDate = useAppSelector(getSelectedDate);
   const times = useAppSelector((state) =>
@@ -135,6 +150,8 @@ export const TaskRow = (props: TaskRowProps) => {
         sx={{
           fontWeight: descriptionSelected ? 'bold' : undefined,
           textDecoration: descriptionSelected ? 'underline' : undefined,
+          backgroundColor: currentTaskType.backgroundColor,
+          borderLeft: `4px solid ${currentTaskType.color}`,
         }}
         onClick={() => {
           dispatch(beginTaskEdit({ taskId: props.taskId }));
@@ -143,6 +160,18 @@ export const TaskRow = (props: TaskRowProps) => {
         scope="row"
         className="taskName"
       >
+        <Chip
+          label={currentTaskType.name}
+          size="small"
+          sx={{
+            backgroundColor: currentTaskType.color,
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: '0.7rem',
+            height: '20px',
+            marginRight: '8px',
+          }}
+        />
         {task.description}
       </TableCell>
       <TableCell className="timerButton">
@@ -156,6 +185,18 @@ export const TaskRow = (props: TaskRowProps) => {
     <TableRow>
       <TableCell className="icon" />
       <TableCell component="th" scope="row" className="cell">
+        <Select
+          value={taskType}
+          onChange={(event) => setTaskType(event.target.value)}
+          size="small"
+          style={{ fontSize: 13, marginRight: 10, minWidth: 100 }}
+        >
+          {DEFAULT_TASK_TYPES.map((type) => (
+            <MenuItem key={type.id} value={type.id}>
+              {type.name}
+            </MenuItem>
+          ))}
+        </Select>
         <Input
           inputRef={inputRef}
           style={{ fontSize: 13 }}
@@ -171,6 +212,7 @@ export const TaskRow = (props: TaskRowProps) => {
             } else if (event.key === 'Escape') {
               dispatch(endTaskEdit());
               setDescription(task.description);
+              setTaskType(task.type || 'task');
             }
           }}
         />

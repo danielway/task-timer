@@ -1,16 +1,25 @@
 import { useRef, useState } from 'react';
-import { TableRow, Input, Button, TableCell } from '@mui/material';
+import {
+  TableRow,
+  Input,
+  Button,
+  TableCell,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import { TimeSummaryCell } from '../time/TimeSummaryCell';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { createTask, getNextTaskId } from '../../app/slices/taskSlice';
 import { type TaskTime, getTimesForDate } from '../../app/slices/timeSlice';
 import { getSelectedDate } from '../../app/slices/appSlice';
 import { addTaskToDate } from '../../app/slices/dateSlice';
+import { DEFAULT_TASK_TYPES } from '../../types/taskTypes';
 
 export const TaskCreationRow = () => {
   const dispatch = useAppDispatch();
 
   const [description, setDescription] = useState('');
+  const [taskType, setTaskType] = useState('task');
 
   const selectedDate = useAppSelector(getSelectedDate);
   const timesForDate = useAppSelector((state) =>
@@ -20,9 +29,10 @@ export const TaskCreationRow = () => {
   const nextId = useAppSelector((state) => getNextTaskId(state.task));
 
   const addTask = () => {
-    dispatch(createTask({ id: nextId, description }));
+    dispatch(createTask({ id: nextId, description, type: taskType }));
     dispatch(addTaskToDate({ date: selectedDate, taskId: nextId }));
     setDescription('');
+    setTaskType('task');
   };
 
   const totalMinutes = timesForDate.reduce(
@@ -36,6 +46,18 @@ export const TaskCreationRow = () => {
     <TableRow>
       <TableCell className="icon" />
       <TableCell>
+        <Select
+          value={taskType}
+          onChange={(event) => setTaskType(event.target.value)}
+          size="small"
+          style={{ fontSize: 13, marginRight: 10, minWidth: 100 }}
+        >
+          {DEFAULT_TASK_TYPES.map((type) => (
+            <MenuItem key={type.id} value={type.id}>
+              {type.name}
+            </MenuItem>
+          ))}
+        </Select>
         <Input
           inputRef={inputRef}
           style={{ fontSize: 13 }}
