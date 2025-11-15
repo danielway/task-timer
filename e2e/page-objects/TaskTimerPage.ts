@@ -190,8 +190,9 @@ export class TaskTimerPage {
     const segment = hourIndex * 4 + segmentIndex;
 
     // Use aria-label to find the time increment (1-based indexing in label)
+    // Match only "logged" state, not "not logged" by requiring ", logged" at end
     const timeIncrement = taskRow.getByRole('button', {
-      name: new RegExp(`Time segment ${segment + 1}.*logged`),
+      name: new RegExp(`Time segment ${segment + 1}, logged$`),
     });
 
     await timeIncrement.click();
