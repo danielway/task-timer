@@ -24,6 +24,7 @@ export default defineConfig({
         'src/main.tsx',
         'src/store.ts',
         'vite.config.ts',
+        'playwright.config.ts',
         'eslint.config.js',
       ],
       // Realistic thresholds focused on business logic coverage
