@@ -1,5 +1,8 @@
 import { type Page, type Locator, expect } from '@playwright/test';
 
+// App constants - time range is 7am-6pm
+const START_HOUR = 7;
+
 /**
  * Page Object Model for the Task Timer application
  * Encapsulates all interactions with the UI for end-to-end tests
@@ -141,7 +144,7 @@ export class TaskTimerPage {
   /**
    * Add time to a task by clicking a time increment
    * @param taskDescription - The task to add time to
-   * @param hour - The hour (0-23)
+   * @param hour - The hour in 24-hour format (e.g., 9 for 9am, 14 for 2pm)
    * @param minuteSegment - The 15-minute segment (0, 15, 30, or 45)
    */
   async addTimeIncrement(
@@ -151,21 +154,28 @@ export class TaskTimerPage {
   ) {
     const taskRow = this.getTaskByName(taskDescription);
 
-    // Time increments are in cells within the task row
+    // Calculate segment number based on hour offset from START_HOUR
     // Each hour has 4 segments (15-min each)
-    // We need to find the right cell based on hour and segment
+    const hourIndex = hour - START_HOUR;
     const segmentIndex = minuteSegment / 15;
-    const cellIndex = hour * 4 + segmentIndex;
+    const segment = hourIndex * 4 + segmentIndex;
 
-    const timeIncrement = taskRow.locator('.increment').nth(cellIndex);
+    // Use aria-label to find the time increment (1-based indexing in label)
+    const timeIncrement = taskRow.getByRole('button', {
+      name: new RegExp(`Time segment ${segment + 1}`),
+    });
+
     await timeIncrement.click();
 
     // Verify the increment is now logged
-    await expect(timeIncrement).toHaveClass(/logged/);
+    await expect(timeIncrement).toHaveAttribute('aria-pressed', 'true');
   }
 
   /**
    * Remove time from a task by clicking a logged time increment
+   * @param taskDescription - The task to remove time from
+   * @param hour - The hour in 24-hour format (e.g., 9 for 9am, 14 for 2pm)
+   * @param minuteSegment - The 15-minute segment (0, 15, 30, or 45)
    */
   async removeTimeIncrement(
     taskDescription: string,
@@ -174,14 +184,20 @@ export class TaskTimerPage {
   ) {
     const taskRow = this.getTaskByName(taskDescription);
 
+    // Calculate segment number based on hour offset from START_HOUR
+    const hourIndex = hour - START_HOUR;
     const segmentIndex = minuteSegment / 15;
-    const cellIndex = hour * 4 + segmentIndex;
+    const segment = hourIndex * 4 + segmentIndex;
 
-    const timeIncrement = taskRow.locator('.increment.logged').nth(cellIndex);
+    // Use aria-label to find the time increment (1-based indexing in label)
+    const timeIncrement = taskRow.getByRole('button', {
+      name: new RegExp(`Time segment ${segment + 1}.*logged`),
+    });
+
     await timeIncrement.click();
 
     // Verify the increment is no longer logged
-    await expect(timeIncrement).not.toHaveClass(/logged/);
+    await expect(timeIncrement).toHaveAttribute('aria-pressed', 'false');
   }
 
   /**
