@@ -4,6 +4,10 @@ dist-ssr
 *.local
 coverage
 
+# Playwright
+playwright-report
+test-results
+
 # Logs
 logs
 *.log
