@@ -28,6 +28,7 @@ import {
 } from '../../app/slices/timeSlice';
 import { removeTaskFromDate } from '../../app/slices/dateSlice';
 import { DEFAULT_TASK_TYPES, getTaskType } from '../../types/taskTypes';
+import { MAX_TASK_DESCRIPTION_LENGTH, UI } from '../../app/constants';
 
 interface TaskRowProps {
   taskId: number;
@@ -64,10 +65,46 @@ export const TaskRow = (props: TaskRowProps) => {
   );
 
   const doUpdateTask = () => {
+    const trimmedDescription = description.trim();
+
+    // Validate description is not empty
+    if (!trimmedDescription) {
+      // Don't update if description is empty, just cancel edit
+      dispatch(endTaskEdit());
+      setDescription(task?.description || '');
+      return;
+    }
+
+    // Validate description length
+    if (trimmedDescription.length > MAX_TASK_DESCRIPTION_LENGTH) {
+      console.warn(
+        `Task description too long (max ${MAX_TASK_DESCRIPTION_LENGTH} characters)`
+      );
+      return;
+    }
+
     dispatch(
-      updateTask({ id: props.taskId, description: description, type: taskType })
+      updateTask({
+        id: props.taskId,
+        description: trimmedDescription,
+        type: taskType,
+      })
     );
     dispatch(endTaskEdit());
+  };
+
+  const doDeleteTask = () => {
+    dispatch(removeTaskFromDate({ date: selectedDate, taskId: props.taskId }));
+    dispatch(deleteTask({ id: props.taskId }));
+    times.forEach((time) =>
+      dispatch(
+        removeTime({
+          date: selectedDate,
+          taskId: props.taskId,
+          start: time.start,
+        })
+      )
+    );
   };
 
   // Handle missing task gracefully - if task doesn't exist, don't render anything
@@ -131,23 +168,18 @@ export const TaskRow = (props: TaskRowProps) => {
     >
       <TableCell className="icon">
         <HighlightOffIcon
-          onClick={() => {
-            dispatch(
-              removeTaskFromDate({ date: selectedDate, taskId: props.taskId })
-            );
-            dispatch(deleteTask({ id: props.taskId }));
-            times.forEach((time) =>
-              dispatch(
-                removeTime({
-                  date: selectedDate,
-                  taskId: props.taskId,
-                  start: time.start,
-                })
-              )
-            );
-          }}
+          onClick={doDeleteTask}
           className="taskDelete"
           fontSize="small"
+          role="button"
+          aria-label={`Delete task: ${task.description}`}
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              doDeleteTask();
+            }
+          }}
         />
       </TableCell>
       <TableCell
@@ -171,9 +203,9 @@ export const TaskRow = (props: TaskRowProps) => {
             backgroundColor: currentTaskType.color,
             color: '#fff',
             fontWeight: 'bold',
-            fontSize: '0.7rem',
-            height: '20px',
-            marginRight: '8px',
+            fontSize: UI.CHIP.FONT_SIZE,
+            height: UI.CHIP.HEIGHT,
+            marginRight: UI.CHIP.MARGIN_RIGHT,
           }}
         />
         {task.description}
@@ -190,7 +222,11 @@ export const TaskRow = (props: TaskRowProps) => {
           value={taskType}
           onChange={(event) => setTaskType(event.target.value)}
           size="small"
-          style={{ fontSize: 13, marginRight: 10, minWidth: 100 }}
+          style={{
+            fontSize: UI.SELECT.FONT_SIZE,
+            marginRight: UI.SELECT.MARGIN_RIGHT,
+            minWidth: UI.SELECT.MIN_WIDTH,
+          }}
         >
           {DEFAULT_TASK_TYPES.map((type) => (
             <MenuItem key={type.id} value={type.id}>
@@ -200,7 +236,7 @@ export const TaskRow = (props: TaskRowProps) => {
         </Select>
         <Input
           inputRef={inputRef}
-          style={{ fontSize: 13 }}
+          style={{ fontSize: UI.INPUT.FONT_SIZE }}
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           onKeyDown={(event) => {
@@ -221,7 +257,7 @@ export const TaskRow = (props: TaskRowProps) => {
           color="secondary"
           size="small"
           variant="contained"
-          style={{ marginLeft: 10 }}
+          style={{ marginLeft: UI.BUTTON.MARGIN_LEFT }}
           onClick={doUpdateTask}
         >
           Update Task
