@@ -110,7 +110,10 @@ test.describe('Task Management', () => {
     await expect(taskName).toBeVisible();
 
     // Find and click the delete button
-    const deleteButton = page.getByRole('button', {
+    const taskRow = page
+      .locator('.taskRow')
+      .filter({ hasText: 'Task to delete' });
+    const deleteButton = taskRow.getByRole('button', {
       name: 'Delete task: Task to delete',
     });
     await deleteButton.click();
@@ -137,7 +140,10 @@ test.describe('Task Management', () => {
     await expect(timeIncrement).toHaveClass(/logged/);
 
     // Delete the task
-    const deleteButton = page.getByRole('button', {
+    const taskRow = page
+      .locator('.taskRow')
+      .filter({ hasText: 'Task with time to delete' });
+    const deleteButton = taskRow.getByRole('button', {
       name: 'Delete task: Task with time to delete',
     });
     await deleteButton.click();
