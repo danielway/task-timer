@@ -44,7 +44,7 @@ export default defineConfig({
   // Run your local dev server before starting the tests
   webServer: {
     command: 'npm run build && npm run preview',
-    url: 'http://localhost:4173',
+    url: 'http://localhost:4173/task-timer/',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },
