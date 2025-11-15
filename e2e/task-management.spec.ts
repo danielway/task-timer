@@ -110,11 +110,9 @@ test.describe('Task Management', () => {
     await expect(taskName).toBeVisible();
 
     // Find and click the delete button
-    const deleteButton = page
-      .locator('.taskDelete')
-      .filter({
-        has: page.locator('[aria-label*="Delete task: Task to delete"]'),
-      });
+    const deleteButton = page.locator('.taskDelete').filter({
+      has: page.locator('[aria-label*="Delete task: Task to delete"]'),
+    });
     await deleteButton.click();
 
     // Verify task is removed
