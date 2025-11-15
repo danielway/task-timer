@@ -31,6 +31,11 @@ Before committing changes, the following checks **must** pass:
    - Runs all unit and integration tests
    - All tests must pass before committing
 
+5. **E2E Tests** - `npm run test:e2e` (optional for local development)
+   - Runs end-to-end tests using Playwright
+   - Tests the full user experience in a real browser
+   - Automatically run in CI, but can be run locally before major changes
+
 ## Automated Pre-Commit Hook
 
 To automatically run these checks before every commit, install the pre-commit hook:
@@ -70,3 +75,55 @@ To avoid CI failures, make sure all pre-commit checks pass before pushing your c
 - Follow ESLint rules (enforced by `npm run lint`)
 - Write tests for new features
 - Keep code modular and maintainable
+
+## End-to-End Testing
+
+The project uses Playwright for end-to-end testing to ensure the full user experience works correctly.
+
+### Running E2E Tests
+
+```bash
+# Run all E2E tests (headless)
+npm run test:e2e
+
+# Run E2E tests with UI mode (recommended for development)
+npm run test:e2e:ui
+
+# Run E2E tests in headed mode (see the browser)
+npm run test:e2e:headed
+
+# Debug E2E tests
+npm run test:e2e:debug
+
+# View test report
+npm run test:e2e:report
+```
+
+### Writing E2E Tests
+
+E2E tests are located in the `e2e/tests/` directory and follow these conventions:
+
+- Use the `TaskTimerPage` page object model from `e2e/page-objects/TaskTimerPage.ts`
+- Tests are organized by feature: task management, time tracking, date navigation, and persistence
+- Use the test fixtures from `e2e/fixtures/test-fixtures.ts` for automatic setup/teardown
+- Helper utilities are available in `e2e/utils/test-helpers.ts`
+
+Example test:
+
+```typescript
+import { test, expect } from '../fixtures/test-fixtures';
+
+test('should create a new task', async ({ taskTimerPage }) => {
+  await taskTimerPage.createTask('My new task');
+  await taskTimerPage.expectTaskToExist('My new task');
+});
+```
+
+### E2E Test Coverage
+
+The E2E tests cover:
+
+- Task management (create, edit, delete)
+- Time tracking (add/remove time increments)
+- Date navigation (switching between dates)
+- Data persistence (localStorage and page reloads)
