@@ -39,11 +39,19 @@ export const TaskCreationRow = () => {
 
     // Validate description length
     if (trimmedDescription.length > MAX_TASK_DESCRIPTION_LENGTH) {
-      console.warn(`Task description too long (max ${MAX_TASK_DESCRIPTION_LENGTH} characters)`);
+      console.warn(
+        `Task description too long (max ${MAX_TASK_DESCRIPTION_LENGTH} characters)`
+      );
       return;
     }
 
-    dispatch(createTask({ id: nextId, description: trimmedDescription, type: taskType }));
+    dispatch(
+      createTask({
+        id: nextId,
+        description: trimmedDescription,
+        type: taskType,
+      })
+    );
     dispatch(addTaskToDate({ date: selectedDate, taskId: nextId }));
     setDescription('');
     setTaskType('task');
@@ -67,7 +75,7 @@ export const TaskCreationRow = () => {
           style={{
             fontSize: UI.SELECT.FONT_SIZE,
             marginRight: UI.SELECT.MARGIN_RIGHT,
-            minWidth: UI.SELECT.MIN_WIDTH
+            minWidth: UI.SELECT.MIN_WIDTH,
           }}
         >
           {DEFAULT_TASK_TYPES.map((type) => (
