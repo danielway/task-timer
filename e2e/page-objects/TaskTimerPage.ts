@@ -154,21 +154,18 @@ export class TaskTimerPage {
   ) {
     const taskRow = this.getTaskByName(taskDescription);
 
-    // Calculate segment number based on hour offset from START_HOUR
+    // Calculate segment number based on hour offset from START_HOUR (7am)
     // Each hour has 4 segments (15-min each)
     const hourIndex = hour - START_HOUR;
     const segmentIndex = minuteSegment / 15;
     const segment = hourIndex * 4 + segmentIndex;
 
-    // Find all increment buttons in this task row, then get the specific one by index
-    const timeIncrement = taskRow
-      .locator('[role="button"][aria-label*="Time segment"]')
-      .nth(segment);
-
+    // Use simple class selector with corrected index
+    const timeIncrement = taskRow.locator('.increment').nth(segment);
     await timeIncrement.click();
 
     // Verify the increment is now logged
-    await expect(timeIncrement).toHaveAttribute('aria-pressed', 'true');
+    await expect(timeIncrement).toHaveClass(/logged/);
   }
 
   /**
@@ -184,20 +181,17 @@ export class TaskTimerPage {
   ) {
     const taskRow = this.getTaskByName(taskDescription);
 
-    // Calculate segment number based on hour offset from START_HOUR
+    // Calculate segment number based on hour offset from START_HOUR (7am)
     const hourIndex = hour - START_HOUR;
     const segmentIndex = minuteSegment / 15;
     const segment = hourIndex * 4 + segmentIndex;
 
-    // Find the specific increment button by index
-    const timeIncrement = taskRow
-      .locator('[role="button"][aria-label*="Time segment"]')
-      .nth(segment);
-
+    // Use simple class selector with corrected index
+    const timeIncrement = taskRow.locator('.increment').nth(segment);
     await timeIncrement.click();
 
     // Verify the increment is no longer logged
-    await expect(timeIncrement).toHaveAttribute('aria-pressed', 'false');
+    await expect(timeIncrement).not.toHaveClass(/logged/);
   }
 
   /**
