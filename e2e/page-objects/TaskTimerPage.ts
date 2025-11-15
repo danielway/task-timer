@@ -23,9 +23,7 @@ export class TaskTimerPage {
    * Navigate to the application
    */
   async goto() {
-    // Use /task-timer/ in CI (GitHub Pages), / for local E2E tests
-    const basePath = process.env.CI ? '/task-timer/' : '/';
-    await this.page.goto(basePath);
+    await this.page.goto('/task-timer/');
     await expect(this.appTitle).toBeVisible();
   }
 

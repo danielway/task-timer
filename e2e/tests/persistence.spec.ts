@@ -152,8 +152,7 @@ test.describe('Data Persistence', () => {
     const taskDescription = 'Pre-populated task';
 
     // Clear and set localStorage before navigating
-    const basePath = process.env.CI ? '/task-timer/' : '/';
-    await page.goto(basePath);
+    await page.goto('/task-timer/');
     await taskTimerPage.setLocalStorageData({
       tasks: JSON.stringify({
         nextTaskId: taskId + 1,

@@ -21,18 +21,7 @@ e2e/
 
 ## Running Tests
 
-### Local Development
-
-For local development, update the `goto()` method in `e2e/page-objects/TaskTimerPage.ts` to use `/` instead of `/task-timer/`:
-
-```typescript
-async goto() {
-  await this.page.goto('/');  // Change from '/task-timer/' for local dev
-  await expect(this.appTitle).toBeVisible();
-}
-```
-
-This is because the local preview server serves the app at the root path, while the GitHub Pages deployment uses `/task-timer/`.
+All E2E tests use the `/task-timer/` base path to match the production GitHub Pages deployment. This ensures tests accurately reflect the production environment.
 
 ```bash
 # Run all E2E tests (headless)
@@ -51,9 +40,7 @@ npm run test:e2e:debug
 npm run test:e2e:report
 ```
 
-### CI/CD
-
-The tests are configured to run in CI with the `/task-timer/` path, which matches the GitHub Pages deployment.
+Tests run identically in both local and CI environments, building and serving the app with the production configuration.
 
 ## Test Organization
 
