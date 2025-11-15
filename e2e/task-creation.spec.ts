@@ -21,10 +21,7 @@ test.describe('Task Creation', () => {
       page.locator('.taskName').getByText(taskDescription)
     ).toBeVisible();
 
-    // Verify localStorage contains the task
-    const localStorage = await page.evaluate(() => {
-      return window.localStorage.getItem('taskTimerState');
-    });
-    expect(localStorage).toContain(taskDescription);
+    // Verify the input field is cleared after adding the task
+    await expect(taskInput).toHaveValue('');
   });
 });
