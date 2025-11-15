@@ -113,9 +113,9 @@ test.describe('Multi-Task Workflows', () => {
     await expect(taskRows).toHaveCount(3);
 
     // Delete the middle task (Task B)
-    const deleteButton = page
-      .locator('.taskDelete')
-      .filter({ has: page.locator('[aria-label*="Delete task: Task B"]') });
+    const deleteButton = page.getByRole('button', {
+      name: 'Delete task: Task B',
+    });
     await deleteButton.click();
 
     // Verify only two tasks remain
@@ -212,9 +212,9 @@ test.describe('Multi-Task Workflows', () => {
     await expect(taskRows.nth(1)).toContainText('00:30');
 
     // Delete second task
-    const deleteButton = page
-      .locator('.taskDelete')
-      .filter({ has: page.locator('[aria-label*="Delete task: Task 2"]') });
+    const deleteButton = page.getByRole('button', {
+      name: 'Delete task: Task 2',
+    });
     await deleteButton.click();
 
     // Verify final state
