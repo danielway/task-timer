@@ -19,6 +19,7 @@ export const test = base.extend<TaskTimerFixtures>({
     await taskTimerPage.reload();
 
     // Provide the page object to the test
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(taskTimerPage);
   },
 });

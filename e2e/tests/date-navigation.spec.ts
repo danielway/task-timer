@@ -20,7 +20,9 @@ test.describe('Date Navigation', () => {
     expect(newDate).not.toBe(initialDate);
   });
 
-  test('should navigate back and forth between dates', async ({ taskTimerPage }) => {
+  test('should navigate back and forth between dates', async ({
+    taskTimerPage,
+  }) => {
     const initialDate = await taskTimerPage.getSelectedDateText();
 
     // Go to next day
@@ -34,7 +36,9 @@ test.describe('Date Navigation', () => {
     expect(backToInitial).toBe(initialDate);
   });
 
-  test('should show tasks only for selected date', async ({ taskTimerPage }) => {
+  test('should show tasks only for selected date', async ({
+    taskTimerPage,
+  }) => {
     const todayTask = generateTaskName('Today task');
     const tomorrowTask = generateTaskName('Tomorrow task');
 
@@ -60,7 +64,9 @@ test.describe('Date Navigation', () => {
     await taskTimerPage.expectTaskNotToExist(tomorrowTask);
   });
 
-  test('should preserve time data when navigating between dates', async ({ taskTimerPage }) => {
+  test('should preserve time data when navigating between dates', async ({
+    taskTimerPage,
+  }) => {
     const todayTask = generateTaskName('Today task');
 
     // Create task and add time
@@ -81,7 +87,9 @@ test.describe('Date Navigation', () => {
     expect(totalTime.minutes).toBe(30);
   });
 
-  test('should maintain separate time entries for different dates', async ({ taskTimerPage }) => {
+  test('should maintain separate time entries for different dates', async ({
+    taskTimerPage,
+  }) => {
     const taskName = generateTaskName('Multi-day task');
 
     // Create task today and add time
@@ -110,7 +118,9 @@ test.describe('Date Navigation', () => {
     expect(totalTime.minutes).toBe(15);
   });
 
-  test('should handle empty state when navigating to new date', async ({ taskTimerPage }) => {
+  test('should handle empty state when navigating to new date', async ({
+    taskTimerPage,
+  }) => {
     const taskName = generateTaskName('Only today');
 
     await taskTimerPage.createTask(taskName);
@@ -130,7 +140,9 @@ test.describe('Date Navigation', () => {
     await taskTimerPage.expectTaskToExist(futureTask);
   });
 
-  test('should navigate multiple days in sequence', async ({ taskTimerPage }) => {
+  test('should navigate multiple days in sequence', async ({
+    taskTimerPage,
+  }) => {
     const dates: string[] = [];
 
     // Capture initial date

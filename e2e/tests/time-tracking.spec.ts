@@ -2,7 +2,9 @@ import { test, expect } from '../fixtures/test-fixtures';
 import { generateTaskName } from '../utils/test-helpers';
 
 test.describe('Time Tracking', () => {
-  test('should add a single 15-minute time increment', async ({ taskTimerPage }) => {
+  test('should add a single 15-minute time increment', async ({
+    taskTimerPage,
+  }) => {
     const taskName = generateTaskName('Task with time');
 
     await taskTimerPage.createTask(taskName);
@@ -13,7 +15,9 @@ test.describe('Time Tracking', () => {
     expect(totalTime.minutes).toBe(15);
   });
 
-  test('should add multiple time increments to same task', async ({ taskTimerPage }) => {
+  test('should add multiple time increments to same task', async ({
+    taskTimerPage,
+  }) => {
     const taskName = generateTaskName('Multi-time task');
 
     await taskTimerPage.createTask(taskName);
@@ -29,7 +33,9 @@ test.describe('Time Tracking', () => {
     expect(totalTime.minutes).toBe(0);
   });
 
-  test('should add time increments across different hours', async ({ taskTimerPage }) => {
+  test('should add time increments across different hours', async ({
+    taskTimerPage,
+  }) => {
     const taskName = generateTaskName('Cross-hour task');
 
     await taskTimerPage.createTask(taskName);
@@ -81,7 +87,9 @@ test.describe('Time Tracking', () => {
     await expect(increment).not.toHaveClass(/logged/);
   });
 
-  test('should track time for multiple tasks independently', async ({ taskTimerPage }) => {
+  test('should track time for multiple tasks independently', async ({
+    taskTimerPage,
+  }) => {
     const task1 = generateTaskName('Task 1');
     const task2 = generateTaskName('Task 2');
 
@@ -104,7 +112,9 @@ test.describe('Time Tracking', () => {
     expect(time2.minutes).toBe(45);
   });
 
-  test('should display correct total when adding significant time', async ({ taskTimerPage }) => {
+  test('should display correct total when adding significant time', async ({
+    taskTimerPage,
+  }) => {
     const taskName = generateTaskName('Long task');
 
     await taskTimerPage.createTask(taskName);
@@ -128,7 +138,9 @@ test.describe('Time Tracking', () => {
     expect(totalTime.minutes).toBe(45);
   });
 
-  test('should maintain time when task is edited', async ({ taskTimerPage }) => {
+  test('should maintain time when task is edited', async ({
+    taskTimerPage,
+  }) => {
     const originalName = generateTaskName('Original');
     const newName = generateTaskName('Renamed');
 
@@ -146,7 +158,9 @@ test.describe('Time Tracking', () => {
     expect(totalTime.minutes).toBe(30);
   });
 
-  test('should show time increment as logged visually', async ({ taskTimerPage }) => {
+  test('should show time increment as logged visually', async ({
+    taskTimerPage,
+  }) => {
     const taskName = generateTaskName('Visual test');
 
     await taskTimerPage.createTask(taskName);

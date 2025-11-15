@@ -34,7 +34,9 @@ export class TaskTimerPage {
     // Select task type if not default
     if (type !== 'task') {
       await this.taskTypeSelect.click();
-      await this.page.getByRole('option', { name: new RegExp(type, 'i') }).click();
+      await this.page
+        .getByRole('option', { name: new RegExp(type, 'i') })
+        .click();
     }
 
     // Enter task description
@@ -60,7 +62,9 @@ export class TaskTimerPage {
    * Get a task row by its description
    */
   getTaskByName(description: string): Locator {
-    return this.page.locator('.taskRow, [class*="taskRow"]').filter({ hasText: description });
+    return this.page
+      .locator('.taskRow, [class*="taskRow"]')
+      .filter({ hasText: description });
   }
 
   /**
@@ -140,7 +144,11 @@ export class TaskTimerPage {
    * @param hour - The hour (0-23)
    * @param minuteSegment - The 15-minute segment (0, 15, 30, or 45)
    */
-  async addTimeIncrement(taskDescription: string, hour: number, minuteSegment: 0 | 15 | 30 | 45) {
+  async addTimeIncrement(
+    taskDescription: string,
+    hour: number,
+    minuteSegment: 0 | 15 | 30 | 45
+  ) {
     const taskRow = this.getTaskByName(taskDescription);
 
     // Time increments are in cells within the task row
@@ -159,7 +167,11 @@ export class TaskTimerPage {
   /**
    * Remove time from a task by clicking a logged time increment
    */
-  async removeTimeIncrement(taskDescription: string, hour: number, minuteSegment: 0 | 15 | 30 | 45) {
+  async removeTimeIncrement(
+    taskDescription: string,
+    hour: number,
+    minuteSegment: 0 | 15 | 30 | 45
+  ) {
     const taskRow = this.getTaskByName(taskDescription);
 
     const segmentIndex = minuteSegment / 15;
@@ -175,11 +187,15 @@ export class TaskTimerPage {
   /**
    * Get the total time displayed for a task
    */
-  async getTaskTotalTime(taskDescription: string): Promise<{ hours: number; minutes: number }> {
+  async getTaskTotalTime(
+    taskDescription: string
+  ): Promise<{ hours: number; minutes: number }> {
     const taskRow = this.getTaskByName(taskDescription);
 
     // The time summary is typically in the last cell
-    const timeSummary = taskRow.locator('[class*="timeSummary"], .timeSummary').last();
+    const timeSummary = taskRow
+      .locator('[class*="timeSummary"], .timeSummary')
+      .last();
     const text = await timeSummary.textContent();
 
     if (!text) {
@@ -265,7 +281,9 @@ export class TaskTimerPage {
   async goToPreviousDay() {
     // The previous day button shows the date of the previous day
     // We'll click the first date button in the header
-    const dateButtons = this.page.getByRole('button').filter({ hasText: /^\w+ \d+$/ });
+    const dateButtons = this.page
+      .getByRole('button')
+      .filter({ hasText: /^\w+ \d+$/ });
     await dateButtons.first().click();
   }
 
@@ -275,7 +293,9 @@ export class TaskTimerPage {
   async goToNextDay() {
     // The next day button shows the date of the next day
     // We'll click the last date button (but not the calendar popover)
-    const dateButtons = this.page.getByRole('button').filter({ hasText: /^\w+ \d+$/ });
+    const dateButtons = this.page
+      .getByRole('button')
+      .filter({ hasText: /^\w+ \d+$/ });
     await dateButtons.last().click();
   }
 
@@ -284,7 +304,9 @@ export class TaskTimerPage {
    */
   async getSelectedDateText(): Promise<string> {
     // The selected date is shown in the middle date button/popover trigger
-    const dateButtons = this.page.getByRole('button').filter({ hasText: /^\w+ \d+$/ });
+    const dateButtons = this.page
+      .getByRole('button')
+      .filter({ hasText: /^\w+ \d+$/ });
     const count = await dateButtons.count();
     if (count >= 2) {
       // Get the middle button (the current date between prev and next)

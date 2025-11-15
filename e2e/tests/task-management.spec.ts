@@ -2,7 +2,9 @@ import { test, expect } from '../fixtures/test-fixtures';
 import { generateTaskName } from '../utils/test-helpers';
 
 test.describe('Task Management', () => {
-  test('should create a new task with default type', async ({ taskTimerPage }) => {
+  test('should create a new task with default type', async ({
+    taskTimerPage,
+  }) => {
     const taskName = generateTaskName('Buy groceries');
 
     await taskTimerPage.createTask(taskName);

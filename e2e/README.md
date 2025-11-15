@@ -58,28 +58,36 @@ The tests are configured to run in CI with the `/task-timer/` path, which matche
 ## Test Organization
 
 ### Task Management Tests (`task-management.spec.ts`)
+
 Tests for creating, editing, and deleting tasks:
+
 - Creating tasks with different types
 - Editing task descriptions
 - Deleting tasks
 - Keyboard shortcuts (Enter, Escape)
 
 ### Time Tracking Tests (`time-tracking.spec.ts`)
+
 Tests for adding and removing time increments:
+
 - Adding single and multiple time increments
 - Removing time increments
 - Time calculation across different hours
 - Time persistence after task edits
 
 ### Date Navigation Tests (`date-navigation.spec.ts`)
+
 Tests for navigating between different dates:
+
 - Moving to previous/next day
 - Task isolation by date
 - Time data separation by date
 - Multi-day workflows
 
 ### Persistence Tests (`persistence.spec.ts`)
+
 Tests for data persistence using localStorage:
+
 - Task persistence after reload
 - Time entry persistence
 - Edit and deletion persistence
@@ -115,6 +123,7 @@ await taskTimerPage.expectTaskNotToExist('Deleted task');
 ## Test Fixtures
 
 Tests use the `test` fixture from `fixtures/test-fixtures.ts` which:
+
 - Automatically navigates to the application
 - Clears localStorage before each test
 - Provides a `TaskTimerPage` instance
@@ -122,6 +131,7 @@ Tests use the `test` fixture from `fixtures/test-fixtures.ts` which:
 ## Helper Utilities
 
 `utils/test-helpers.ts` provides utility functions:
+
 - `generateTaskName()` - Generate unique task names
 - `getTodayTimestamp()` - Get today's date as timestamp
 - `createTimeTimestamp()` - Create timestamps for specific times
@@ -132,11 +142,13 @@ Tests use the `test` fixture from `fixtures/test-fixtures.ts` which:
 When writing new E2E tests:
 
 1. Import the test fixture:
+
    ```typescript
    import { test, expect } from '../fixtures/test-fixtures';
    ```
 
 2. Use the page object model:
+
    ```typescript
    test('my test', async ({ taskTimerPage }) => {
      // Use taskTimerPage methods
@@ -144,6 +156,7 @@ When writing new E2E tests:
    ```
 
 3. Generate unique test data:
+
    ```typescript
    import { generateTaskName } from '../utils/test-helpers';
    const taskName = generateTaskName('My task');
@@ -154,6 +167,7 @@ When writing new E2E tests:
 ## CI/CD Integration
 
 E2E tests run automatically in GitHub Actions on every push and pull request. The CI workflow:
+
 - Installs Playwright and Chromium
 - Builds the application
 - Runs all E2E tests

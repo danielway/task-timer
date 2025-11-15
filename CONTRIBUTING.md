@@ -28,6 +28,7 @@ Before committing changes, the following checks **must** pass:
    - Catches TypeScript errors and build issues
 
 4. **Tests** - `npm run test -- --run`
+
    - Runs all unit and integration tests
    - All tests must pass before committing
 

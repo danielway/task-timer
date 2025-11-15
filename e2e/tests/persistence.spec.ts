@@ -1,5 +1,9 @@
 import { test, expect } from '../fixtures/test-fixtures';
-import { generateTaskName, getTodayTimestamp, createTimeTimestamp } from '../utils/test-helpers';
+import {
+  generateTaskName,
+  getTodayTimestamp,
+  createTimeTimestamp,
+} from '../utils/test-helpers';
 
 test.describe('Data Persistence', () => {
   test('should persist tasks after page reload', async ({ taskTimerPage }) => {
@@ -18,7 +22,9 @@ test.describe('Data Persistence', () => {
     await taskTimerPage.expectTaskToExist(task2);
   });
 
-  test('should persist time entries after page reload', async ({ taskTimerPage }) => {
+  test('should persist time entries after page reload', async ({
+    taskTimerPage,
+  }) => {
     const taskName = generateTaskName('Timed task');
 
     // Create task and add time
@@ -39,7 +45,9 @@ test.describe('Data Persistence', () => {
     expect(totalTime.minutes).toBe(45);
   });
 
-  test('should persist task edits after page reload', async ({ taskTimerPage }) => {
+  test('should persist task edits after page reload', async ({
+    taskTimerPage,
+  }) => {
     const originalName = generateTaskName('Original');
     const updatedName = generateTaskName('Updated');
 
@@ -55,7 +63,9 @@ test.describe('Data Persistence', () => {
     await taskTimerPage.expectTaskNotToExist(originalName);
   });
 
-  test('should persist task deletion after page reload', async ({ taskTimerPage }) => {
+  test('should persist task deletion after page reload', async ({
+    taskTimerPage,
+  }) => {
     const task1 = generateTaskName('Keep this');
     const task2 = generateTaskName('Delete this');
 
@@ -74,7 +84,9 @@ test.describe('Data Persistence', () => {
     await taskTimerPage.expectTaskNotToExist(task2);
   });
 
-  test('should persist data across different dates', async ({ taskTimerPage }) => {
+  test('should persist data across different dates', async ({
+    taskTimerPage,
+  }) => {
     const todayTask = generateTaskName('Today');
     const tomorrowTask = generateTaskName('Tomorrow');
 
@@ -104,7 +116,9 @@ test.describe('Data Persistence', () => {
     expect(totalTime.minutes).toBe(15);
   });
 
-  test('should handle localStorage data correctly', async ({ taskTimerPage }) => {
+  test('should handle localStorage data correctly', async ({
+    taskTimerPage,
+  }) => {
     const taskName = generateTaskName('Storage test');
 
     // Create task
@@ -129,7 +143,10 @@ test.describe('Data Persistence', () => {
     expect(ourTask).toBeDefined();
   });
 
-  test('should restore from pre-populated localStorage', async ({ taskTimerPage, page }) => {
+  test('should restore from pre-populated localStorage', async ({
+    taskTimerPage,
+    page,
+  }) => {
     const today = getTodayTimestamp();
     const taskId = 999;
     const taskDescription = 'Pre-populated task';
@@ -171,7 +188,9 @@ test.describe('Data Persistence', () => {
     expect(totalTime.minutes).toBe(30);
   });
 
-  test('should persist complex multi-day workflow', async ({ taskTimerPage }) => {
+  test('should persist complex multi-day workflow', async ({
+    taskTimerPage,
+  }) => {
     const task1 = generateTaskName('Project A');
     const task2 = generateTaskName('Project B');
 
@@ -210,7 +229,9 @@ test.describe('Data Persistence', () => {
     expect(totalTime.minutes).toBe(15);
   });
 
-  test('should handle empty localStorage gracefully', async ({ taskTimerPage }) => {
+  test('should handle empty localStorage gracefully', async ({
+    taskTimerPage,
+  }) => {
     // Clear localStorage
     await taskTimerPage.clearLocalStorage();
     await taskTimerPage.reload();
@@ -225,7 +246,9 @@ test.describe('Data Persistence', () => {
     await taskTimerPage.expectTaskToExist(newTask);
   });
 
-  test('should maintain data integrity after multiple operations', async ({ taskTimerPage }) => {
+  test('should maintain data integrity after multiple operations', async ({
+    taskTimerPage,
+  }) => {
     const tasks = [
       generateTaskName('Task A'),
       generateTaskName('Task B'),

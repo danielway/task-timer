@@ -18,7 +18,10 @@ export function generateTaskName(prefix = 'Test Task'): string {
 export function createMockLocalStorageData(config: {
   tasks?: Array<{ id: number; description: string; type: string }>;
   dateTasks?: Array<{ date: number; tasks: number[] }>;
-  times?: Array<{ date: number; taskTimes: Array<{ task: number; start: number; end: number }> }>;
+  times?: Array<{
+    date: number;
+    taskTimes: Array<{ task: number; start: number; end: number }>;
+  }>;
 }) {
   const data: Record<string, string> = {};
 
@@ -76,7 +79,11 @@ export function getDateTimestamp(daysOffset: number): number {
 /**
  * Create a timestamp for a specific time on a given date
  */
-export function createTimeTimestamp(baseDate: number, hour: number, minute: number): number {
+export function createTimeTimestamp(
+  baseDate: number,
+  hour: number,
+  minute: number
+): number {
   const date = new Date(baseDate);
   date.setHours(hour, minute, 0, 0);
   return date.getTime();
