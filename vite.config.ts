@@ -17,6 +17,7 @@ export default defineConfig({
       exclude: [
         'node_modules/',
         'dist/',
+        'e2e/',
         'src/test-utils/',
         '**/*.test.{ts,tsx}',
         '**/*.spec.{ts,tsx}',
@@ -25,6 +26,7 @@ export default defineConfig({
         'src/store.ts',
         'vite.config.ts',
         'eslint.config.js',
+        'playwright.config.ts',
       ],
       // Realistic thresholds focused on business logic coverage
       // Currently at: 100% on business logic (slices, keyboard)
