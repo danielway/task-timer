@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/task-timer/',
+  base: process.env.E2E_TEST ? '/' : '/task-timer/',
   plugins: [react()],
   test: {
     environment: 'jsdom',
