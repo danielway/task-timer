@@ -12,7 +12,8 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "preview": "vite preview",
     "test": "vitest",
-    "stamp-version": "replace-in-file --is-regex true /REPLACE_WITH_RELEASE/g $VERSION src/components/layout/Footer.tsx && replace-in-file --is-regex true /REPLACE_WITH_RELEASE/g $VERSION src/app/slice.ts"
+    "stamp-version": "replace-in-file --is-regex true /REPLACE_WITH_RELEASE/g $VERSION src/components/layout/Footer.tsx && replace-in-file --is-regex true /REPLACE_WITH_RELEASE/g $VERSION src/app/slice.ts",
+    "prepare": "husky"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -41,6 +42,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.2.0",
+    "husky": "^9.1.7",
     "jsdom": "^26.1.0",
     "prettier": "^3.5.3",
     "replace-in-file": "^8.3.0",
