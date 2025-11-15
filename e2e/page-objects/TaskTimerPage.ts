@@ -160,10 +160,10 @@ export class TaskTimerPage {
     const segmentIndex = minuteSegment / 15;
     const segment = hourIndex * 4 + segmentIndex;
 
-    // Use aria-label to find the time increment (1-based indexing in label)
-    const timeIncrement = taskRow.getByRole('button', {
-      name: new RegExp(`Time segment ${segment + 1}`),
-    });
+    // Find all increment buttons in this task row, then get the specific one by index
+    const timeIncrement = taskRow
+      .locator('[role="button"][aria-label*="Time segment"]')
+      .nth(segment);
 
     await timeIncrement.click();
 
@@ -189,11 +189,10 @@ export class TaskTimerPage {
     const segmentIndex = minuteSegment / 15;
     const segment = hourIndex * 4 + segmentIndex;
 
-    // Use aria-label to find the time increment (1-based indexing in label)
-    // Match only "logged" state, not "not logged" by requiring ", logged" at end
-    const timeIncrement = taskRow.getByRole('button', {
-      name: new RegExp(`Time segment ${segment + 1}, logged$`),
-    });
+    // Find the specific increment button by index
+    const timeIncrement = taskRow
+      .locator('[role="button"][aria-label*="Time segment"]')
+      .nth(segment);
 
     await timeIncrement.click();
 
