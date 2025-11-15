@@ -46,7 +46,9 @@ export default defineConfig({
     command: process.env.CI
       ? 'npm run build && npm run preview'
       : 'npm run build && npm run preview',
-    url: process.env.CI ? 'http://localhost:4173/task-timer/' : 'http://localhost:4173/',
+    url: process.env.CI
+      ? 'http://localhost:4173/task-timer/'
+      : 'http://localhost:4173/',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
     env: {
