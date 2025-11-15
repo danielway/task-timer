@@ -1,0 +1,24 @@
+echo "Running pre-commit checks..."
+
+# Check formatting with Prettier
+echo "Checking code formatting..."
+npm run format:check || {
+  echo "❌ Formatting check failed! Run 'npm run format' to fix."
+  exit 1
+}
+
+# Run ESLint
+echo "Running linter..."
+npm run lint || {
+  echo "❌ Linting failed! Run 'npm run lint:fix' to fix auto-fixable issues."
+  exit 1
+}
+
+# Run tests
+echo "Running tests..."
+npm test -- --run || {
+  echo "❌ Tests failed!"
+  exit 1
+}
+
+echo "✅ All pre-commit checks passed!"
