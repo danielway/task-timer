@@ -1,29 +1,28 @@
-import { AppBar, Box, Toolbar, Typography, styled } from '@mui/material';
+import { AppBar, Toolbar, Typography } from '@mui/material';
 import { DatePicker } from './DatePicker';
 
 export const Header = () => {
   return (
     <AppBar position="static">
-      <Toolbar>
-        <AppTitle variant="h5">Task Timer</AppTitle>
-        <DatePickerBox>
-          <DatePicker />
-        </DatePickerBox>
+      <Toolbar
+        sx={{
+          flexDirection: { xs: 'column', sm: 'row' },
+          py: { xs: 1, sm: 0 },
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{
+            flexGrow: 1,
+            fontWeight: 'bold',
+            fontSize: { xs: '1.25rem', sm: '1.5rem' },
+            mb: { xs: 1, sm: 0 },
+          }}
+        >
+          Task Timer
+        </Typography>
+        <DatePicker />
       </Toolbar>
     </AppBar>
   );
 };
-
-const AppTitle = styled(Typography)(() => ({
-  flexGrow: 1,
-  fontWeight: 'bold',
-}));
-
-const DatePickerBox = styled(Box)`
-  ${(props) => props.theme.breakpoints.up('xs')} {
-    display: none;
-  }
-  ${(props) => props.theme.breakpoints.up('sm')} {
-    display: block;
-  }
-`;

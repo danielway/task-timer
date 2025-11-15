@@ -26,7 +26,13 @@ export const Layout = (props: LayoutProps) => {
       <CssBaseline />
       <Header />
       <Container>
-        <Box p="20px">{props.children}</Box>
+        <Box
+          sx={{
+            p: { xs: 1, sm: 2, md: 2.5 },
+          }}
+        >
+          {props.children}
+        </Box>
         <Footer />
       </Container>
     </ThemeProvider>
