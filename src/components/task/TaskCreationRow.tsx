@@ -14,6 +14,7 @@ import { type TaskTime, getTimesForDate } from '../../app/slices/timeSlice';
 import { getSelectedDate } from '../../app/slices/appSlice';
 import { addTaskToDate } from '../../app/slices/dateSlice';
 import { DEFAULT_TASK_TYPES } from '../../types/taskTypes';
+import { MAX_TASK_DESCRIPTION_LENGTH, UI } from '../../app/constants';
 
 export const TaskCreationRow = () => {
   const dispatch = useAppDispatch();
@@ -29,7 +30,20 @@ export const TaskCreationRow = () => {
   const nextId = useAppSelector((state) => getNextTaskId(state.task));
 
   const addTask = () => {
-    dispatch(createTask({ id: nextId, description, type: taskType }));
+    const trimmedDescription = description.trim();
+
+    // Validate description is not empty
+    if (!trimmedDescription) {
+      return;
+    }
+
+    // Validate description length
+    if (trimmedDescription.length > MAX_TASK_DESCRIPTION_LENGTH) {
+      console.warn(`Task description too long (max ${MAX_TASK_DESCRIPTION_LENGTH} characters)`);
+      return;
+    }
+
+    dispatch(createTask({ id: nextId, description: trimmedDescription, type: taskType }));
     dispatch(addTaskToDate({ date: selectedDate, taskId: nextId }));
     setDescription('');
     setTaskType('task');
@@ -50,7 +64,11 @@ export const TaskCreationRow = () => {
           value={taskType}
           onChange={(event) => setTaskType(event.target.value)}
           size="small"
-          style={{ fontSize: 13, marginRight: 10, minWidth: 100 }}
+          style={{
+            fontSize: UI.SELECT.FONT_SIZE,
+            marginRight: UI.SELECT.MARGIN_RIGHT,
+            minWidth: UI.SELECT.MIN_WIDTH
+          }}
         >
           {DEFAULT_TASK_TYPES.map((type) => (
             <MenuItem key={type.id} value={type.id}>
@@ -60,7 +78,7 @@ export const TaskCreationRow = () => {
         </Select>
         <Input
           inputRef={inputRef}
-          style={{ fontSize: 13 }}
+          style={{ fontSize: UI.INPUT.FONT_SIZE }}
           placeholder="Task name/description"
           value={description}
           onChange={(event) => setDescription(event.target.value)}
@@ -77,7 +95,7 @@ export const TaskCreationRow = () => {
           color="secondary"
           size="small"
           variant="contained"
-          style={{ marginLeft: 10 }}
+          style={{ marginLeft: UI.BUTTON.MARGIN_LEFT }}
           onClick={addTask}
         >
           Add Task

@@ -9,6 +9,21 @@ import {
 } from '../../app/slices/dateSlice';
 import { useState, useCallback } from 'react';
 
+// Helper function to reorder tasks array
+const reorderTasks = (
+  taskIds: number[],
+  draggedId: number,
+  targetIndex: number
+): number[] => {
+  const fromIndex = taskIds.indexOf(draggedId);
+  if (fromIndex === -1) return taskIds;
+
+  const temp = [...taskIds];
+  temp.splice(fromIndex, 1);
+  temp.splice(targetIndex, 0, draggedId);
+  return temp;
+};
+
 export const TableBody = () => {
   const selectedDate = useAppSelector(getSelectedDate);
   const taskIds = useAppSelector((state) =>
@@ -23,13 +38,7 @@ export const TableBody = () => {
   // Compute reordered list if dragging
   let displayTaskIds = taskIds;
   if (draggedTaskId !== null && hoveredIndex !== null) {
-    const fromIndex = taskIds.indexOf(draggedTaskId);
-    if (fromIndex !== -1) {
-      const temp = [...taskIds];
-      temp.splice(fromIndex, 1);
-      temp.splice(hoveredIndex, 0, draggedTaskId);
-      displayTaskIds = temp;
-    }
+    displayTaskIds = reorderTasks(taskIds, draggedTaskId, hoveredIndex);
   }
 
   // Handlers to pass to TaskRow
@@ -45,15 +54,10 @@ export const TableBody = () => {
   }, []);
   const handleDrop = useCallback(() => {
     if (draggedTaskId !== null && hoveredIndex !== null) {
-      const fromIndex = taskIds.indexOf(draggedTaskId);
-      if (fromIndex !== -1) {
-        const temp = [...taskIds];
-        temp.splice(fromIndex, 1);
-        temp.splice(hoveredIndex, 0, draggedTaskId);
-        dispatch(
-          reorderTasksForDate({ date: selectedDate, newTaskOrder: temp })
-        );
-      }
+      const reordered = reorderTasks(taskIds, draggedTaskId, hoveredIndex);
+      dispatch(
+        reorderTasksForDate({ date: selectedDate, newTaskOrder: reordered })
+      );
     }
     setDraggedTaskId(null);
     setHoveredIndex(null);

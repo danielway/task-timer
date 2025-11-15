@@ -246,7 +246,7 @@ describe('TaskRow', () => {
       expect(state.task.tasks[0].description).toBe('Original');
     });
 
-    it('should allow empty description', async () => {
+    it('should not allow empty description and cancel edit', async () => {
       const user = userEvent.setup();
 
       const stateInEditMode: Partial<RootState> = {
@@ -267,7 +267,10 @@ describe('TaskRow', () => {
       await user.click(updateButton);
 
       const state = store.getState() as RootState;
-      expect(state.task.tasks[0].description).toBe('');
+      // Should keep original description due to validation
+      expect(state.task.tasks[0].description).toBe('Original');
+      // Should exit edit mode
+      expect(state.edit.activeEditTaskId).toBeUndefined();
     });
   });
 

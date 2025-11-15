@@ -175,7 +175,7 @@ describe('TaskCreationRow', () => {
     expect(state.task.tasks[2].description).toBe('Task 3');
   });
 
-  it('should handle empty description', async () => {
+  it('should not create task with empty description', async () => {
     const user = userEvent.setup();
 
     const { store } = renderWithProviders(<TaskCreationRow />, {
@@ -187,8 +187,8 @@ describe('TaskCreationRow', () => {
     await user.click(button);
 
     const state = store.getState() as RootState;
-    expect(state.task.tasks).toHaveLength(1);
-    expect(state.task.tasks[0].description).toBe('');
+    // Should not create a task with empty description due to validation
+    expect(state.task.tasks).toHaveLength(0);
   });
 
   it('should display total time for date', () => {

@@ -1,3 +1,4 @@
+import { type ReactNode } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import {
@@ -8,8 +9,11 @@ import {
   createTheme,
 } from '@mui/material';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const Layout = (props: any) => {
+interface LayoutProps {
+  children: ReactNode;
+}
+
+export const Layout = (props: LayoutProps) => {
   const theme = createTheme({
     palette: {
       primary: { main: '#173040' },

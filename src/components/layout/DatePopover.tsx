@@ -8,6 +8,7 @@ import {
 } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useState } from 'react';
+import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { useAppSelector } from '../../app/hooks';
 import { getDatesWithTasks } from '../../app/slices/dateSlice';
@@ -68,11 +69,9 @@ const CalendarPopover = (
           value={dayjs(currentDate)}
           showDaysOutsideCurrentMonth={true}
           slots={{ day: Day }}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          slotProps={{ day: { daysWithTasks } as any }}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onChange={(value: any, selection) => {
-            if (selection !== 'finish') return;
+          slotProps={{ day: { daysWithTasks } as unknown as object }}
+          onChange={(value: Dayjs | null, selectionState) => {
+            if (selectionState !== 'finish' || !value) return;
 
             onSelectDate(value.valueOf());
             closePopover();

@@ -1,4 +1,4 @@
-import { HOUR_COUNT } from './constants';
+import { MAX_SEGMENTS } from './constants';
 import type { KeyboardSelection } from './slices/editSlice';
 
 type taskDescriptionSelector = (payload: { taskId: number }) => void;
@@ -58,10 +58,10 @@ export const handleKeyboardInput = (
         const newTaskId = tasksForDate[taskIndex - 1];
         if (uiSelection.description) {
           selectTaskDescription({ taskId: newTaskId });
-        } else {
+        } else if (uiSelection.timeSegment !== undefined) {
           selectTaskTimeSegment({
             taskId: newTaskId,
-            timeSegment: uiSelection.timeSegment!,
+            timeSegment: uiSelection.timeSegment,
           });
         }
       }
@@ -71,10 +71,10 @@ export const handleKeyboardInput = (
         const newTaskId = tasksForDate[taskIndex + 1];
         if (uiSelection.description) {
           selectTaskDescription({ taskId: newTaskId });
-        } else {
+        } else if (uiSelection.timeSegment !== undefined) {
           selectTaskTimeSegment({
             taskId: newTaskId,
-            timeSegment: uiSelection.timeSegment!,
+            timeSegment: uiSelection.timeSegment,
           });
         }
       }
@@ -97,10 +97,13 @@ export const handleKeyboardInput = (
           taskId: uiSelection.taskId,
           timeSegment: 0,
         });
-      } else if (uiSelection.timeSegment! < HOUR_COUNT * 4) {
+      } else if (
+        uiSelection.timeSegment !== undefined &&
+        uiSelection.timeSegment < MAX_SEGMENTS
+      ) {
         selectTaskTimeSegment({
           taskId: uiSelection.taskId,
-          timeSegment: uiSelection.timeSegment! + 1,
+          timeSegment: uiSelection.timeSegment + 1,
         });
       }
       break;
@@ -109,12 +112,11 @@ export const handleKeyboardInput = (
       if (uiSelection.description) {
         beginTaskEdit({ taskId: uiSelection.taskId });
         clearSelection();
-      } else {
-        const timeSegment = uiSelection.timeSegment!;
+      } else if (uiSelection.timeSegment !== undefined) {
         toggleSegment({
           date: selectedDate,
           taskId: uiSelection.taskId,
-          segment: timeSegment,
+          segment: uiSelection.timeSegment,
         });
       }
 
