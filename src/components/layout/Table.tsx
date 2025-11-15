@@ -49,14 +49,19 @@ export const Table = () => {
     <TableContainer
       component={Paper}
       ref={tableRef}
-      style={{ marginBottom: '10px', position: 'relative' }}
+      sx={{
+        mb: { xs: 1, sm: 1.25 },
+        position: 'relative',
+        overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch',
+      }}
     >
       <TimeCursor
         hoursPositionLeft={hoursPosition?.hoursLeftPosition}
         hoursPositionRight={hoursPosition?.hoursRightPosition}
         hoursHeight={timeHeight}
       />
-      <MuiTable size="small">
+      <MuiTable size="small" sx={{ minWidth: { xs: 800, sm: 'auto' } }}>
         <TableHead>
           <TableRow>
             <TableCell className="icon" />

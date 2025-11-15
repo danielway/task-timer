@@ -6,6 +6,7 @@ import {
   TableCell,
   Select,
   MenuItem,
+  Box,
 } from '@mui/material';
 import { TimeSummaryCell } from '../time/TimeSummaryCell';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
@@ -14,7 +15,7 @@ import { type TaskTime, getTimesForDate } from '../../app/slices/timeSlice';
 import { getSelectedDate } from '../../app/slices/appSlice';
 import { addTaskToDate } from '../../app/slices/dateSlice';
 import { DEFAULT_TASK_TYPES } from '../../types/taskTypes';
-import { MAX_TASK_DESCRIPTION_LENGTH, UI } from '../../app/constants';
+import { MAX_TASK_DESCRIPTION_LENGTH } from '../../app/constants';
 
 export const TaskCreationRow = () => {
   const dispatch = useAppDispatch();
@@ -68,46 +69,59 @@ export const TaskCreationRow = () => {
     <TableRow>
       <TableCell className="icon" />
       <TableCell>
-        <Select
-          value={taskType}
-          onChange={(event) => setTaskType(event.target.value)}
-          size="small"
-          style={{
-            fontSize: UI.SELECT.FONT_SIZE,
-            marginRight: UI.SELECT.MARGIN_RIGHT,
-            minWidth: UI.SELECT.MIN_WIDTH,
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1, sm: 1 },
+            alignItems: { xs: 'stretch', sm: 'center' },
           }}
         >
-          {DEFAULT_TASK_TYPES.map((type) => (
-            <MenuItem key={type.id} value={type.id}>
-              {type.name}
-            </MenuItem>
-          ))}
-        </Select>
-        <Input
-          inputRef={inputRef}
-          style={{ fontSize: UI.INPUT.FONT_SIZE }}
-          placeholder="Task name/description"
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              addTask();
-            } else if (event.key === 'Escape') {
-              setDescription('');
-              inputRef.current?.blur();
-            }
-          }}
-        />
-        <Button
-          color="secondary"
-          size="small"
-          variant="contained"
-          style={{ marginLeft: UI.BUTTON.MARGIN_LEFT }}
-          onClick={addTask}
-        >
-          Add Task
-        </Button>
+          <Select
+            value={taskType}
+            onChange={(event) => setTaskType(event.target.value)}
+            size="small"
+            sx={{
+              fontSize: { xs: 14, sm: 13 },
+              minWidth: { xs: '100%', sm: 100 },
+            }}
+          >
+            {DEFAULT_TASK_TYPES.map((type) => (
+              <MenuItem key={type.id} value={type.id}>
+                {type.name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Input
+            inputRef={inputRef}
+            sx={{
+              fontSize: { xs: 14, sm: 13 },
+              flex: { sm: 1 },
+            }}
+            placeholder="Task name/description"
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                addTask();
+              } else if (event.key === 'Escape') {
+                setDescription('');
+                inputRef.current?.blur();
+              }
+            }}
+          />
+          <Button
+            color="secondary"
+            size="small"
+            variant="contained"
+            sx={{
+              minHeight: { xs: 44, sm: 'auto' },
+            }}
+            onClick={addTask}
+          >
+            Add Task
+          </Button>
+        </Box>
       </TableCell>
       <TableCell colSpan={11}></TableCell>
       <TimeSummaryCell totalMinutes={totalMinutes} />

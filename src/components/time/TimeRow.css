@@ -14,6 +14,14 @@
   z-index: 200;
 }
 
+/* Larger touch targets on mobile */
+@media (max-width: 599px) {
+  .increment {
+    width: 16px;
+    height: 32px;
+  }
+}
+
 .increment:hover {
   background-color: #f9643d;
   cursor: pointer;
