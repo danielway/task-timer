@@ -181,7 +181,10 @@ test.describe('Data Persistence', () => {
     await expect(taskRow).toContainText('00:30');
 
     // Navigate to the next day
-    const nextDayButton = page.getByRole('button', { name: 'Next day' });
+    // The date picker has 3 buttons: [previous date] [current date] [next date]
+    // We need the third button (index 2) to go to the next day
+    const headerButtons = page.locator('header button');
+    const nextDayButton = headerButtons.nth(2);
     await nextDayButton.click();
 
     // Wait a moment for the date change to take effect
@@ -193,9 +196,8 @@ test.describe('Data Persistence', () => {
     ).not.toBeVisible();
 
     // Navigate back to the previous day
-    const previousDayButton = page.getByRole('button', {
-      name: 'Previous day',
-    });
+    // We need the first button (index 0) to go to the previous day
+    const previousDayButton = headerButtons.nth(0);
     await previousDayButton.click();
 
     // Wait for the date change
