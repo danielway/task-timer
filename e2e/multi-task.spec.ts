@@ -99,24 +99,79 @@ test.describe('Multi-Task Workflows', () => {
     // Create three tasks
     const taskInput = page.getByPlaceholder('Task name/description');
 
+    console.log('Creating Task A');
     await taskInput.fill('Task A');
     await page.getByRole('button', { name: 'Add Task' }).click();
 
+    console.log('Creating Task B');
     await taskInput.fill('Task B');
     await page.getByRole('button', { name: 'Add Task' }).click();
 
+    console.log('Creating Task C');
     await taskInput.fill('Task C');
     await page.getByRole('button', { name: 'Add Task' }).click();
 
     // Verify all three tasks exist
     let taskRows = page.locator('.taskRow');
+    const count = await taskRows.count();
+    console.log('Task rows count:', count);
     await expect(taskRows).toHaveCount(3);
 
-    // Delete the middle task (Task B)
+    // Debug: Log all task row content
+    console.log('\n=== DEBUG: Task Row Content ===');
+    for (let i = 0; i < count; i++) {
+      const row = taskRows.nth(i);
+      const taskNameEl = row.locator('.taskName');
+      const taskText = await taskNameEl.textContent();
+      console.log(`Row ${i} task name text:`, taskText);
+
+      // Check for delete buttons in this row
+      const deleteButtons = row.locator('[role="button"]');
+      const deleteCount = await deleteButtons.count();
+      console.log(`Row ${i} has ${deleteCount} buttons with role="button"`);
+
+      for (let j = 0; j < deleteCount; j++) {
+        const btn = deleteButtons.nth(j);
+        const ariaLabel = await btn.getAttribute('aria-label');
+        const className = await btn.getAttribute('class');
+        console.log(
+          `  Button ${j}: aria-label="${ariaLabel}", class="${className}"`
+        );
+      }
+    }
+
+    // Try to find Task B row
+    console.log('\n=== DEBUG: Finding Task B Row ===');
     const taskBRow = page.locator('.taskRow').filter({ hasText: 'Task B' });
+    const taskBCount = await taskBRow.count();
+    console.log('Rows matching "Task B":', taskBCount);
+
+    if (taskBCount > 0) {
+      const taskBText = await taskBRow.first().textContent();
+      console.log('Task B row full text:', taskBText);
+
+      // Try to find delete button within Task B row
+      console.log('\n=== DEBUG: Finding Delete Button ===');
+      const allButtonsInRow = taskBRow.locator('[role="button"]');
+      const btnCount = await allButtonsInRow.count();
+      console.log('Buttons with role="button" in Task B row:', btnCount);
+
+      for (let i = 0; i < btnCount; i++) {
+        const btn = allButtonsInRow.nth(i);
+        const ariaLabel = await btn.getAttribute('aria-label');
+        console.log(`  Button ${i} aria-label:`, ariaLabel);
+      }
+    }
+
+    // Delete the middle task (Task B)
     const deleteButton = taskBRow.getByRole('button', {
       name: 'Delete task: Task B',
     });
+
+    console.log('\n=== DEBUG: Attempting to click delete button ===');
+    const isVisible = await deleteButton.isVisible().catch(() => false);
+    console.log('Delete button visible:', isVisible);
+
     await deleteButton.click();
 
     // Verify only two tasks remain
