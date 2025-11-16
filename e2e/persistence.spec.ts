@@ -154,4 +154,83 @@ test.describe('Data Persistence', () => {
       'Meeting'
     );
   });
+
+  test('should persist task and time across date changes and reload', async ({
+    page,
+  }) => {
+    // Navigate to the app
+    await page.goto('/');
+
+    const taskInput = page.getByPlaceholder('Task name/description');
+    await expect(taskInput).toBeVisible({ timeout: 10000 });
+
+    // Create a task and log time on the current date
+    await taskInput.fill('Task from yesterday');
+    await page.getByRole('button', { name: 'Add Task' }).click();
+
+    // Track some time (2 increments = 30 minutes)
+    const increments = page.locator('.increment');
+    await increments.nth(0).click();
+    await increments.nth(1).click();
+
+    // Verify time is tracked
+    await expect(increments.nth(0)).toHaveClass(/logged/);
+    await expect(increments.nth(1)).toHaveClass(/logged/);
+
+    const taskRow = page.locator('.taskRow').first();
+    await expect(taskRow).toContainText('00:30');
+
+    // Navigate to the next day
+    const nextDayButton = page.getByRole('button', { name: 'Next day' });
+    await nextDayButton.click();
+
+    // Wait a moment for the date change to take effect
+    await page.waitForTimeout(500);
+
+    // Verify the task is NOT visible on the next day (it's date-specific)
+    await expect(
+      page.locator('.taskName').getByText('Task from yesterday')
+    ).not.toBeVisible();
+
+    // Navigate back to the previous day
+    const previousDayButton = page.getByRole('button', {
+      name: 'Previous day',
+    });
+    await previousDayButton.click();
+
+    // Wait for the date change
+    await page.waitForTimeout(500);
+
+    // Verify the task and time are visible again
+    await expect(
+      page.locator('.taskName').getByText('Task from yesterday')
+    ).toBeVisible();
+
+    const restoredIncrements = page.locator('.increment');
+    await expect(restoredIncrements.nth(0)).toHaveClass(/logged/);
+    await expect(restoredIncrements.nth(1)).toHaveClass(/logged/);
+
+    const restoredTaskRow = page.locator('.taskRow').first();
+    await expect(restoredTaskRow).toContainText('00:30');
+
+    // Reload the page to test persistence after reload
+    await page.reload();
+
+    // Wait for app to load
+    await expect(page.getByPlaceholder('Task name/description')).toBeVisible({
+      timeout: 10000,
+    });
+
+    // Verify the task and time still persist after reload
+    await expect(
+      page.locator('.taskName').getByText('Task from yesterday')
+    ).toBeVisible();
+
+    const reloadedIncrements = page.locator('.increment');
+    await expect(reloadedIncrements.nth(0)).toHaveClass(/logged/);
+    await expect(reloadedIncrements.nth(1)).toHaveClass(/logged/);
+
+    const reloadedTaskRow = page.locator('.taskRow').first();
+    await expect(reloadedTaskRow).toContainText('00:30');
+  });
 });
