@@ -19,10 +19,7 @@ test.describe('Time Tracking', () => {
 
   test('should track time when clicking a time increment', async ({ page }) => {
     // Find the first time increment button for the task
-    const timeIncrement = page
-      .locator('.increment')
-      .first()
-      .filter({ has: page.locator('[aria-pressed="false"]') });
+    const timeIncrement = page.locator('.increment').first();
 
     // Click to start tracking
     await timeIncrement.click();
