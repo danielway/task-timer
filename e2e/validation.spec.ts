@@ -193,9 +193,7 @@ test.describe('Validation and Edge Cases', () => {
 
     // Immediately delete the task
     const taskRow = page.locator('.taskRow').filter({ hasText: 'Edited task' });
-    const deleteButton = taskRow.getByRole('button', {
-      name: 'Delete task: Edited task',
-    });
+    const deleteButton = taskRow.locator('.taskDelete');
     await deleteButton.click();
 
     // Verify task is deleted

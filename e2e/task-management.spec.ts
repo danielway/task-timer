@@ -113,9 +113,7 @@ test.describe('Task Management', () => {
     const taskRow = page
       .locator('.taskRow')
       .filter({ hasText: 'Task to delete' });
-    const deleteButton = taskRow.getByRole('button', {
-      name: 'Delete task: Task to delete',
-    });
+    const deleteButton = taskRow.locator('.taskDelete');
     await deleteButton.click();
 
     // Verify task is removed
@@ -143,9 +141,7 @@ test.describe('Task Management', () => {
     const taskRow = page
       .locator('.taskRow')
       .filter({ hasText: 'Task with time to delete' });
-    const deleteButton = taskRow.getByRole('button', {
-      name: 'Delete task: Task with time to delete',
-    });
+    const deleteButton = taskRow.locator('.taskDelete');
     await deleteButton.click();
 
     // Verify task is removed
