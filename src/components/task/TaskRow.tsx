@@ -8,6 +8,7 @@ import {
   Select,
   MenuItem,
   Chip,
+  Box,
 } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { TimeRowCell } from '../time/TimeRow';
@@ -29,6 +30,7 @@ import {
 } from '../../app/slices/timeSlice';
 import { removeTaskFromDate } from '../../app/slices/dateSlice';
 import { DEFAULT_TASK_TYPES, getTaskType } from '../../types/taskTypes';
+import { MAX_TASK_DESCRIPTION_LENGTH } from '../../app/constants';
 
 interface TaskRowProps {
   taskId: number;
@@ -65,10 +67,46 @@ export const TaskRow = (props: TaskRowProps) => {
   );
 
   const doUpdateTask = () => {
+    const trimmedDescription = description.trim();
+
+    // Validate description is not empty
+    if (!trimmedDescription) {
+      // Don't update if description is empty, just cancel edit
+      dispatch(endTaskEdit());
+      setDescription(task?.description || '');
+      return;
+    }
+
+    // Validate description length
+    if (trimmedDescription.length > MAX_TASK_DESCRIPTION_LENGTH) {
+      console.warn(
+        `Task description too long (max ${MAX_TASK_DESCRIPTION_LENGTH} characters)`
+      );
+      return;
+    }
+
     dispatch(
-      updateTask({ id: props.taskId, description: description, type: taskType })
+      updateTask({
+        id: props.taskId,
+        description: trimmedDescription,
+        type: taskType,
+      })
     );
     dispatch(endTaskEdit());
+  };
+
+  const doDeleteTask = () => {
+    dispatch(removeTaskFromDate({ date: selectedDate, taskId: props.taskId }));
+    dispatch(deleteTask({ id: props.taskId }));
+    times.forEach((time) =>
+      dispatch(
+        removeTime({
+          date: selectedDate,
+          taskId: props.taskId,
+          start: time.start,
+        })
+      )
+    );
   };
 
   // Handle missing task gracefully - if task doesn't exist, don't render anything
@@ -132,23 +170,20 @@ export const TaskRow = (props: TaskRowProps) => {
     >
       <TableCell className="icon">
         <HighlightOffIcon
-          onClick={() => {
-            dispatch(
-              removeTaskFromDate({ date: selectedDate, taskId: props.taskId })
-            );
-            dispatch(deleteTask({ id: props.taskId }));
-            times.forEach((time) =>
-              dispatch(
-                removeTime({
-                  date: selectedDate,
-                  taskId: props.taskId,
-                  start: time.start,
-                })
-              )
-            );
-          }}
+          onClick={doDeleteTask}
           className="taskDelete"
-          fontSize="small"
+          sx={{
+            fontSize: { xs: '1.5rem', sm: '1.25rem' },
+          }}
+          role="button"
+          aria-label={`Delete task: ${task.description}`}
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              doDeleteTask();
+            }
+          }}
         />
       </TableCell>
       <TableCell
@@ -172,9 +207,9 @@ export const TaskRow = (props: TaskRowProps) => {
             backgroundColor: currentTaskType.color,
             color: '#fff',
             fontWeight: 'bold',
-            fontSize: '0.7rem',
-            height: '20px',
-            marginRight: '8px',
+            fontSize: { xs: '0.75rem', sm: '0.7rem' },
+            height: { xs: 24, sm: 20 },
+            marginRight: 1,
           }}
         />
         {task.description}
@@ -190,46 +225,63 @@ export const TaskRow = (props: TaskRowProps) => {
     <TableRow>
       <TableCell className="icon" />
       <TableCell component="th" scope="row" className="cell">
-        <Select
-          value={taskType}
-          onChange={(event) => setTaskType(event.target.value)}
-          size="small"
-          style={{ fontSize: 13, marginRight: 10, minWidth: 100 }}
-        >
-          {DEFAULT_TASK_TYPES.map((type) => (
-            <MenuItem key={type.id} value={type.id}>
-              {type.name}
-            </MenuItem>
-          ))}
-        </Select>
-        <Input
-          inputRef={inputRef}
-          style={{ fontSize: 13 }}
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          onKeyDown={(event) => {
-            if (!editing) {
-              return;
-            }
-
-            if (event.key === 'Enter') {
-              doUpdateTask();
-            } else if (event.key === 'Escape') {
-              dispatch(endTaskEdit());
-              setDescription(task.description);
-              setTaskType(task.type || 'task');
-            }
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1, sm: 1 },
+            alignItems: { xs: 'stretch', sm: 'center' },
           }}
-        />
-        <Button
-          color="secondary"
-          size="small"
-          variant="contained"
-          style={{ marginLeft: 10 }}
-          onClick={doUpdateTask}
         >
-          Update Task
-        </Button>
+          <Select
+            value={taskType}
+            onChange={(event) => setTaskType(event.target.value)}
+            size="small"
+            sx={{
+              fontSize: { xs: 14, sm: 13 },
+              minWidth: { xs: '100%', sm: 100 },
+            }}
+          >
+            {DEFAULT_TASK_TYPES.map((type) => (
+              <MenuItem key={type.id} value={type.id}>
+                {type.name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Input
+            inputRef={inputRef}
+            sx={{
+              fontSize: { xs: 14, sm: 13 },
+              flex: { sm: 1 },
+            }}
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            onKeyDown={(event) => {
+              if (!editing) {
+                return;
+              }
+
+              if (event.key === 'Enter') {
+                doUpdateTask();
+              } else if (event.key === 'Escape') {
+                dispatch(endTaskEdit());
+                setDescription(task.description);
+                setTaskType(task.type || 'task');
+              }
+            }}
+          />
+          <Button
+            color="secondary"
+            size="small"
+            variant="contained"
+            sx={{
+              minHeight: { xs: 44, sm: 'auto' },
+            }}
+            onClick={doUpdateTask}
+          >
+            Update Task
+          </Button>
+        </Box>
       </TableCell>
       <TableCell className="timerButton">
         <TimerButton taskId={props.taskId} date={selectedDate} />

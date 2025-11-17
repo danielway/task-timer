@@ -6,6 +6,7 @@ import {
   TableCell,
   Select,
   MenuItem,
+  Box,
 } from '@mui/material';
 import { TimeSummaryCell } from '../time/TimeSummaryCell';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
@@ -14,6 +15,7 @@ import { type TaskTime, getTimesForDate } from '../../app/slices/timeSlice';
 import { getSelectedDate } from '../../app/slices/appSlice';
 import { addTaskToDate } from '../../app/slices/dateSlice';
 import { DEFAULT_TASK_TYPES } from '../../types/taskTypes';
+import { MAX_TASK_DESCRIPTION_LENGTH } from '../../app/constants';
 
 export const TaskCreationRow = () => {
   const dispatch = useAppDispatch();
@@ -29,7 +31,28 @@ export const TaskCreationRow = () => {
   const nextId = useAppSelector((state) => getNextTaskId(state.task));
 
   const addTask = () => {
-    dispatch(createTask({ id: nextId, description, type: taskType }));
+    const trimmedDescription = description.trim();
+
+    // Validate description is not empty
+    if (!trimmedDescription) {
+      return;
+    }
+
+    // Validate description length
+    if (trimmedDescription.length > MAX_TASK_DESCRIPTION_LENGTH) {
+      console.warn(
+        `Task description too long (max ${MAX_TASK_DESCRIPTION_LENGTH} characters)`
+      );
+      return;
+    }
+
+    dispatch(
+      createTask({
+        id: nextId,
+        description: trimmedDescription,
+        type: taskType,
+      })
+    );
     dispatch(addTaskToDate({ date: selectedDate, taskId: nextId }));
     setDescription('');
     setTaskType('task');
@@ -46,42 +69,59 @@ export const TaskCreationRow = () => {
     <TableRow>
       <TableCell className="icon" />
       <TableCell>
-        <Select
-          value={taskType}
-          onChange={(event) => setTaskType(event.target.value)}
-          size="small"
-          style={{ fontSize: 13, marginRight: 10, minWidth: 100 }}
-        >
-          {DEFAULT_TASK_TYPES.map((type) => (
-            <MenuItem key={type.id} value={type.id}>
-              {type.name}
-            </MenuItem>
-          ))}
-        </Select>
-        <Input
-          inputRef={inputRef}
-          style={{ fontSize: 13 }}
-          placeholder="Task name/description"
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              addTask();
-            } else if (event.key === 'Escape') {
-              setDescription('');
-              inputRef.current?.blur();
-            }
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 1, sm: 1 },
+            alignItems: { xs: 'stretch', sm: 'center' },
           }}
-        />
-        <Button
-          color="secondary"
-          size="small"
-          variant="contained"
-          style={{ marginLeft: 10 }}
-          onClick={addTask}
         >
-          Add Task
-        </Button>
+          <Select
+            value={taskType}
+            onChange={(event) => setTaskType(event.target.value)}
+            size="small"
+            sx={{
+              fontSize: { xs: 14, sm: 13 },
+              minWidth: { xs: '100%', sm: 100 },
+            }}
+          >
+            {DEFAULT_TASK_TYPES.map((type) => (
+              <MenuItem key={type.id} value={type.id}>
+                {type.name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Input
+            inputRef={inputRef}
+            sx={{
+              fontSize: { xs: 14, sm: 13 },
+              flex: { sm: 1 },
+            }}
+            placeholder="Task name/description"
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                addTask();
+              } else if (event.key === 'Escape') {
+                setDescription('');
+                inputRef.current?.blur();
+              }
+            }}
+          />
+          <Button
+            color="secondary"
+            size="small"
+            variant="contained"
+            sx={{
+              minHeight: { xs: 44, sm: 'auto' },
+            }}
+            onClick={addTask}
+          >
+            Add Task
+          </Button>
+        </Box>
       </TableCell>
       <TableCell colSpan={11}></TableCell>
       <TimeSummaryCell totalMinutes={totalMinutes} />

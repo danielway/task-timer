@@ -16,18 +16,36 @@ const rootReducer = combineReducers({
 export type RootState = ReturnType<typeof rootReducer>;
 
 const loadState = () => {
-  const persistedStateJson = localStorage.getItem('state');
-  const persistedState = persistedStateJson
-    ? JSON.parse(persistedStateJson)
-    : undefined;
+  try {
+    const persistedStateJson = localStorage.getItem('state');
+    if (!persistedStateJson) {
+      return undefined;
+    }
 
-  // Stored state migrations can be added here
+    const persistedState = JSON.parse(persistedStateJson);
 
-  return persistedState;
+    // Stored state migrations can be added here
+
+    return persistedState;
+  } catch (error) {
+    console.error('Failed to load state from localStorage:', error);
+    // Clear corrupted state
+    try {
+      localStorage.removeItem('state');
+    } catch {
+      // Ignore errors when clearing
+    }
+    return undefined;
+  }
 };
 
 const saveState = (state: RootState) => {
-  localStorage.setItem('state', JSON.stringify(state));
+  try {
+    localStorage.setItem('state', JSON.stringify(state));
+  } catch (error) {
+    console.error('Failed to save state to localStorage:', error);
+    // Could be quota exceeded or localStorage disabled
+  }
 };
 
 import type { Middleware } from '@reduxjs/toolkit';
