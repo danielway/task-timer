@@ -66,6 +66,7 @@ export const Table = () => {
           <TableRow>
             <TableCell className="icon" />
             <TableCell className="header">Task</TableCell>
+            <TableCell className="header">Timer</TableCell>
             <TimeHeaderCells onNewPosition={handleNewHoursPosition} />
             <TableCell className="header">Total</TableCell>
           </TableRow>

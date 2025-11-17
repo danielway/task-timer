@@ -13,6 +13,7 @@ import {
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { TimeRowCell } from '../time/TimeRow';
 import { TimeSummaryCell } from '../time/TimeSummaryCell';
+import { TimerButton } from '../time/TimerButton';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { deleteTask, getTask, updateTask } from '../../app/slices/taskSlice';
 import {
@@ -213,6 +214,9 @@ export const TaskRow = (props: TaskRowProps) => {
         />
         {task.description}
       </TableCell>
+      <TableCell className="timerButton">
+        <TimerButton taskId={props.taskId} date={selectedDate} />
+      </TableCell>
       {taskRowTime()}
     </TableRow>
   );
@@ -278,6 +282,9 @@ export const TaskRow = (props: TaskRowProps) => {
             Update Task
           </Button>
         </Box>
+      </TableCell>
+      <TableCell className="timerButton">
+        <TimerButton taskId={props.taskId} date={selectedDate} />
       </TableCell>
       {taskRowTime()}
     </TableRow>
