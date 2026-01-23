@@ -130,7 +130,7 @@ describe('TaskRow', () => {
   });
 
   describe('edit mode', () => {
-    it('should render input and update button in edit mode', () => {
+    it('should render inline input in edit mode', () => {
       const stateInEditMode: Partial<TestState> = {
         ...createDefaultState(1, 'Edit Me'),
         edit: {
@@ -144,10 +144,9 @@ describe('TaskRow', () => {
 
       const input = screen.getByDisplayValue('Edit Me') as HTMLInputElement;
       expect(input).toBeTruthy();
-      expect(screen.getByRole('button', { name: /update task/i })).toBeTruthy();
     });
 
-    it('should update task description when Update Task button is clicked', async () => {
+    it('should update task description on blur', async () => {
       const user = userEvent.setup();
 
       const stateInEditMode: Partial<TestState> = {
@@ -165,14 +164,14 @@ describe('TaskRow', () => {
       await user.clear(input);
       await user.type(input, 'Updated Description');
 
-      const updateButton = screen.getByRole('button', { name: /update task/i });
-      await user.click(updateButton);
+      // Blur the input to save
+      await user.tab();
 
       const taskState = stores.task.getState();
       expect(taskState.tasks[0].description).toBe('Updated Description');
     });
 
-    it('should exit edit mode after updating', async () => {
+    it('should exit edit mode after blur', async () => {
       const user = userEvent.setup();
 
       const stateInEditMode: Partial<TestState> = {
@@ -189,8 +188,8 @@ describe('TaskRow', () => {
       const input = screen.getByDisplayValue('Original');
       await user.type(input, ' Updated');
 
-      const updateButton = screen.getByRole('button', { name: /update task/i });
-      await user.click(updateButton);
+      // Blur the input to save
+      await user.tab();
 
       const appState = stores.app.getState();
       expect(appState.activeEditTaskId).toBeUndefined();
@@ -248,7 +247,7 @@ describe('TaskRow', () => {
       expect(taskState.tasks[0].description).toBe('Original');
     });
 
-    it('should not allow empty description and cancel edit', async () => {
+    it('should revert to original and exit edit mode when blurring empty input', async () => {
       const user = userEvent.setup();
 
       const stateInEditMode: Partial<TestState> = {
@@ -265,8 +264,8 @@ describe('TaskRow', () => {
       const input = screen.getByDisplayValue('Original');
       await user.clear(input);
 
-      const updateButton = screen.getByRole('button', { name: /update task/i });
-      await user.click(updateButton);
+      // Blur to trigger save
+      await user.tab();
 
       const taskState = stores.task.getState();
       const appState = stores.app.getState();

@@ -3,11 +3,10 @@ import './TaskRow.css';
 import {
   TableRow,
   Input,
-  Button,
   TableCell,
-  Select,
-  MenuItem,
   Chip,
+  Menu,
+  MenuItem,
   Box,
 } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
@@ -41,9 +40,10 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
   const task = getTask(taskState, props.taskId);
 
   const [description, setDescription] = useState('');
-  const [taskType, setTaskType] = useState(task?.type || 'task');
   useEffect(() => setDescription(task?.description || ''), [task?.description]);
-  useEffect(() => setTaskType(task?.type || 'task'), [task?.type]);
+
+  const [typeMenuAnchor, setTypeMenuAnchor] = useState<null | HTMLElement>(null);
+  const typeMenuOpen = Boolean(typeMenuAnchor);
 
   const uiSelection = useAppStore((state) => state.selection);
   const descriptionSelected =
@@ -53,7 +53,12 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
   const editing = activeEditTaskId === props.taskId;
 
   const inputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => inputRef.current?.focus(), [inputRef, editing]);
+  useEffect(() => {
+    if (editing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [editing]);
 
   const selectedDate = useAppStore((state) => state.selectedDate);
   const timeState = useTimeStore();
@@ -67,14 +72,14 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
   const removeTaskFromDate = useDateStore((state) => state.removeTaskFromDate);
   const removeTime = useTimeStore((state) => state.removeTime);
 
-  const doUpdateTask = () => {
+  const saveDescription = () => {
     const trimmedDescription = description.trim();
 
     // Validate description is not empty
     if (!trimmedDescription) {
-      // Don't update if description is empty, just cancel edit
-      endTaskEdit();
+      // Revert to original if empty
       setDescription(task?.description || '');
+      endTaskEdit();
       return;
     }
 
@@ -86,12 +91,25 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
       return;
     }
 
-    updateTask({
-      id: props.taskId,
-      description: trimmedDescription,
-      type: taskType,
-    });
+    if (trimmedDescription !== task?.description) {
+      updateTask({
+        id: props.taskId,
+        description: trimmedDescription,
+        type: task?.type || 'task',
+      });
+    }
     endTaskEdit();
+  };
+
+  const handleTypeSelect = (typeId: string) => {
+    setTypeMenuAnchor(null);
+    if (typeId !== task?.type) {
+      updateTask({
+        id: props.taskId,
+        description: task?.description || '',
+        type: typeId,
+      });
+    }
   };
 
   const doDeleteTask = () => {
@@ -132,10 +150,10 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
     return end / 1000 / 60 - time.start / 1000 / 60;
   };
 
-  const renderViewRow = () => (
+  return (
     <TableRow
-      className={`taskRow cell${props.dragging ? ' dragging' : ''}`}
-      draggable="true"
+      className={`taskRow cell${props.dragging ? ' dragging' : ''}${editing ? ' editing' : ''}`}
+      draggable={!editing}
       onDragStart={(event) => {
         setDragImage(event);
         if (props.onDragStart) props.onDragStart();
@@ -174,103 +192,96 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
       <TableCell
         sx={{
           fontWeight: descriptionSelected ? 'bold' : undefined,
-          textDecoration: descriptionSelected ? 'underline' : undefined,
+          textDecoration: descriptionSelected && !editing ? 'underline' : undefined,
           backgroundColor: currentTaskType.backgroundColor,
-        }}
-        onClick={() => {
-          beginTaskEdit({ taskId: props.taskId });
         }}
         component="th"
         scope="row"
         className="taskName"
       >
-        <Chip
-          label={currentTaskType.name}
-          size="small"
-          sx={{
-            backgroundColor: currentTaskType.color,
-            color: '#fff',
-            fontWeight: 'bold',
-            fontSize: { xs: '0.75rem', sm: '0.7rem' },
-            height: { xs: 24, sm: 20 },
-            marginRight: 1,
-            minWidth: 65,
-          }}
-        />
-        {task.description}
-      </TableCell>
-      {taskRowTime()}
-    </TableRow>
-  );
-
-  const renderEditRow = () => (
-    <TableRow>
-      <TableCell className="icon" />
-      <TableCell component="th" scope="row" className="cell">
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
-            gap: { xs: 1, sm: 1 },
-            alignItems: { xs: 'stretch', sm: 'center' },
-          }}
-        >
-          <Select
-            value={taskType}
-            onChange={(event) => setTaskType(event.target.value)}
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Chip
+            label={currentTaskType.name}
             size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              setTypeMenuAnchor(e.currentTarget);
+            }}
             sx={{
-              fontSize: { xs: 14, sm: 12 },
-              minWidth: { xs: '100%', sm: 90 },
-              '& .MuiSelect-select': {
-                py: 0.5,
+              backgroundColor: currentTaskType.color,
+              color: '#fff',
+              fontWeight: 'bold',
+              fontSize: { xs: '0.75rem', sm: '0.7rem' },
+              height: { xs: 24, sm: 20 },
+              marginRight: 1,
+              minWidth: 65,
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: currentTaskType.color,
+                filter: 'brightness(0.9)',
               },
             }}
+          />
+          <Menu
+            anchorEl={typeMenuAnchor}
+            open={typeMenuOpen}
+            onClose={() => setTypeMenuAnchor(null)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           >
             {DEFAULT_TASK_TYPES.map((type) => (
-              <MenuItem key={type.id} value={type.id}>
+              <MenuItem
+                key={type.id}
+                selected={type.id === task.type}
+                onClick={() => handleTypeSelect(type.id)}
+                sx={{ fontSize: 13 }}
+              >
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    backgroundColor: type.color,
+                    marginRight: 1,
+                  }}
+                />
                 {type.name}
               </MenuItem>
             ))}
-          </Select>
-          <Input
-            inputRef={inputRef}
-            sx={{
-              fontSize: { xs: 14, sm: 13 },
-              flex: { sm: 1 },
-            }}
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            onKeyDown={(event) => {
-              if (!editing) {
-                return;
-              }
-
-              if (event.key === 'Enter') {
-                doUpdateTask();
-              } else if (event.key === 'Escape') {
-                endTaskEdit();
-                setDescription(task.description);
-                setTaskType(task.type || 'task');
-              }
-            }}
-          />
-          <Button
-            color="secondary"
-            size="small"
-            variant="contained"
-            sx={{
-              minHeight: { xs: 44, sm: 'auto' },
-            }}
-            onClick={doUpdateTask}
-          >
-            Update Task
-          </Button>
+          </Menu>
+          {editing ? (
+            <Input
+              inputRef={inputRef}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              onBlur={saveDescription}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  saveDescription();
+                } else if (e.key === 'Escape') {
+                  setDescription(task.description);
+                  endTaskEdit();
+                }
+              }}
+              disableUnderline
+              sx={{
+                fontSize: 'inherit',
+                flex: 1,
+                '& input': {
+                  padding: 0,
+                },
+              }}
+            />
+          ) : (
+            <span
+              className="taskDescription"
+              onClick={() => beginTaskEdit({ taskId: props.taskId })}
+            >
+              {task.description}
+            </span>
+          )}
         </Box>
       </TableCell>
       {taskRowTime()}
     </TableRow>
   );
-
-  return editing ? renderEditRow() : renderViewRow();
 });
