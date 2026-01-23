@@ -7,7 +7,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   base: '/task-timer/',
   plugins: [react()],
-    server: {
+  server: {
     host: true,
     port: 5173,
     strictPort: true,

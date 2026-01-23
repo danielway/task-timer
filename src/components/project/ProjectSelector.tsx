@@ -62,10 +62,7 @@ export function ProjectSelector({
         onClose={handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
-        <MenuItem
-          onClick={() => handleSelect(undefined)}
-          sx={{ fontSize: 12 }}
-        >
+        <MenuItem onClick={() => handleSelect(undefined)} sx={{ fontSize: 12 }}>
           <Box
             sx={{
               width: 8,

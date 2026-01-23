@@ -7,7 +7,11 @@ interface ProjectChipProps {
   onClick?: () => void;
 }
 
-export function ProjectChip({ projectId, size = 'small', onClick }: ProjectChipProps) {
+export function ProjectChip({
+  projectId,
+  size = 'small',
+  onClick,
+}: ProjectChipProps) {
   const projectState = useProjectStore();
   const project = getProject(projectState, projectId);
 

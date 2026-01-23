@@ -147,7 +147,12 @@ export function ProjectManager({ open, onClose }: ProjectManagerProps) {
             <ListItem key={project.id}>
               {editingId === project.id ? (
                 <Box
-                  sx={{ display: 'flex', gap: 1, alignItems: 'center', flex: 1 }}
+                  sx={{
+                    display: 'flex',
+                    gap: 1,
+                    alignItems: 'center',
+                    flex: 1,
+                  }}
                 >
                   <TextField
                     size="small"

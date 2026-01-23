@@ -10,11 +10,7 @@ import {
 } from '@mui/material';
 import ListIcon from '@mui/icons-material/List';
 import { DatePicker } from './DatePicker';
-import {
-  useAppStore,
-  useProjectStore,
-  getActiveProjects,
-} from '../../store';
+import { useAppStore, useProjectStore, getActiveProjects } from '../../store';
 
 export const Header = () => {
   const backlogOpen = useAppStore((state) => state.backlogOpen);

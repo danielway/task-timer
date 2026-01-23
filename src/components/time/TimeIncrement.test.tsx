@@ -86,10 +86,20 @@ describe('TimeIncrement', () => {
       },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {},
-      date: { dateTasks: [{ date: mockToday, tasks: [1], taskFirstWorkTime: {} }] },
+      date: {
+        dateTasks: [{ date: mockToday, tasks: [1], taskFirstWorkTime: {} }],
+      },
       task: {
         nextTaskId: 2,
-        tasks: [{ id: 1, description: 'Task 1', type: 'task', status: 'new', createdAt: Date.now() }],
+        tasks: [
+          {
+            id: 1,
+            description: 'Task 1',
+            type: 'task',
+            status: 'new',
+            createdAt: Date.now(),
+          },
+        ],
       },
     };
 
@@ -144,10 +154,20 @@ describe('TimeIncrement', () => {
         ],
       },
       edit: {},
-      date: { dateTasks: [{ date: mockToday, tasks: [1], taskFirstWorkTime: {} }] },
+      date: {
+        dateTasks: [{ date: mockToday, tasks: [1], taskFirstWorkTime: {} }],
+      },
       task: {
         nextTaskId: 2,
-        tasks: [{ id: 1, description: 'Task 1', type: 'task', status: 'new', createdAt: Date.now() }],
+        tasks: [
+          {
+            id: 1,
+            description: 'Task 1',
+            type: 'task',
+            status: 'new',
+            createdAt: Date.now(),
+          },
+        ],
       },
     };
 
@@ -263,10 +283,20 @@ describe('TimeIncrement', () => {
       },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {},
-      date: { dateTasks: [{ date: mockToday, tasks: [1], taskFirstWorkTime: {} }] },
+      date: {
+        dateTasks: [{ date: mockToday, tasks: [1], taskFirstWorkTime: {} }],
+      },
       task: {
         nextTaskId: 2,
-        tasks: [{ id: 1, description: 'Task 1', type: 'task', status: 'new', createdAt: Date.now() }],
+        tasks: [
+          {
+            id: 1,
+            description: 'Task 1',
+            type: 'task',
+            status: 'new',
+            createdAt: Date.now(),
+          },
+        ],
       },
     };
 

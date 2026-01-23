@@ -94,7 +94,9 @@ export const useProjectStore = create<ProjectStore>()((set, get) => {
             ? {
                 ...project,
                 ...(payload.name !== undefined ? { name: payload.name } : {}),
-                ...(payload.color !== undefined ? { color: payload.color } : {}),
+                ...(payload.color !== undefined
+                  ? { color: payload.color }
+                  : {}),
                 ...(payload.description !== undefined
                   ? { description: payload.description }
                   : {}),

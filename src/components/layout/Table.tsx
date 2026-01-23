@@ -64,9 +64,13 @@ export const Table = () => {
         <TableHead>
           <TableRow>
             <TableCell component="th" className="icon" />
-            <TableCell component="th" className="header">Task</TableCell>
+            <TableCell component="th" className="header">
+              Task
+            </TableCell>
             <TimeHeaderCells onNewPosition={handleNewHoursPosition} />
-            <TableCell component="th" className="time">Total</TableCell>
+            <TableCell component="th" className="time">
+              Total
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody />

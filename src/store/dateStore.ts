@@ -105,7 +105,11 @@ export const useDateStore = create<DateStore>()((set, get) => {
         return {
           dateTasks: [
             ...state.dateTasks,
-            { date: payload.date, tasks: [payload.taskId], taskFirstWorkTime: {} },
+            {
+              date: payload.date,
+              tasks: [payload.taskId],
+              taskFirstWorkTime: {},
+            },
           ],
         };
       });

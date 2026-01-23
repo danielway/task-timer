@@ -19,9 +19,19 @@ describe('TaskRow', () => {
     },
     task: {
       nextTaskId: taskId + 1,
-      tasks: [{ id: taskId, description, type: 'task', status: 'new', createdAt: Date.now() }],
+      tasks: [
+        {
+          id: taskId,
+          description,
+          type: 'task',
+          status: 'new',
+          createdAt: Date.now(),
+        },
+      ],
     },
-    date: { dateTasks: [{ date: mockToday, tasks: [taskId], taskFirstWorkTime: {} }] },
+    date: {
+      dateTasks: [{ date: mockToday, tasks: [taskId], taskFirstWorkTime: {} }],
+    },
     time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
     edit: {},
   });

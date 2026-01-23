@@ -46,7 +46,9 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
   const [description, setDescription] = useState('');
   useEffect(() => setDescription(task?.description || ''), [task?.description]);
 
-  const [typeMenuAnchor, setTypeMenuAnchor] = useState<null | HTMLElement>(null);
+  const [typeMenuAnchor, setTypeMenuAnchor] = useState<null | HTMLElement>(
+    null
+  );
   const typeMenuOpen = Boolean(typeMenuAnchor);
 
   const uiSelection = useAppStore((state) => state.selection);
@@ -209,7 +211,8 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
       <TableCell
         sx={{
           fontWeight: descriptionSelected ? 'bold' : undefined,
-          textDecoration: descriptionSelected && !editing ? 'underline' : undefined,
+          textDecoration:
+            descriptionSelected && !editing ? 'underline' : undefined,
           backgroundColor: currentTaskType.backgroundColor,
         }}
         component="th"

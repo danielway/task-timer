@@ -19,11 +19,25 @@ describe('TableBody', () => {
     task: {
       nextTaskId: 3,
       tasks: [
-        { id: 1, description: 'Task 1', type: 'task', status: 'new', createdAt: Date.now() },
-        { id: 2, description: 'Task 2', type: 'meeting', status: 'new', createdAt: Date.now() },
+        {
+          id: 1,
+          description: 'Task 1',
+          type: 'task',
+          status: 'new',
+          createdAt: Date.now(),
+        },
+        {
+          id: 2,
+          description: 'Task 2',
+          type: 'meeting',
+          status: 'new',
+          createdAt: Date.now(),
+        },
       ],
     },
-    date: { dateTasks: [{ date: mockToday, tasks: [1, 2], taskFirstWorkTime: {} }] },
+    date: {
+      dateTasks: [{ date: mockToday, tasks: [1, 2], taskFirstWorkTime: {} }],
+    },
     time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
     edit: {},
   });
@@ -61,7 +75,9 @@ describe('TableBody', () => {
           nextTaskId: 1,
           tasks: [],
         },
-        date: { dateTasks: [{ date: mockToday, tasks: [], taskFirstWorkTime: {} }] },
+        date: {
+          dateTasks: [{ date: mockToday, tasks: [], taskFirstWorkTime: {} }],
+        },
         time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
         edit: {},
       };
@@ -96,7 +112,9 @@ describe('TableBody', () => {
           nextTaskId: 1,
           tasks: [],
         },
-        date: { dateTasks: [{ date: mockToday, tasks: [], taskFirstWorkTime: {} }] },
+        date: {
+          dateTasks: [{ date: mockToday, tasks: [], taskFirstWorkTime: {} }],
+        },
         time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
         edit: {},
       };
@@ -137,7 +155,9 @@ describe('TableBody', () => {
           nextTaskId: 1,
           tasks: [],
         },
-        date: { dateTasks: [{ date: mockToday, tasks: [], taskFirstWorkTime: {} }] },
+        date: {
+          dateTasks: [{ date: mockToday, tasks: [], taskFirstWorkTime: {} }],
+        },
         time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
         edit: {},
       };
@@ -343,7 +363,15 @@ describe('TableBody', () => {
         },
         task: {
           nextTaskId: 3,
-          tasks: [{ id: 1, description: 'Task 1', type: 'task', status: 'new', createdAt: Date.now() }], // Only task 1 exists
+          tasks: [
+            {
+              id: 1,
+              description: 'Task 1',
+              type: 'task',
+              status: 'new',
+              createdAt: Date.now(),
+            },
+          ], // Only task 1 exists
         },
         date: {
           dateTasks: [

@@ -39,7 +39,8 @@ export function BacklogTaskItem({ taskId }: BacklogTaskItemProps) {
         p: 1,
         borderBottom: '1px solid',
         borderColor: 'divider',
-        backgroundColor: task.status === 'done' ? 'action.hover' : 'background.paper',
+        backgroundColor:
+          task.status === 'done' ? 'action.hover' : 'background.paper',
         opacity: task.status === 'done' ? 0.6 : 1,
         '&:hover': {
           backgroundColor: 'action.hover',

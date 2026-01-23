@@ -31,7 +31,13 @@ export const DatePicker = () => {
 
       selectDate(date);
     },
-    [createDate, createTimeDate, selectDate, selectedDate, carryForwardIncompleteTasks]
+    [
+      createDate,
+      createTimeDate,
+      selectDate,
+      selectedDate,
+      carryForwardIncompleteTasks,
+    ]
   );
 
   const dateSelectionButton = useCallback(
