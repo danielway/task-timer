@@ -1,17 +1,61 @@
 import { TableBody as MuiTableBody } from '@mui/material';
 import { TaskCreationRow } from '../task/TaskCreationRow';
 import { TaskRow } from '../task/TaskRow';
-import { useAppStore, useDateStore, getTasksForDate } from '../../store';
+import {
+  useAppStore,
+  useDateStore,
+  useTaskStore,
+  getTasksForDate,
+  getTask,
+} from '../../store';
 import { useDragDrop } from '../../app/hooks/useDragDrop';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export const TableBody = () => {
   const selectedDate = useAppStore((state) => state.selectedDate);
+  const showCompleted = useAppStore((state) => state.showCompleted);
+  const projectFilter = useAppStore((state) => state.projectFilter);
   const dateState = useDateStore();
-  const taskIds = getTasksForDate(dateState, selectedDate);
+  const taskState = useTaskStore();
+  const allTaskIds = getTasksForDate(dateState, selectedDate);
   const reorderTasksForDate = useDateStore(
     (state) => state.reorderTasksForDate
   );
+
+  // Filter tasks by project and completion status
+  const taskIds = useMemo(() => {
+    return allTaskIds.filter((taskId) => {
+      const task = getTask(taskState, taskId);
+      if (!task) return false;
+
+      // Filter by completion status
+      if (!showCompleted && task.status === 'done') return false;
+
+      // Filter by project
+      if (projectFilter !== undefined && task.projectId !== projectFilter)
+        return false;
+
+      return true;
+    });
+  }, [allTaskIds, taskState, showCompleted, projectFilter]);
+
+  // Track which tasks are continued from a previous date
+  const continuedTaskIds = useMemo(() => {
+    const continued = new Set<number>();
+
+    // A task is "continued" if it appears on an earlier date
+    dateState.dateTasks.forEach((dt) => {
+      if (dt.date < selectedDate) {
+        dt.tasks.forEach((taskId) => {
+          if (allTaskIds.includes(taskId)) {
+            continued.add(taskId);
+          }
+        });
+      }
+    });
+
+    return continued;
+  }, [dateState.dateTasks, selectedDate, allTaskIds]);
 
   const handleReorder = useCallback(
     (newTaskOrder: number[]) => {
@@ -38,6 +82,7 @@ export const TableBody = () => {
         <TaskRow
           key={taskId}
           taskId={taskId}
+          continued={continuedTaskIds.has(taskId)}
           dragging={isDragging(taskId)}
           onDragStart={() => handleDragStart(taskId)}
           onDragEnd={handleDragEnd}

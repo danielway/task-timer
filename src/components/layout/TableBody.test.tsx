@@ -9,15 +9,21 @@ import { TableBody } from './TableBody';
 
 describe('TableBody', () => {
   const createDefaultState = (): Partial<TestState> => ({
-    app: { version: '1.0', selectedDate: mockToday },
+    app: {
+      version: '1.0',
+      selectedDate: mockToday,
+      backlogOpen: false,
+      backlogExpanded: false,
+      showCompleted: true,
+    },
     task: {
       nextTaskId: 3,
       tasks: [
-        { id: 1, description: 'Task 1', type: 'task' },
-        { id: 2, description: 'Task 2', type: 'meeting' },
+        { id: 1, description: 'Task 1', type: 'task', status: 'new', createdAt: Date.now() },
+        { id: 2, description: 'Task 2', type: 'meeting', status: 'new', createdAt: Date.now() },
       ],
     },
-    date: { dateTasks: [{ date: mockToday, tasks: [1, 2] }] },
+    date: { dateTasks: [{ date: mockToday, tasks: [1, 2], taskFirstWorkTime: {} }] },
     time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
     edit: {},
   });
@@ -44,12 +50,18 @@ describe('TableBody', () => {
 
     it('should render empty table body with only creation row when no tasks', () => {
       const stateWithNoTasks: Partial<TestState> = {
-        app: { version: '1.0', selectedDate: mockToday },
+        app: {
+          version: '1.0',
+          selectedDate: mockToday,
+          backlogOpen: false,
+          backlogExpanded: false,
+          showCompleted: true,
+        },
         task: {
           nextTaskId: 1,
           tasks: [],
         },
-        date: { dateTasks: [{ date: mockToday, tasks: [] }] },
+        date: { dateTasks: [{ date: mockToday, tasks: [], taskFirstWorkTime: {} }] },
         time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
         edit: {},
       };
@@ -73,12 +85,18 @@ describe('TableBody', () => {
 
       // Start with empty state
       const initialState: Partial<TestState> = {
-        app: { version: '1.0', selectedDate: mockToday },
+        app: {
+          version: '1.0',
+          selectedDate: mockToday,
+          backlogOpen: false,
+          backlogExpanded: false,
+          showCompleted: true,
+        },
         task: {
           nextTaskId: 1,
           tasks: [],
         },
-        date: { dateTasks: [{ date: mockToday, tasks: [] }] },
+        date: { dateTasks: [{ date: mockToday, tasks: [], taskFirstWorkTime: {} }] },
         time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
         edit: {},
       };
@@ -108,12 +126,18 @@ describe('TableBody', () => {
     it('should display multiple tasks added sequentially', () => {
       // Test adding multiple tasks one by one (real user scenario)
       const initialState: Partial<TestState> = {
-        app: { version: '1.0', selectedDate: mockToday },
+        app: {
+          version: '1.0',
+          selectedDate: mockToday,
+          backlogOpen: false,
+          backlogExpanded: false,
+          showCompleted: true,
+        },
         task: {
           nextTaskId: 1,
           tasks: [],
         },
-        date: { dateTasks: [{ date: mockToday, tasks: [] }] },
+        date: { dateTasks: [{ date: mockToday, tasks: [], taskFirstWorkTime: {} }] },
         time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
         edit: {},
       };
@@ -157,15 +181,21 @@ describe('TableBody', () => {
       const yesterday = mockToday - 24 * 60 * 60 * 1000;
 
       const stateWithPreviousDayTasks: Partial<TestState> = {
-        app: { version: '1.0', selectedDate: mockToday }, // App opens to today
+        app: {
+          version: '1.0',
+          selectedDate: mockToday,
+          backlogOpen: false,
+          backlogExpanded: false,
+          showCompleted: true,
+        }, // App opens to today
         task: {
           nextTaskId: 3,
           tasks: [], // But tasks array is empty (data corruption/migration issue)
         },
         date: {
           dateTasks: [
-            { date: yesterday, tasks: [1, 2] }, // Yesterday had task IDs 1 and 2
-            { date: mockToday, tasks: [] }, // Today has no tasks yet
+            { date: yesterday, tasks: [1, 2], taskFirstWorkTime: {} }, // Yesterday had task IDs 1 and 2
+            { date: mockToday, tasks: [], taskFirstWorkTime: {} }, // Today has no tasks yet
           ],
         },
         time: {
@@ -212,14 +242,20 @@ describe('TableBody', () => {
       const yesterday = mockToday - 24 * 60 * 60 * 1000;
 
       const stateViewingYesterday: Partial<TestState> = {
-        app: { version: '1.0', selectedDate: yesterday }, // User is viewing yesterday
+        app: {
+          version: '1.0',
+          selectedDate: yesterday,
+          backlogOpen: false,
+          backlogExpanded: false,
+          showCompleted: true,
+        }, // User is viewing yesterday
         task: {
           nextTaskId: 3,
           tasks: [], // Task objects are missing
         },
         date: {
           dateTasks: [
-            { date: yesterday, tasks: [1, 2] }, // Yesterday had task IDs 1 and 2
+            { date: yesterday, tasks: [1, 2], taskFirstWorkTime: {} }, // Yesterday had task IDs 1 and 2
           ],
         },
         time: {
@@ -261,14 +297,20 @@ describe('TableBody', () => {
       // Fix: getTask() now properly returns undefined, and TaskRow checks for
       // undefined tasks and renders nothing instead of crashing.
       const stateWithMismatch: Partial<TestState> = {
-        app: { version: '1.0', selectedDate: mockToday },
+        app: {
+          version: '1.0',
+          selectedDate: mockToday,
+          backlogOpen: false,
+          backlogExpanded: false,
+          showCompleted: true,
+        },
         task: {
           nextTaskId: 3,
           tasks: [], // Tasks array is empty!
         },
         date: {
           dateTasks: [
-            { date: mockToday, tasks: [1, 2] }, // But task IDs still exist here
+            { date: mockToday, tasks: [1, 2], taskFirstWorkTime: {} }, // But task IDs still exist here
           ],
         },
         time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
@@ -292,14 +334,20 @@ describe('TableBody', () => {
       // Partial mismatch: task ID 1 exists, but task ID 2 is missing
       // This simulates what happens if the task slice and date slice get out of sync
       const stateWithPartialMismatch: Partial<TestState> = {
-        app: { version: '1.0', selectedDate: mockToday },
+        app: {
+          version: '1.0',
+          selectedDate: mockToday,
+          backlogOpen: false,
+          backlogExpanded: false,
+          showCompleted: true,
+        },
         task: {
           nextTaskId: 3,
-          tasks: [{ id: 1, description: 'Task 1', type: 'task' }], // Only task 1 exists
+          tasks: [{ id: 1, description: 'Task 1', type: 'task', status: 'new', createdAt: Date.now() }], // Only task 1 exists
         },
         date: {
           dateTasks: [
-            { date: mockToday, tasks: [1, 2] }, // But both 1 and 2 are referenced
+            { date: mockToday, tasks: [1, 2], taskFirstWorkTime: {} }, // But both 1 and 2 are referenced
           ],
         },
         time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },

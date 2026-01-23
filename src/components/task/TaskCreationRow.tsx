@@ -7,6 +7,8 @@ import {
   Select,
   MenuItem,
   Box,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import { TimeSummaryCell } from '../time/TimeSummaryCell';
 import {
@@ -14,8 +16,10 @@ import {
   useTaskStore,
   useDateStore,
   useTimeStore,
+  useProjectStore,
   getTimesForDate,
   getNextTaskId,
+  getActiveProjects,
   type TaskTime,
 } from '../../store';
 import { DEFAULT_TASK_TYPES } from '../../types/taskTypes';
@@ -24,6 +28,8 @@ import { MAX_TASK_DESCRIPTION_LENGTH } from '../../app/constants';
 export const TaskCreationRow = () => {
   const [description, setDescription] = useState('');
   const [taskType, setTaskType] = useState('task');
+  const [projectId, setProjectId] = useState<number | undefined>(undefined);
+  const [addToBacklog, setAddToBacklog] = useState(false);
 
   const selectedDate = useAppStore((state) => state.selectedDate);
   const timeState = useTimeStore();
@@ -31,6 +37,9 @@ export const TaskCreationRow = () => {
 
   const taskState = useTaskStore();
   const nextId = getNextTaskId(taskState);
+
+  const projectState = useProjectStore();
+  const activeProjects = getActiveProjects(projectState);
 
   const createTask = useTaskStore((state) => state.createTask);
   const addTaskToDate = useDateStore((state) => state.addTaskToDate);
@@ -55,10 +64,18 @@ export const TaskCreationRow = () => {
       id: nextId,
       description: trimmedDescription,
       type: taskType,
+      projectId,
     });
-    addTaskToDate({ date: selectedDate, taskId: nextId });
+
+    // Only add to current date if not adding to backlog
+    if (!addToBacklog) {
+      addTaskToDate({ date: selectedDate, taskId: nextId });
+    }
+
     setDescription('');
     setTaskType('task');
+    setProjectId(undefined);
+    setAddToBacklog(false);
   };
 
   const totalMinutes = timesForDate.reduce(
@@ -98,6 +115,50 @@ export const TaskCreationRow = () => {
               </MenuItem>
             ))}
           </Select>
+          <Select
+            value={projectId !== undefined ? String(projectId) : ''}
+            onChange={(event) =>
+              setProjectId(
+                event.target.value === ''
+                  ? undefined
+                  : Number(event.target.value)
+              )
+            }
+            displayEmpty
+            size="small"
+            sx={{
+              fontSize: { xs: 14, sm: 12 },
+              minWidth: { xs: '100%', sm: 100 },
+              '& .MuiSelect-select': {
+                py: 0.5,
+              },
+            }}
+          >
+            <MenuItem value="">
+              <em>No Project</em>
+            </MenuItem>
+            {activeProjects.map((project) => (
+              <MenuItem key={project.id} value={project.id}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      backgroundColor: project.color,
+                    }}
+                  />
+                  {project.name}
+                </Box>
+              </MenuItem>
+            ))}
+          </Select>
           <Input
             inputRef={inputRef}
             sx={{
@@ -116,6 +177,22 @@ export const TaskCreationRow = () => {
               }
             }}
           />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={addToBacklog}
+                onChange={(e) => setAddToBacklog(e.target.checked)}
+                size="small"
+              />
+            }
+            label="Backlog"
+            sx={{
+              margin: 0,
+              '& .MuiFormControlLabel-label': {
+                fontSize: { xs: 12, sm: 11 },
+              },
+            }}
+          />
           <Button
             color="secondary"
             size="small"
@@ -125,7 +202,7 @@ export const TaskCreationRow = () => {
             }}
             onClick={addTask}
           >
-            Add Task
+            {addToBacklog ? 'Add to Backlog' : 'Add Task'}
           </Button>
         </Box>
       </TableCell>

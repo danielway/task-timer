@@ -43,13 +43,17 @@ export function resetStores() {
     selectedDate: todayTime,
     selection: undefined,
     activeEditTaskId: undefined,
+    backlogOpen: false,
+    backlogExpanded: false,
+    projectFilter: undefined,
+    showCompleted: true,
   });
   useTaskStore.setState({
     nextTaskId: 1,
     tasks: [],
   });
   useDateStore.setState({
-    dateTasks: [{ date: todayTime, tasks: [] }],
+    dateTasks: [{ date: todayTime, tasks: [], taskFirstWorkTime: {} }],
   });
   useTimeStore.setState({
     dateTimes: [{ date: todayTime, taskTimes: [] }],

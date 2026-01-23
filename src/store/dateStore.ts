@@ -8,6 +8,7 @@ import {
 export interface DateTasks {
   date: number;
   tasks: number[];
+  taskFirstWorkTime: Record<number, number>; // taskId -> first work timestamp
 }
 
 export interface DateState {
@@ -22,6 +23,17 @@ interface DateActions {
     date: number;
     newTaskOrder: number[];
   }) => void;
+  recordFirstWorkTime: (payload: {
+    date: number;
+    taskId: number;
+    time: number;
+  }) => void;
+  carryForwardTasks: (payload: {
+    fromDate: number;
+    toDate: number;
+    taskIds: number[];
+  }) => void;
+  sortTasksByFirstWork: (payload: { date: number }) => void;
 }
 
 export type DateStore = DateState & DateActions;
@@ -40,6 +52,7 @@ const getInitialState = (): DateState => {
       {
         date: today.getTime(),
         tasks: [],
+        taskFirstWorkTime: {},
       },
     ],
   };
@@ -64,6 +77,7 @@ export const useDateStore = create<DateStore>()((set, get) => {
             {
               date: payload.date,
               tasks: [],
+              taskFirstWorkTime: {},
             },
           ],
         };
@@ -91,7 +105,7 @@ export const useDateStore = create<DateStore>()((set, get) => {
         return {
           dateTasks: [
             ...state.dateTasks,
-            { date: payload.date, tasks: [payload.taskId] },
+            { date: payload.date, tasks: [payload.taskId], taskFirstWorkTime: {} },
           ],
         };
       });
@@ -124,6 +138,88 @@ export const useDateStore = create<DateStore>()((set, get) => {
       }));
       triggerPersist();
     },
+
+    recordFirstWorkTime: (payload) => {
+      set((state) => ({
+        dateTasks: state.dateTasks.map((dateObj) => {
+          if (dateObj.date !== payload.date) return dateObj;
+
+          // Only record if not already set
+          if (dateObj.taskFirstWorkTime[payload.taskId]) return dateObj;
+
+          return {
+            ...dateObj,
+            taskFirstWorkTime: {
+              ...dateObj.taskFirstWorkTime,
+              [payload.taskId]: payload.time,
+            },
+          };
+        }),
+      }));
+      triggerPersist();
+    },
+
+    carryForwardTasks: (payload) => {
+      set((state) => {
+        const toDateObj = state.dateTasks.find(
+          (dateObj) => dateObj.date === payload.toDate
+        );
+
+        // Filter out tasks that already exist on the target date
+        const existingTaskIds = new Set(toDateObj?.tasks || []);
+        const newTaskIds = payload.taskIds.filter(
+          (id) => !existingTaskIds.has(id)
+        );
+
+        if (newTaskIds.length === 0) return state;
+
+        if (toDateObj) {
+          return {
+            dateTasks: state.dateTasks.map((dateObj) =>
+              dateObj.date === payload.toDate
+                ? { ...dateObj, tasks: [...newTaskIds, ...dateObj.tasks] }
+                : dateObj
+            ),
+          };
+        }
+
+        // Create the date entry if it doesn't exist
+        return {
+          dateTasks: [
+            ...state.dateTasks,
+            {
+              date: payload.toDate,
+              tasks: newTaskIds,
+              taskFirstWorkTime: {},
+            },
+          ],
+        };
+      });
+      triggerPersist();
+    },
+
+    sortTasksByFirstWork: (payload) => {
+      set((state) => ({
+        dateTasks: state.dateTasks.map((dateObj) => {
+          if (dateObj.date !== payload.date) return dateObj;
+
+          const sortedTasks = [...dateObj.tasks].sort((a, b) => {
+            const timeA = dateObj.taskFirstWorkTime[a];
+            const timeB = dateObj.taskFirstWorkTime[b];
+
+            // Tasks without work time go to the end
+            if (!timeA && !timeB) return 0;
+            if (!timeA) return 1;
+            if (!timeB) return -1;
+
+            return timeA - timeB;
+          });
+
+          return { ...dateObj, tasks: sortedTasks };
+        }),
+      }));
+      triggerPersist();
+    },
   };
 });
 
@@ -133,3 +229,22 @@ export const getTasksForDate = (state: DateStore, date: number) =>
 
 export const getDatesWithTasks = (state: DateStore) =>
   state.dateTasks.filter((dateObj) => dateObj.tasks.length > 0);
+
+export const getDateTasksEntry = (state: DateStore, date: number) =>
+  state.dateTasks.find((dateObj) => dateObj.date === date);
+
+export const getTaskFirstWorkTime = (
+  state: DateStore,
+  date: number,
+  taskId: number
+) => state.dateTasks.find((d) => d.date === date)?.taskFirstWorkTime[taskId];
+
+export const getMostRecentDateWithTasks = (
+  state: DateStore,
+  beforeDate: number
+) => {
+  const datesWithTasks = state.dateTasks
+    .filter((dateObj) => dateObj.date < beforeDate && dateObj.tasks.length > 0)
+    .sort((a, b) => b.date - a.date);
+  return datesWithTasks[0];
+};

@@ -23,6 +23,13 @@ export interface AppState {
   selection?: KeyboardSelection;
   // If a task's description is being edited, the task's ID
   activeEditTaskId?: number;
+  // Backlog drawer state
+  backlogOpen: boolean;
+  backlogExpanded: boolean;
+  // Filter tasks by project
+  projectFilter?: number;
+  // Show/hide completed tasks
+  showCompleted: boolean;
 }
 
 interface AppActions {
@@ -35,6 +42,10 @@ interface AppActions {
   beginTaskEdit: (payload: { taskId: number }) => void;
   endTaskEdit: () => void;
   clearSelection: () => void;
+  toggleBacklog: () => void;
+  setBacklogExpanded: (expanded: boolean) => void;
+  setProjectFilter: (projectId?: number) => void;
+  setShowCompleted: (show: boolean) => void;
 }
 
 export type AppStore = AppState & AppActions;
@@ -51,6 +62,10 @@ const getInitialState = (): AppState => {
     selectedDate: persistedApp?.selectedDate ?? today.getTime(),
     selection: persistedEdit?.selection,
     activeEditTaskId: persistedEdit?.activeEditTaskId,
+    backlogOpen: persistedApp?.backlogOpen ?? false,
+    backlogExpanded: persistedApp?.backlogExpanded ?? false,
+    projectFilter: persistedApp?.projectFilter,
+    showCompleted: persistedApp?.showCompleted ?? true,
   };
 };
 
@@ -99,6 +114,26 @@ export const useAppStore = create<AppStore>()((set, get) => {
 
     clearSelection: () => {
       set({ selection: undefined });
+      triggerPersist();
+    },
+
+    toggleBacklog: () => {
+      set((state) => ({ backlogOpen: !state.backlogOpen }));
+      triggerPersist();
+    },
+
+    setBacklogExpanded: (expanded: boolean) => {
+      set({ backlogExpanded: expanded });
+      triggerPersist();
+    },
+
+    setProjectFilter: (projectId?: number) => {
+      set({ projectFilter: projectId });
+      triggerPersist();
+    },
+
+    setShowCompleted: (show: boolean) => {
+      set({ showCompleted: show });
       triggerPersist();
     },
   };

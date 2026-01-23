@@ -20,13 +20,17 @@ import {
   getTask,
   getTimesForTask,
   type TaskTime,
+  type TaskStatus,
 } from '../../store';
 import { DEFAULT_TASK_TYPES, getTaskType } from '../../types/taskTypes';
 import { MAX_TASK_DESCRIPTION_LENGTH } from '../../app/constants';
 import { setDragImage } from '../../app/dragImage';
+import { TaskStatusChip } from './TaskStatusChip';
+import { ProjectSelector } from '../project/ProjectSelector';
 
 interface TaskRowProps {
   taskId: number;
+  continued?: boolean;
   dragging?: boolean;
   onDragStart?: () => void;
   onDragEnd?: () => void;
@@ -67,10 +71,22 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
   // Get actions from stores
   const updateTask = useTaskStore((state) => state.updateTask);
   const deleteTask = useTaskStore((state) => state.deleteTask);
+  const setTaskStatus = useTaskStore((state) => state.setTaskStatus);
+  const assignProject = useTaskStore((state) => state.assignProject);
   const endTaskEdit = useAppStore((state) => state.endTaskEdit);
   const beginTaskEdit = useAppStore((state) => state.beginTaskEdit);
   const removeTaskFromDate = useDateStore((state) => state.removeTaskFromDate);
   const removeTime = useTimeStore((state) => state.removeTime);
+
+  const handleStatusChange = (newStatus: TaskStatus) => {
+    setTaskStatus({ id: props.taskId, status: newStatus });
+  };
+
+  const handleProjectChange = (projectId?: number) => {
+    assignProject({ taskId: props.taskId, projectId });
+  };
+
+  const isCompleted = task?.status === 'done';
 
   const saveDescription = () => {
     const trimmedDescription = description.trim();
@@ -152,7 +168,7 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
 
   return (
     <TableRow
-      className={`taskRow cell${props.dragging ? ' dragging' : ''}${editing ? ' editing' : ''}`}
+      className={`taskRow cell${props.dragging ? ' dragging' : ''}${editing ? ' editing' : ''}${isCompleted ? ' completed' : ''}`}
       draggable={!editing}
       onDragStart={(event) => {
         setDragImage(event);
@@ -164,6 +180,7 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
         props.onDragOver?.call(e);
       }}
       onDrop={props.onDrop}
+      sx={isCompleted ? { opacity: 0.6 } : undefined}
     >
       <TableCell
         className="icon"
@@ -213,7 +230,7 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
               fontWeight: 'bold',
               fontSize: { xs: '0.75rem', sm: '0.7rem' },
               height: { xs: 24, sm: 20 },
-              marginRight: 1,
+              marginRight: 0.5,
               minWidth: 65,
               cursor: 'pointer',
               '&:hover': {
@@ -222,6 +239,35 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
               },
             }}
           />
+          <Box sx={{ marginRight: 0.5 }}>
+            <TaskStatusChip
+              status={task.status}
+              onChange={handleStatusChange}
+            />
+          </Box>
+          <Box sx={{ marginRight: 1 }}>
+            <ProjectSelector
+              projectId={task.projectId}
+              onChange={handleProjectChange}
+              showLabel={!!task.projectId}
+            />
+          </Box>
+          {props.continued && (
+            <Chip
+              label="Continued"
+              size="small"
+              sx={{
+                backgroundColor: '#fff3e0',
+                color: '#e65100',
+                fontSize: { xs: '0.6rem', sm: '0.55rem' },
+                height: { xs: 18, sm: 16 },
+                marginRight: 1,
+                '& .MuiChip-label': {
+                  padding: '0 4px',
+                },
+              }}
+            />
+          )}
           <Menu
             anchorEl={typeMenuAnchor}
             open={typeMenuOpen}

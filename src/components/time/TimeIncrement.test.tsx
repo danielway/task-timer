@@ -7,7 +7,13 @@ import { type TestState } from '../../test-utils/test-utils';
 describe('TimeIncrement', () => {
   it('should render with unlogged class when segment is not logged', () => {
     const preloadedState: Partial<TestState> = {
-      app: { version: '1.0', selectedDate: mockToday },
+      app: {
+        version: '1.0',
+        selectedDate: mockToday,
+        backlogOpen: false,
+        backlogExpanded: false,
+        showCompleted: true,
+      },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {},
     };
@@ -40,7 +46,13 @@ describe('TimeIncrement', () => {
     ).getTime();
 
     const preloadedState: Partial<TestState> = {
-      app: { version: '1.0', selectedDate: mockToday },
+      app: {
+        version: '1.0',
+        selectedDate: mockToday,
+        backlogOpen: false,
+        backlogExpanded: false,
+        showCompleted: true,
+      },
       time: {
         dateTimes: [
           {
@@ -65,13 +77,19 @@ describe('TimeIncrement', () => {
     const user = userEvent.setup();
 
     const preloadedState: Partial<TestState> = {
-      app: { version: '1.0', selectedDate: mockToday },
+      app: {
+        version: '1.0',
+        selectedDate: mockToday,
+        backlogOpen: false,
+        backlogExpanded: false,
+        showCompleted: true,
+      },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {},
-      date: { dateTasks: [{ date: mockToday, tasks: [1] }] },
+      date: { dateTasks: [{ date: mockToday, tasks: [1], taskFirstWorkTime: {} }] },
       task: {
         nextTaskId: 2,
-        tasks: [{ id: 1, description: 'Task 1', type: 'task' }],
+        tasks: [{ id: 1, description: 'Task 1', type: 'task', status: 'new', createdAt: Date.now() }],
       },
     };
 
@@ -110,7 +128,13 @@ describe('TimeIncrement', () => {
     ).getTime();
 
     const preloadedState: Partial<TestState> = {
-      app: { version: '1.0', selectedDate: mockToday },
+      app: {
+        version: '1.0',
+        selectedDate: mockToday,
+        backlogOpen: false,
+        backlogExpanded: false,
+        showCompleted: true,
+      },
       time: {
         dateTimes: [
           {
@@ -120,10 +144,10 @@ describe('TimeIncrement', () => {
         ],
       },
       edit: {},
-      date: { dateTasks: [{ date: mockToday, tasks: [1] }] },
+      date: { dateTasks: [{ date: mockToday, tasks: [1], taskFirstWorkTime: {} }] },
       task: {
         nextTaskId: 2,
-        tasks: [{ id: 1, description: 'Task 1', type: 'task' }],
+        tasks: [{ id: 1, description: 'Task 1', type: 'task', status: 'new', createdAt: Date.now() }],
       },
     };
 
@@ -141,7 +165,13 @@ describe('TimeIncrement', () => {
 
   it('should show selected border when segment is keyboard selected', () => {
     const preloadedState: Partial<TestState> = {
-      app: { version: '1.0', selectedDate: mockToday },
+      app: {
+        version: '1.0',
+        selectedDate: mockToday,
+        backlogOpen: false,
+        backlogExpanded: false,
+        showCompleted: true,
+      },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {
         selection: {
@@ -164,7 +194,13 @@ describe('TimeIncrement', () => {
 
   it('should not show selected border when different segment is selected', () => {
     const preloadedState: Partial<TestState> = {
-      app: { version: '1.0', selectedDate: mockToday },
+      app: {
+        version: '1.0',
+        selectedDate: mockToday,
+        backlogOpen: false,
+        backlogExpanded: false,
+        showCompleted: true,
+      },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {
         selection: {
@@ -187,7 +223,13 @@ describe('TimeIncrement', () => {
 
   it('should not show selected border when different task is selected', () => {
     const preloadedState: Partial<TestState> = {
-      app: { version: '1.0', selectedDate: mockToday },
+      app: {
+        version: '1.0',
+        selectedDate: mockToday,
+        backlogOpen: false,
+        backlogExpanded: false,
+        showCompleted: true,
+      },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {
         selection: {
@@ -212,13 +254,19 @@ describe('TimeIncrement', () => {
     const user = userEvent.setup();
 
     const preloadedState: Partial<TestState> = {
-      app: { version: '1.0', selectedDate: mockToday },
+      app: {
+        version: '1.0',
+        selectedDate: mockToday,
+        backlogOpen: false,
+        backlogExpanded: false,
+        showCompleted: true,
+      },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {},
-      date: { dateTasks: [{ date: mockToday, tasks: [1] }] },
+      date: { dateTasks: [{ date: mockToday, tasks: [1], taskFirstWorkTime: {} }] },
       task: {
         nextTaskId: 2,
-        tasks: [{ id: 1, description: 'Task 1', type: 'task' }],
+        tasks: [{ id: 1, description: 'Task 1', type: 'task', status: 'new', createdAt: Date.now() }],
       },
     };
 

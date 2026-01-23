@@ -10,12 +10,18 @@ describe('TaskRow', () => {
     taskId: number = 1,
     description: string = 'Test Task'
   ): Partial<TestState> => ({
-    app: { version: '1.0', selectedDate: mockToday },
+    app: {
+      version: '1.0',
+      selectedDate: mockToday,
+      backlogOpen: false,
+      backlogExpanded: false,
+      showCompleted: true,
+    },
     task: {
       nextTaskId: taskId + 1,
-      tasks: [{ id: taskId, description, type: 'task' }],
+      tasks: [{ id: taskId, description, type: 'task', status: 'new', createdAt: Date.now() }],
     },
-    date: { dateTasks: [{ date: mockToday, tasks: [taskId] }] },
+    date: { dateTasks: [{ date: mockToday, tasks: [taskId], taskFirstWorkTime: {} }] },
     time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
     edit: {},
   });

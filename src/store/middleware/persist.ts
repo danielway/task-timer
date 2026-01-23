@@ -1,17 +1,36 @@
 const STORAGE_KEY = 'state';
+const CURRENT_VERSION = '2.0.0';
+
+export type TaskStatus = 'new' | 'in_progress' | 'done';
 
 // Combined state structure matching the existing Redux state
 export interface PersistedState {
   app: {
     version: string;
     selectedDate: number;
+    backlogOpen: boolean;
+    backlogExpanded: boolean;
+    projectFilter?: number;
+    showCompleted: boolean;
   };
   task: {
     nextTaskId: number;
-    tasks: Array<{ id: number; description: string; type: string }>;
+    tasks: Array<{
+      id: number;
+      description: string;
+      type: string;
+      status: TaskStatus;
+      projectId?: number;
+      createdAt: number;
+      completedAt?: number;
+    }>;
   };
   date: {
-    dateTasks: Array<{ date: number; tasks: number[] }>;
+    dateTasks: Array<{
+      date: number;
+      tasks: number[];
+      taskFirstWorkTime: Record<number, number>;
+    }>;
   };
   time: {
     dateTimes: Array<{
@@ -27,7 +46,96 @@ export interface PersistedState {
     };
     activeEditTaskId?: number;
   };
+  project: {
+    nextProjectId: number;
+    projects: Array<{
+      id: number;
+      name: string;
+      color: string;
+      description?: string;
+      createdAt: number;
+      archived: boolean;
+    }>;
+  };
 }
+
+// Migration function for v1 -> v2
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const migrateToV2 = (state: any): PersistedState => {
+  const now = Date.now();
+
+  return {
+    app: {
+      version: CURRENT_VERSION,
+      selectedDate: state.app?.selectedDate ?? now,
+      backlogOpen: false,
+      backlogExpanded: false,
+      projectFilter: undefined,
+      showCompleted: true,
+    },
+    task: {
+      nextTaskId: state.task?.nextTaskId ?? 1,
+      tasks: (state.task?.tasks || []).map(
+        (task: { id: number; description: string; type: string }) => ({
+          ...task,
+          status: 'new' as TaskStatus,
+          projectId: undefined,
+          createdAt: now,
+          completedAt: undefined,
+        })
+      ),
+    },
+    date: {
+      dateTasks: (state.date?.dateTasks || []).map(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (dt: any) => ({
+          date: dt.date,
+          tasks: dt.tasks,
+          taskFirstWorkTime: dt.taskFirstWorkTime ?? {},
+        })
+      ),
+    },
+    time: state.time ?? { dateTimes: [] },
+    edit: state.edit ?? {},
+    project: {
+      nextProjectId: 2,
+      projects: [
+        {
+          id: 1,
+          name: 'Inbox',
+          color: '#757575',
+          createdAt: now,
+          archived: false,
+        },
+      ],
+    },
+  };
+};
+
+// Check if state needs migration
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const needsMigration = (state: any): boolean => {
+  // No project store means v1
+  if (!state.project) return true;
+
+  // Tasks missing status field means v1
+  if (
+    state.task?.tasks?.length > 0 &&
+    state.task.tasks[0].status === undefined
+  ) {
+    return true;
+  }
+
+  // Date tasks missing taskFirstWorkTime means v1
+  if (
+    state.date?.dateTasks?.length > 0 &&
+    state.date.dateTasks[0].taskFirstWorkTime === undefined
+  ) {
+    return true;
+  }
+
+  return false;
+};
 
 // Load the entire persisted state from localStorage
 export const loadPersistedState = (): PersistedState | undefined => {
@@ -37,9 +145,14 @@ export const loadPersistedState = (): PersistedState | undefined => {
       return undefined;
     }
 
-    const persistedState = JSON.parse(persistedStateJson);
+    let persistedState = JSON.parse(persistedStateJson);
 
-    // State migrations can be added here in the future
+    // Apply migrations if needed
+    if (needsMigration(persistedState)) {
+      persistedState = migrateToV2(persistedState);
+      // Save migrated state
+      savePersistedState(persistedState);
+    }
 
     return persistedState;
   } catch (error) {
@@ -87,11 +200,16 @@ const persistCombinedState = (): void => {
   const taskState = storeGetters['task']?.() || {};
   const dateState = storeGetters['date']?.() || {};
   const timeState = storeGetters['time']?.() || {};
+  const projectState = storeGetters['project']?.() || {};
 
   const combinedState: Partial<PersistedState> = {
     app: {
-      version: (appState.version as string) || 'REPLACE_WITH_RELEASE',
+      version: (appState.version as string) || CURRENT_VERSION,
       selectedDate: appState.selectedDate as number,
+      backlogOpen: (appState.backlogOpen as boolean) ?? false,
+      backlogExpanded: (appState.backlogExpanded as boolean) ?? false,
+      projectFilter: appState.projectFilter as number | undefined,
+      showCompleted: (appState.showCompleted as boolean) ?? true,
     },
     task: {
       nextTaskId: taskState.nextTaskId as number,
@@ -107,6 +225,10 @@ const persistCombinedState = (): void => {
     edit: {
       selection: appState.selection as PersistedState['edit']['selection'],
       activeEditTaskId: appState.activeEditTaskId as number | undefined,
+    },
+    project: {
+      nextProjectId: projectState.nextProjectId as number,
+      projects: projectState.projects as PersistedState['project']['projects'],
     },
   };
 

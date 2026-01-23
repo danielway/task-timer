@@ -7,6 +7,8 @@ export const createMockTask = (overrides: Partial<Task> = {}): Task => ({
   id: 1,
   description: 'Test Task',
   type: 'task',
+  status: 'new',
+  createdAt: Date.now(),
   ...overrides,
 });
 
@@ -22,6 +24,7 @@ export const createMockTaskTime = (
 export const createMockDateTask = (date: number, tasks: number[]) => ({
   date,
   tasks,
+  taskFirstWorkTime: {},
 });
 
 export const createMockDateTimes = (
@@ -38,6 +41,9 @@ export const createMockState = (
   app: {
     version: '1.0.0',
     selectedDate: mockToday,
+    backlogOpen: false,
+    backlogExpanded: false,
+    showCompleted: true,
   },
   task: {
     nextTaskId: 1,
@@ -61,13 +67,24 @@ export const createMockStateWithTask = (
   app: {
     version: '1.0.0',
     selectedDate: date,
+    backlogOpen: false,
+    backlogExpanded: false,
+    showCompleted: true,
   },
   task: {
     nextTaskId: taskId + 1,
-    tasks: [{ id: taskId, description, type: 'task' }],
+    tasks: [
+      {
+        id: taskId,
+        description,
+        type: 'task',
+        status: 'new',
+        createdAt: Date.now(),
+      },
+    ],
   },
   date: {
-    dateTasks: [{ date, tasks: [taskId] }],
+    dateTasks: [{ date, tasks: [taskId], taskFirstWorkTime: {} }],
   },
   time: {
     dateTimes: [{ date, taskTimes: [] }],
@@ -104,13 +121,24 @@ export const createMockStateWithTaskAndTime = (
     app: {
       version: '1.0.0',
       selectedDate: date,
+      backlogOpen: false,
+      backlogExpanded: false,
+      showCompleted: true,
     },
     task: {
       nextTaskId: taskId + 1,
-      tasks: [{ id: taskId, description, type: 'task' }],
+      tasks: [
+        {
+          id: taskId,
+          description,
+          type: 'task',
+          status: 'new',
+          createdAt: Date.now(),
+        },
+      ],
     },
     date: {
-      dateTasks: [{ date, tasks: [taskId] }],
+      dateTasks: [{ date, tasks: [taskId], taskFirstWorkTime: {} }],
     },
     time: {
       dateTimes: [

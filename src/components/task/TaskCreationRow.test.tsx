@@ -10,9 +10,15 @@ import { TaskCreationRow } from './TaskCreationRow';
 
 describe('TaskCreationRow', () => {
   const defaultState: Partial<TestState> = {
-    app: { version: '1.0', selectedDate: mockToday },
+    app: {
+      version: '1.0',
+      selectedDate: mockToday,
+      backlogOpen: false,
+      backlogExpanded: false,
+      showCompleted: true,
+    },
     task: { nextTaskId: 1, tasks: [] },
-    date: { dateTasks: [{ date: mockToday, tasks: [] }] },
+    date: { dateTasks: [{ date: mockToday, tasks: [], taskFirstWorkTime: {} }] },
     time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
   };
 
@@ -201,9 +207,15 @@ describe('TaskCreationRow', () => {
     const end2 = new Date(mockToday).setHours(8, 15, 0, 0);
 
     const stateWithTime: Partial<TestState> = {
-      app: { version: '1.0', selectedDate: mockToday },
+      app: {
+        version: '1.0',
+        selectedDate: mockToday,
+        backlogOpen: false,
+        backlogExpanded: false,
+        showCompleted: true,
+      },
       task: { nextTaskId: 3, tasks: [] },
-      date: { dateTasks: [{ date: mockToday, tasks: [] }] },
+      date: { dateTasks: [{ date: mockToday, tasks: [], taskFirstWorkTime: {} }] },
       time: {
         dateTimes: [
           {
@@ -231,15 +243,21 @@ describe('TaskCreationRow', () => {
     const user = userEvent.setup();
 
     const stateWithExistingTasks: Partial<TestState> = {
-      app: { version: '1.0', selectedDate: mockToday },
+      app: {
+        version: '1.0',
+        selectedDate: mockToday,
+        backlogOpen: false,
+        backlogExpanded: false,
+        showCompleted: true,
+      },
       task: {
         nextTaskId: 5,
         tasks: [
-          { id: 1, description: 'Task 1', type: 'task' },
-          { id: 2, description: 'Task 2', type: 'task' },
+          { id: 1, description: 'Task 1', type: 'task', status: 'new', createdAt: Date.now() },
+          { id: 2, description: 'Task 2', type: 'task', status: 'new', createdAt: Date.now() },
         ],
       },
-      date: { dateTasks: [{ date: mockToday, tasks: [1, 2] }] },
+      date: { dateTasks: [{ date: mockToday, tasks: [1, 2], taskFirstWorkTime: {} }] },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
     };
 
