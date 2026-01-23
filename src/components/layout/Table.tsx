@@ -7,16 +7,15 @@ import {
   TableCell,
 } from '@mui/material';
 import { TimeHeaderCells } from '../time/TimeHeaderCells';
-import { useAppSelector } from '../../app/hooks';
+import { useAppStore, useDateStore, getTasksForDate } from '../../store';
 import { TimeCursor } from '../time/TimeCursor';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { TableBody } from './TableBody';
-import { getSelectedDate } from '../../app/slices/appSlice';
-import { getTasksForDate } from '../../app/slices/dateSlice';
 
 export const Table = () => {
-  const selectedDate = useAppSelector(getSelectedDate);
-  const tasks = useAppSelector((state) => getTasksForDate(state, selectedDate));
+  const selectedDate = useAppStore((state) => state.selectedDate);
+  const dateState = useDateStore();
+  const tasks = getTasksForDate(dateState, selectedDate);
 
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -64,10 +63,14 @@ export const Table = () => {
       <MuiTable size="small" sx={{ minWidth: { xs: 800, sm: 'auto' } }}>
         <TableHead>
           <TableRow>
-            <TableCell className="icon" />
-            <TableCell className="header">Task</TableCell>
+            <TableCell component="th" className="icon" />
+            <TableCell component="th" className="header">
+              Task
+            </TableCell>
             <TimeHeaderCells onNewPosition={handleNewHoursPosition} />
-            <TableCell className="header">Total</TableCell>
+            <TableCell component="th" className="time">
+              Total
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody />

@@ -2,13 +2,13 @@ import './TimeRow.css';
 import { TimeIncrement } from './TimeIncrement';
 import { TableCell } from '@mui/material';
 import { HOUR_COUNT } from '../../app/constants';
-import { useCallback } from 'react';
+import { memo, useCallback } from 'react';
 
 interface TimeRowProps {
   taskId: number;
 }
 
-export const TimeRowCell = (props: TimeRowProps) => {
+export const TimeRowCell = memo(function TimeRowCell(props: TimeRowProps) {
   const renderSegment = useCallback(
     (segment: number) => (
       <TimeIncrement key={segment} taskId={props.taskId} segment={segment} />
@@ -30,4 +30,4 @@ export const TimeRowCell = (props: TimeRowProps) => {
   }
 
   return <>{hours}</>;
-};
+});

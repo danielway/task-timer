@@ -1,15 +1,26 @@
 import { describe, it, expect } from 'vitest';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithProviders, mockToday } from '../../test-utils/test-utils';
+import {
+  renderWithProviders,
+  mockToday,
+  type TestState,
+} from '../../test-utils/test-utils';
 import { TaskCreationRow } from './TaskCreationRow';
-import type { RootState } from '../../app/store';
 
 describe('TaskCreationRow', () => {
-  const defaultState: Partial<RootState> = {
-    app: { version: '1.0', selectedDate: mockToday },
+  const defaultState: Partial<TestState> = {
+    app: {
+      version: '1.0',
+      selectedDate: mockToday,
+      backlogOpen: false,
+      backlogExpanded: false,
+      showCompleted: true,
+    },
     task: { nextTaskId: 1, tasks: [] },
-    date: { dateTasks: [{ date: mockToday, tasks: [] }] },
+    date: {
+      dateTasks: [{ date: mockToday, tasks: [], taskFirstWorkTime: {} }],
+    },
     time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
   };
 
@@ -41,7 +52,7 @@ describe('TaskCreationRow', () => {
   it('should create task when clicking Add Task button', async () => {
     const user = userEvent.setup();
 
-    const { store } = renderWithProviders(<TaskCreationRow />, {
+    const { stores } = renderWithProviders(<TaskCreationRow />, {
       preloadedState: defaultState,
     });
 
@@ -51,16 +62,16 @@ describe('TaskCreationRow', () => {
     await user.type(input, 'My New Task');
     await user.click(button);
 
-    const state = store.getState() as RootState;
-    expect(state.task.tasks).toHaveLength(1);
-    expect(state.task.tasks[0].description).toBe('My New Task');
-    expect(state.task.tasks[0].id).toBe(1);
+    const taskState = stores.task.getState();
+    expect(taskState.tasks).toHaveLength(1);
+    expect(taskState.tasks[0].description).toBe('My New Task');
+    expect(taskState.tasks[0].id).toBe(1);
   });
 
   it('should add task to current date when created', async () => {
     const user = userEvent.setup();
 
-    const { store } = renderWithProviders(<TaskCreationRow />, {
+    const { stores } = renderWithProviders(<TaskCreationRow />, {
       preloadedState: defaultState,
     });
 
@@ -70,8 +81,8 @@ describe('TaskCreationRow', () => {
     await user.type(input, 'My New Task');
     await user.click(button);
 
-    const state = store.getState() as RootState;
-    expect(state.date.dateTasks[0].tasks).toContain(1);
+    const dateState = stores.date.getState();
+    expect(dateState.dateTasks[0].tasks).toContain(1);
   });
 
   it('should clear input after creating task', async () => {
@@ -95,7 +106,7 @@ describe('TaskCreationRow', () => {
   it('should increment nextTaskId after creating task', async () => {
     const user = userEvent.setup();
 
-    const { store } = renderWithProviders(<TaskCreationRow />, {
+    const { stores } = renderWithProviders(<TaskCreationRow />, {
       preloadedState: defaultState,
     });
 
@@ -105,20 +116,20 @@ describe('TaskCreationRow', () => {
     await user.type(input, 'Task 1');
     await user.click(button);
 
-    let state = store.getState() as RootState;
-    expect(state.task.nextTaskId).toBe(2);
+    let taskState = stores.task.getState();
+    expect(taskState.nextTaskId).toBe(2);
 
     await user.type(input, 'Task 2');
     await user.click(button);
 
-    state = store.getState() as RootState;
-    expect(state.task.nextTaskId).toBe(3);
+    taskState = stores.task.getState();
+    expect(taskState.nextTaskId).toBe(3);
   });
 
   it('should create task when pressing Enter key', async () => {
     const user = userEvent.setup();
 
-    const { store } = renderWithProviders(<TaskCreationRow />, {
+    const { stores } = renderWithProviders(<TaskCreationRow />, {
       preloadedState: defaultState,
     });
 
@@ -126,9 +137,9 @@ describe('TaskCreationRow', () => {
 
     await user.type(input, 'Task via Enter{Enter}');
 
-    const state = store.getState() as RootState;
-    expect(state.task.tasks).toHaveLength(1);
-    expect(state.task.tasks[0].description).toBe('Task via Enter');
+    const taskState = stores.task.getState();
+    expect(taskState.tasks).toHaveLength(1);
+    expect(taskState.tasks[0].description).toBe('Task via Enter');
   });
 
   it('should clear input when pressing Escape key', async () => {
@@ -152,7 +163,7 @@ describe('TaskCreationRow', () => {
   it('should allow creating multiple tasks', async () => {
     const user = userEvent.setup();
 
-    const { store } = renderWithProviders(<TaskCreationRow />, {
+    const { stores } = renderWithProviders(<TaskCreationRow />, {
       preloadedState: defaultState,
     });
 
@@ -168,17 +179,17 @@ describe('TaskCreationRow', () => {
     await user.type(input, 'Task 3');
     await user.click(button);
 
-    const state = store.getState() as RootState;
-    expect(state.task.tasks).toHaveLength(3);
-    expect(state.task.tasks[0].description).toBe('Task 1');
-    expect(state.task.tasks[1].description).toBe('Task 2');
-    expect(state.task.tasks[2].description).toBe('Task 3');
+    const taskState = stores.task.getState();
+    expect(taskState.tasks).toHaveLength(3);
+    expect(taskState.tasks[0].description).toBe('Task 1');
+    expect(taskState.tasks[1].description).toBe('Task 2');
+    expect(taskState.tasks[2].description).toBe('Task 3');
   });
 
   it('should not create task with empty description', async () => {
     const user = userEvent.setup();
 
-    const { store } = renderWithProviders(<TaskCreationRow />, {
+    const { stores } = renderWithProviders(<TaskCreationRow />, {
       preloadedState: defaultState,
     });
 
@@ -186,61 +197,48 @@ describe('TaskCreationRow', () => {
 
     await user.click(button);
 
-    const state = store.getState() as RootState;
+    const taskState = stores.task.getState();
     // Should not create a task with empty description due to validation
-    expect(state.task.tasks).toHaveLength(0);
-  });
-
-  it('should display total time for date', () => {
-    const start1 = new Date(mockToday).setHours(7, 0, 0, 0);
-    const end1 = new Date(mockToday).setHours(7, 30, 0, 0);
-    const start2 = new Date(mockToday).setHours(8, 0, 0, 0);
-    const end2 = new Date(mockToday).setHours(8, 15, 0, 0);
-
-    const stateWithTime: Partial<RootState> = {
-      app: { version: '1.0', selectedDate: mockToday },
-      task: { nextTaskId: 3, tasks: [] },
-      date: { dateTasks: [{ date: mockToday, tasks: [] }] },
-      time: {
-        dateTimes: [
-          {
-            date: mockToday,
-            taskTimes: [
-              { task: 1, start: start1, end: end1 },
-              { task: 2, start: start2, end: end2 },
-            ],
-          },
-        ],
-      },
-    };
-
-    const { container } = renderWithProviders(<TaskCreationRow />, {
-      preloadedState: stateWithTime,
-    });
-
-    // Total should be 30 + 15 = 45 minutes = 0:45
-    // Text might be split across elements, so check container text
-    expect(container.textContent).toContain('0');
-    expect(container.textContent).toContain('45');
+    expect(taskState.tasks).toHaveLength(0);
   });
 
   it('should use correct task id based on nextTaskId', async () => {
     const user = userEvent.setup();
 
-    const stateWithExistingTasks: Partial<RootState> = {
-      app: { version: '1.0', selectedDate: mockToday },
+    const stateWithExistingTasks: Partial<TestState> = {
+      app: {
+        version: '1.0',
+        selectedDate: mockToday,
+        backlogOpen: false,
+        backlogExpanded: false,
+        showCompleted: true,
+      },
       task: {
         nextTaskId: 5,
         tasks: [
-          { id: 1, description: 'Task 1', type: 'task' },
-          { id: 2, description: 'Task 2', type: 'task' },
+          {
+            id: 1,
+            description: 'Task 1',
+            type: 'task',
+            status: 'new',
+            createdAt: Date.now(),
+          },
+          {
+            id: 2,
+            description: 'Task 2',
+            type: 'task',
+            status: 'new',
+            createdAt: Date.now(),
+          },
         ],
       },
-      date: { dateTasks: [{ date: mockToday, tasks: [1, 2] }] },
+      date: {
+        dateTasks: [{ date: mockToday, tasks: [1, 2], taskFirstWorkTime: {} }],
+      },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
     };
 
-    const { store } = renderWithProviders(<TaskCreationRow />, {
+    const { stores } = renderWithProviders(<TaskCreationRow />, {
       preloadedState: stateWithExistingTasks,
     });
 
@@ -250,8 +248,8 @@ describe('TaskCreationRow', () => {
     await user.type(input, 'New Task');
     await user.click(button);
 
-    const state = store.getState() as RootState;
-    expect(state.task.tasks).toHaveLength(3);
-    expect(state.task.tasks[2].id).toBe(5);
+    const taskState = stores.task.getState();
+    expect(taskState.tasks).toHaveLength(3);
+    expect(taskState.tasks[2].id).toBe(5);
   });
 });

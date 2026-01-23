@@ -1,10 +1,8 @@
 import { Button, styled } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useAppStore, useDateStore, useTimeStore } from '../../store';
 import { DatePopover } from './DatePopover';
 import { useCallback } from 'react';
-import { getSelectedDate, selectDate } from '../../app/slices/appSlice';
-import { createDate } from '../../app/slices/dateSlice';
-import { createDate as createTimeDate } from '../../app/slices/timeSlice';
+import { useTaskContinuation } from '../../app/hooks/useTaskContinuation';
 
 const DateButton = styled(Button)(() => ({
   marginLeft: '10px',
@@ -12,19 +10,34 @@ const DateButton = styled(Button)(() => ({
 }));
 
 export const DatePicker = () => {
-  const dispatch = useAppDispatch();
+  const selectedDate = useAppStore((state) => state.selectedDate);
+  const selectDate = useAppStore((state) => state.selectDate);
+  const createDate = useDateStore((state) => state.createDate);
+  const createTimeDate = useTimeStore((state) => state.createDate);
+  const { carryForwardIncompleteTasks } = useTaskContinuation();
 
-  const selectedDate = useAppSelector(getSelectedDate);
   const previousDate = selectedDate - 86400000;
   const nextDate = selectedDate + 86400000;
 
   const onSelectDate = useCallback(
     (date: number) => {
-      dispatch(createDate({ date }));
-      dispatch(createTimeDate({ date }));
-      dispatch(selectDate(date));
+      createDate({ date });
+      createTimeDate({ date });
+
+      // Carry forward incomplete tasks when navigating to a future date
+      if (date > selectedDate) {
+        carryForwardIncompleteTasks(date);
+      }
+
+      selectDate(date);
     },
-    [dispatch]
+    [
+      createDate,
+      createTimeDate,
+      selectDate,
+      selectedDate,
+      carryForwardIncompleteTasks,
+    ]
   );
 
   const dateSelectionButton = useCallback(

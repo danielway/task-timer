@@ -1,38 +1,36 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import './TaskRow.css';
 import {
   TableRow,
   Input,
-  Button,
   TableCell,
-  Select,
-  MenuItem,
   Chip,
+  Menu,
+  MenuItem,
   Box,
 } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { TimeRowCell } from '../time/TimeRow';
 import { TimeSummaryCell } from '../time/TimeSummaryCell';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { deleteTask, getTask, updateTask } from '../../app/slices/taskSlice';
 import {
-  beginTaskEdit,
-  endTaskEdit,
-  getActiveEditTaskId,
-  getSelection,
-} from '../../app/slices/editSlice';
-import { getSelectedDate } from '../../app/slices/appSlice';
-import {
-  type TaskTime,
+  useAppStore,
+  useTaskStore,
+  useDateStore,
+  useTimeStore,
+  getTask,
   getTimesForTask,
-  removeTime,
-} from '../../app/slices/timeSlice';
-import { removeTaskFromDate } from '../../app/slices/dateSlice';
+  type TaskTime,
+  type TaskStatus,
+} from '../../store';
 import { DEFAULT_TASK_TYPES, getTaskType } from '../../types/taskTypes';
 import { MAX_TASK_DESCRIPTION_LENGTH } from '../../app/constants';
+import { setDragImage } from '../../app/dragImage';
+import { TaskStatusChip } from './TaskStatusChip';
+import { ProjectSelector } from '../project/ProjectSelector';
 
 interface TaskRowProps {
   taskId: number;
+  continued?: boolean;
   dragging?: boolean;
   onDragStart?: () => void;
   onDragEnd?: () => void;
@@ -40,39 +38,66 @@ interface TaskRowProps {
   onDrop?: () => void;
 }
 
-export const TaskRow = (props: TaskRowProps) => {
-  const dispatch = useAppDispatch();
-
-  const task = useAppSelector((state) => getTask(state.task, props.taskId));
+export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
+  // Get state from stores
+  const taskState = useTaskStore();
+  const task = getTask(taskState, props.taskId);
 
   const [description, setDescription] = useState('');
-  const [taskType, setTaskType] = useState(task?.type || 'task');
   useEffect(() => setDescription(task?.description || ''), [task?.description]);
-  useEffect(() => setTaskType(task?.type || 'task'), [task?.type]);
 
-  const uiSelection = useAppSelector(getSelection);
+  const [typeMenuAnchor, setTypeMenuAnchor] = useState<null | HTMLElement>(
+    null
+  );
+  const typeMenuOpen = Boolean(typeMenuAnchor);
+
+  const uiSelection = useAppStore((state) => state.selection);
   const descriptionSelected =
     uiSelection?.taskId === props.taskId && uiSelection?.description;
 
-  const activeEditTaskId = useAppSelector(getActiveEditTaskId);
+  const activeEditTaskId = useAppStore((state) => state.activeEditTaskId);
   const editing = activeEditTaskId === props.taskId;
 
   const inputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => inputRef.current?.focus(), [inputRef, editing]);
+  useEffect(() => {
+    if (editing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [editing]);
 
-  const selectedDate = useAppSelector(getSelectedDate);
-  const times = useAppSelector((state) =>
-    getTimesForTask(state, selectedDate, props.taskId)
-  );
+  const selectedDate = useAppStore((state) => state.selectedDate);
+  const timeState = useTimeStore();
+  const times = getTimesForTask(timeState, selectedDate, props.taskId);
 
-  const doUpdateTask = () => {
+  // Get actions from stores
+  const updateTask = useTaskStore((state) => state.updateTask);
+  const deleteTask = useTaskStore((state) => state.deleteTask);
+  const setTaskStatus = useTaskStore((state) => state.setTaskStatus);
+  const assignProject = useTaskStore((state) => state.assignProject);
+  const endTaskEdit = useAppStore((state) => state.endTaskEdit);
+  const beginTaskEdit = useAppStore((state) => state.beginTaskEdit);
+  const removeTaskFromDate = useDateStore((state) => state.removeTaskFromDate);
+  const removeTime = useTimeStore((state) => state.removeTime);
+
+  const handleStatusChange = (newStatus: TaskStatus) => {
+    setTaskStatus({ id: props.taskId, status: newStatus });
+  };
+
+  const handleProjectChange = (projectId?: number) => {
+    assignProject({ taskId: props.taskId, projectId });
+  };
+
+  const isCompleted = task?.status === 'done';
+
+  const saveDescription = () => {
     const trimmedDescription = description.trim();
 
     // Validate description is not empty
     if (!trimmedDescription) {
-      // Don't update if description is empty, just cancel edit
-      dispatch(endTaskEdit());
+      // Revert to original if empty
       setDescription(task?.description || '');
+      endTaskEdit();
       return;
     }
 
@@ -84,27 +109,36 @@ export const TaskRow = (props: TaskRowProps) => {
       return;
     }
 
-    dispatch(
+    if (trimmedDescription !== task?.description) {
       updateTask({
         id: props.taskId,
         description: trimmedDescription,
-        type: taskType,
-      })
-    );
-    dispatch(endTaskEdit());
+        type: task?.type || 'task',
+      });
+    }
+    endTaskEdit();
+  };
+
+  const handleTypeSelect = (typeId: string) => {
+    setTypeMenuAnchor(null);
+    if (typeId !== task?.type) {
+      updateTask({
+        id: props.taskId,
+        description: task?.description || '',
+        type: typeId,
+      });
+    }
   };
 
   const doDeleteTask = () => {
-    dispatch(removeTaskFromDate({ date: selectedDate, taskId: props.taskId }));
-    dispatch(deleteTask({ id: props.taskId }));
+    removeTaskFromDate({ date: selectedDate, taskId: props.taskId });
+    deleteTask({ id: props.taskId });
     times.forEach((time) =>
-      dispatch(
-        removeTime({
-          date: selectedDate,
-          taskId: props.taskId,
-          start: time.start,
-        })
-      )
+      removeTime({
+        date: selectedDate,
+        taskId: props.taskId,
+        start: time.start,
+      })
     );
   };
 
@@ -134,30 +168,12 @@ export const TaskRow = (props: TaskRowProps) => {
     return end / 1000 / 60 - time.start / 1000 / 60;
   };
 
-  const renderViewRow = () => (
+  return (
     <TableRow
-      className={`taskRow cell${props.dragging ? ' dragging' : ''}`}
-      draggable="true"
+      className={`taskRow cell${props.dragging ? ' dragging' : ''}${editing ? ' editing' : ''}${isCompleted ? ' completed' : ''}`}
+      draggable={!editing}
       onDragStart={(event) => {
-        // Custom drag image logic for white background with cursor offset
-        const target = event.currentTarget;
-        const clone = target.cloneNode(true) as HTMLElement;
-        clone.style.background = '#fff';
-        clone.style.color = getComputedStyle(target).color;
-        clone.style.position = 'absolute';
-        clone.style.top = '-9999px';
-        clone.style.left = '-9999px';
-        clone.style.width = `${target.offsetWidth}px`;
-        clone.style.height = `${target.offsetHeight}px`;
-        document.body.appendChild(clone);
-
-        // Calculate offset between mouse and row top-left
-        const rect = target.getBoundingClientRect();
-        const offsetX = event.clientX - rect.left;
-        const offsetY = event.clientY - rect.top;
-        event.dataTransfer.setDragImage(clone, offsetX, offsetY);
-
-        setTimeout(() => document.body.removeChild(clone), 0);
+        setDragImage(event);
         if (props.onDragStart) props.onDragStart();
       }}
       onDragEnd={props.onDragEnd}
@@ -166,8 +182,15 @@ export const TaskRow = (props: TaskRowProps) => {
         props.onDragOver?.call(e);
       }}
       onDrop={props.onDrop}
+      sx={isCompleted ? { opacity: 0.6 } : undefined}
     >
-      <TableCell className="icon">
+      <TableCell
+        className="icon"
+        sx={{
+          backgroundColor: currentTaskType.backgroundColor,
+          borderLeft: `4px solid ${currentTaskType.color}`,
+        }}
+      >
         <HighlightOffIcon
           onClick={doDeleteTask}
           className="taskDelete"
@@ -188,100 +211,126 @@ export const TaskRow = (props: TaskRowProps) => {
       <TableCell
         sx={{
           fontWeight: descriptionSelected ? 'bold' : undefined,
-          textDecoration: descriptionSelected ? 'underline' : undefined,
+          textDecoration:
+            descriptionSelected && !editing ? 'underline' : undefined,
           backgroundColor: currentTaskType.backgroundColor,
-          borderLeft: `4px solid ${currentTaskType.color}`,
-        }}
-        onClick={() => {
-          dispatch(beginTaskEdit({ taskId: props.taskId }));
         }}
         component="th"
         scope="row"
         className="taskName"
       >
-        <Chip
-          label={currentTaskType.name}
-          size="small"
-          sx={{
-            backgroundColor: currentTaskType.color,
-            color: '#fff',
-            fontWeight: 'bold',
-            fontSize: { xs: '0.75rem', sm: '0.7rem' },
-            height: { xs: 24, sm: 20 },
-            marginRight: 1,
-          }}
-        />
-        {task.description}
-      </TableCell>
-      {taskRowTime()}
-    </TableRow>
-  );
-
-  const renderEditRow = () => (
-    <TableRow>
-      <TableCell className="icon" />
-      <TableCell component="th" scope="row" className="cell">
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
-            gap: { xs: 1, sm: 1 },
-            alignItems: { xs: 'stretch', sm: 'center' },
-          }}
-        >
-          <Select
-            value={taskType}
-            onChange={(event) => setTaskType(event.target.value)}
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Chip
+            label={currentTaskType.name}
             size="small"
-            sx={{
-              fontSize: { xs: 14, sm: 13 },
-              minWidth: { xs: '100%', sm: 100 },
+            onClick={(e) => {
+              e.stopPropagation();
+              setTypeMenuAnchor(e.currentTarget);
             }}
+            sx={{
+              backgroundColor: currentTaskType.color,
+              color: '#fff',
+              fontWeight: 'bold',
+              fontSize: { xs: '0.75rem', sm: '0.7rem' },
+              height: { xs: 24, sm: 20 },
+              marginRight: 0.5,
+              minWidth: 65,
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: currentTaskType.color,
+                filter: 'brightness(0.9)',
+              },
+            }}
+          />
+          <Box sx={{ marginRight: 0.5 }}>
+            <TaskStatusChip
+              status={task.status}
+              onChange={handleStatusChange}
+            />
+          </Box>
+          <Box sx={{ marginRight: 1 }}>
+            <ProjectSelector
+              projectId={task.projectId}
+              onChange={handleProjectChange}
+              showLabel={!!task.projectId}
+            />
+          </Box>
+          {props.continued && (
+            <Chip
+              label="Continued"
+              size="small"
+              sx={{
+                backgroundColor: '#fff3e0',
+                color: '#e65100',
+                fontSize: { xs: '0.6rem', sm: '0.55rem' },
+                height: { xs: 18, sm: 16 },
+                marginRight: 1,
+                '& .MuiChip-label': {
+                  padding: '0 4px',
+                },
+              }}
+            />
+          )}
+          <Menu
+            anchorEl={typeMenuAnchor}
+            open={typeMenuOpen}
+            onClose={() => setTypeMenuAnchor(null)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           >
             {DEFAULT_TASK_TYPES.map((type) => (
-              <MenuItem key={type.id} value={type.id}>
+              <MenuItem
+                key={type.id}
+                selected={type.id === task.type}
+                onClick={() => handleTypeSelect(type.id)}
+                sx={{ fontSize: 13 }}
+              >
+                <Box
+                  sx={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: '50%',
+                    backgroundColor: type.color,
+                    marginRight: 1,
+                  }}
+                />
                 {type.name}
               </MenuItem>
             ))}
-          </Select>
-          <Input
-            inputRef={inputRef}
-            sx={{
-              fontSize: { xs: 14, sm: 13 },
-              flex: { sm: 1 },
-            }}
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            onKeyDown={(event) => {
-              if (!editing) {
-                return;
-              }
-
-              if (event.key === 'Enter') {
-                doUpdateTask();
-              } else if (event.key === 'Escape') {
-                dispatch(endTaskEdit());
-                setDescription(task.description);
-                setTaskType(task.type || 'task');
-              }
-            }}
-          />
-          <Button
-            color="secondary"
-            size="small"
-            variant="contained"
-            sx={{
-              minHeight: { xs: 44, sm: 'auto' },
-            }}
-            onClick={doUpdateTask}
-          >
-            Update Task
-          </Button>
+          </Menu>
+          {editing ? (
+            <Input
+              inputRef={inputRef}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              onBlur={saveDescription}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  saveDescription();
+                } else if (e.key === 'Escape') {
+                  setDescription(task.description);
+                  endTaskEdit();
+                }
+              }}
+              disableUnderline
+              sx={{
+                fontSize: 'inherit',
+                flex: 1,
+                '& input': {
+                  padding: 0,
+                },
+              }}
+            />
+          ) : (
+            <span
+              className="taskDescription"
+              onClick={() => beginTaskEdit({ taskId: props.taskId })}
+            >
+              {task.description}
+            </span>
+          )}
         </Box>
       </TableCell>
       {taskRowTime()}
     </TableRow>
   );
-
-  return editing ? renderEditRow() : renderViewRow();
-};
+});

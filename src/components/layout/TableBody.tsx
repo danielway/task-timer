@@ -1,67 +1,76 @@
 import { TableBody as MuiTableBody } from '@mui/material';
 import { TaskCreationRow } from '../task/TaskCreationRow';
 import { TaskRow } from '../task/TaskRow';
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { getSelectedDate } from '../../app/slices/appSlice';
 import {
+  useAppStore,
+  useDateStore,
+  useTaskStore,
   getTasksForDate,
-  reorderTasksForDate,
-} from '../../app/slices/dateSlice';
-import { useState, useCallback } from 'react';
-
-// Helper function to reorder tasks array
-const reorderTasks = (
-  taskIds: number[],
-  draggedId: number,
-  targetIndex: number
-): number[] => {
-  const fromIndex = taskIds.indexOf(draggedId);
-  if (fromIndex === -1) return taskIds;
-
-  const temp = [...taskIds];
-  temp.splice(fromIndex, 1);
-  temp.splice(targetIndex, 0, draggedId);
-  return temp;
-};
+  getTask,
+} from '../../store';
+import { useDragDrop } from '../../app/hooks/useDragDrop';
+import { useCallback, useMemo } from 'react';
 
 export const TableBody = () => {
-  const selectedDate = useAppSelector(getSelectedDate);
-  const taskIds = useAppSelector((state) =>
-    getTasksForDate(state, selectedDate)
+  const selectedDate = useAppStore((state) => state.selectedDate);
+  const projectFilter = useAppStore((state) => state.projectFilter);
+  const dateState = useDateStore();
+  const taskState = useTaskStore();
+  const allTaskIds = getTasksForDate(dateState, selectedDate);
+  const reorderTasksForDate = useDateStore(
+    (state) => state.reorderTasksForDate
   );
-  const dispatch = useAppDispatch();
 
-  // Drag-and-drop state
-  const [draggedTaskId, setDraggedTaskId] = useState<number | null>(null);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  // Filter tasks by project
+  const taskIds = useMemo(() => {
+    return allTaskIds.filter((taskId) => {
+      const task = getTask(taskState, taskId);
+      if (!task) return false;
 
-  // Compute reordered list if dragging
-  let displayTaskIds = taskIds;
-  if (draggedTaskId !== null && hoveredIndex !== null) {
-    displayTaskIds = reorderTasks(taskIds, draggedTaskId, hoveredIndex);
-  }
+      // Filter by project
+      if (projectFilter !== undefined && task.projectId !== projectFilter)
+        return false;
 
-  // Handlers to pass to TaskRow
-  const handleDragStart = useCallback((taskId: number) => {
-    setDraggedTaskId(taskId);
-  }, []);
-  const handleDragEnd = useCallback(() => {
-    setDraggedTaskId(null);
-    setHoveredIndex(null);
-  }, []);
-  const handleDragOver = useCallback((index: number) => {
-    setHoveredIndex(index);
-  }, []);
-  const handleDrop = useCallback(() => {
-    if (draggedTaskId !== null && hoveredIndex !== null) {
-      const reordered = reorderTasks(taskIds, draggedTaskId, hoveredIndex);
-      dispatch(
-        reorderTasksForDate({ date: selectedDate, newTaskOrder: reordered })
-      );
-    }
-    setDraggedTaskId(null);
-    setHoveredIndex(null);
-  }, [draggedTaskId, hoveredIndex, taskIds, selectedDate, dispatch]);
+      return true;
+    });
+  }, [allTaskIds, taskState, projectFilter]);
+
+  // Track which tasks are continued from a previous date
+  const continuedTaskIds = useMemo(() => {
+    const continued = new Set<number>();
+
+    // A task is "continued" if it appears on an earlier date
+    dateState.dateTasks.forEach((dt) => {
+      if (dt.date < selectedDate) {
+        dt.tasks.forEach((taskId) => {
+          if (allTaskIds.includes(taskId)) {
+            continued.add(taskId);
+          }
+        });
+      }
+    });
+
+    return continued;
+  }, [dateState.dateTasks, selectedDate, allTaskIds]);
+
+  const handleReorder = useCallback(
+    (newTaskOrder: number[]) => {
+      reorderTasksForDate({ date: selectedDate, newTaskOrder });
+    },
+    [selectedDate, reorderTasksForDate]
+  );
+
+  const {
+    displayItems: displayTaskIds,
+    isDragging,
+    handleDragStart,
+    handleDragEnd,
+    handleDragOver,
+    handleDrop,
+  } = useDragDrop({
+    items: taskIds,
+    onReorder: handleReorder,
+  });
 
   return (
     <MuiTableBody>
@@ -69,7 +78,8 @@ export const TableBody = () => {
         <TaskRow
           key={taskId}
           taskId={taskId}
-          dragging={draggedTaskId === taskId}
+          continued={continuedTaskIds.has(taskId)}
+          dragging={isDragging(taskId)}
           onDragStart={() => handleDragStart(taskId)}
           onDragEnd={handleDragEnd}
           onDragOver={() => handleDragOver(idx)}

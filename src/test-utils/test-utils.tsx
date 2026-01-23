@@ -1,35 +1,103 @@
-import { configureStore } from '@reduxjs/toolkit';
 import { render, type RenderOptions } from '@testing-library/react';
-import { Provider } from 'react-redux';
 import { type ReactElement } from 'react';
-import app from '../app/slices/appSlice';
-import edit from '../app/slices/editSlice';
-import date from '../app/slices/dateSlice';
-import task from '../app/slices/taskSlice';
-import time from '../app/slices/timeSlice';
-import type { RootState } from '../app/store';
+import { useAppStore } from '../store/appStore';
+import { useTaskStore } from '../store/taskStore';
+import { useDateStore } from '../store/dateStore';
+import { useTimeStore } from '../store/timeStore';
+import type { AppState } from '../store/appStore';
+import type { TaskState } from '../store/taskStore';
+import type { DateState } from '../store/dateStore';
+import type { TimeState } from '../store/timeStore';
+
+// Edit state is now part of AppState, but keep interface for test compatibility
+export interface EditState {
+  selection?: {
+    taskId: number;
+    description: boolean;
+    timeSegment?: number;
+  };
+  activeEditTaskId?: number;
+}
+
+// Combined state type for compatibility with existing tests
+export interface TestState {
+  app: AppState;
+  task: TaskState;
+  edit: EditState;
+  date: DateState;
+  time: TimeState;
+}
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'wrapper'> {
-  preloadedState?: Partial<RootState>;
-  store?: ReturnType<typeof configureStore>;
+  preloadedState?: Partial<TestState>;
+}
+
+// Reset all stores to initial state
+export function resetStores() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayTime = today.getTime();
+
+  useAppStore.setState({
+    version: 'REPLACE_WITH_RELEASE',
+    selectedDate: todayTime,
+    selection: undefined,
+    activeEditTaskId: undefined,
+    backlogOpen: false,
+    backlogExpanded: false,
+    projectFilter: undefined,
+    showCompleted: true,
+  });
+  useTaskStore.setState({
+    nextTaskId: 1,
+    tasks: [],
+  });
+  useDateStore.setState({
+    dateTasks: [{ date: todayTime, tasks: [], taskFirstWorkTime: {} }],
+  });
+  useTimeStore.setState({
+    dateTimes: [{ date: todayTime, taskTimes: [] }],
+  });
+}
+
+// Set up stores with preloaded state
+export function setupStores(preloadedState: Partial<TestState> = {}) {
+  resetStores();
+
+  if (preloadedState.app) {
+    useAppStore.setState(preloadedState.app);
+  }
+  if (preloadedState.task) {
+    useTaskStore.setState(preloadedState.task);
+  }
+  // Edit state is now part of appStore
+  if (preloadedState.edit) {
+    useAppStore.setState(preloadedState.edit);
+  }
+  if (preloadedState.date) {
+    useDateStore.setState(preloadedState.date);
+  }
+  if (preloadedState.time) {
+    useTimeStore.setState(preloadedState.time);
+  }
 }
 
 export function renderWithProviders(
   ui: ReactElement,
-  {
-    preloadedState = {},
-    store = configureStore({
-      reducer: { app, edit, date, task, time },
-      preloadedState: preloadedState as RootState,
-    }),
-    ...renderOptions
-  }: ExtendedRenderOptions = {}
+  { preloadedState = {}, ...renderOptions }: ExtendedRenderOptions = {}
 ) {
-  function Wrapper({ children }: { children: React.ReactNode }) {
-    return <Provider store={store}>{children}</Provider>;
-  }
+  setupStores(preloadedState);
 
-  return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+  return {
+    ...render(ui, renderOptions),
+    // Provide access to stores for test assertions
+    stores: {
+      app: useAppStore,
+      task: useTaskStore,
+      date: useDateStore,
+      time: useTimeStore,
+    },
+  };
 }
 
 export function createMockDate(timestamp: number): number {
