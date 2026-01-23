@@ -6,7 +6,7 @@ test.describe('Multi-Task Workflows', () => {
     await page.goto('/');
 
     const taskInput = page.getByPlaceholder('Task name/description');
-    await expect(taskInput).toBeVisible({ timeout: 10000 });
+    await expect(taskInput).toBeVisible({ timeout: 3000 });
   });
 
   test('should create and track multiple tasks', async ({ page }) => {

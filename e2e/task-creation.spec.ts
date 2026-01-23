@@ -7,7 +7,7 @@ test.describe('Task Creation', () => {
 
     // Wait for the task creation input field to be visible (confirms app loaded)
     const taskInput = page.getByPlaceholder('Task name/description');
-    await expect(taskInput).toBeVisible({ timeout: 10000 });
+    await expect(taskInput).toBeVisible({ timeout: 3000 });
 
     // Type a task description
     const taskDescription = 'Write E2E tests for task timer';

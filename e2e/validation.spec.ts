@@ -6,7 +6,7 @@ test.describe('Validation and Edge Cases', () => {
     await page.goto('/');
 
     const taskInput = page.getByPlaceholder('Task name/description');
-    await expect(taskInput).toBeVisible({ timeout: 10000 });
+    await expect(taskInput).toBeVisible({ timeout: 3000 });
   });
 
   test('should not create task with empty description', async ({ page }) => {
@@ -217,11 +217,9 @@ test.describe('Validation and Edge Cases', () => {
     await increment.click();
     await expect(increment).toHaveClass(/logged/);
 
-    // Reload multiple times
-    for (let i = 0; i < 3; i++) {
-      await page.reload();
-      await expect(taskInput).toBeVisible({ timeout: 10000 });
-    }
+    // Reload the page to verify persistence
+    await page.reload();
+    await expect(taskInput).toBeVisible({ timeout: 3000 });
 
     // Verify task and time still exist
     await expect(

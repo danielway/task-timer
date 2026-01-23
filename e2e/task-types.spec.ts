@@ -6,7 +6,7 @@ test.describe('Task Types', () => {
     await page.goto('/');
 
     const taskInput = page.getByPlaceholder('Task name/description');
-    await expect(taskInput).toBeVisible({ timeout: 10000 });
+    await expect(taskInput).toBeVisible({ timeout: 3000 });
   });
 
   test('should create task with default type', async ({ page }) => {

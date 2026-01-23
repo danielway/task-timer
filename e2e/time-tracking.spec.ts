@@ -6,7 +6,7 @@ test.describe('Time Tracking', () => {
     await page.goto('/');
 
     const taskInput = page.getByPlaceholder('Task name/description');
-    await expect(taskInput).toBeVisible({ timeout: 10000 });
+    await expect(taskInput).toBeVisible({ timeout: 3000 });
 
     await taskInput.fill('Time tracking test task');
     await page.getByRole('button', { name: 'Add Task' }).click();
