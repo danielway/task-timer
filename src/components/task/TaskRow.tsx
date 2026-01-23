@@ -147,7 +147,13 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
       }}
       onDrop={props.onDrop}
     >
-      <TableCell className="icon">
+      <TableCell
+        className="icon"
+        sx={{
+          backgroundColor: currentTaskType.backgroundColor,
+          borderLeft: `4px solid ${currentTaskType.color}`,
+        }}
+      >
         <HighlightOffIcon
           onClick={doDeleteTask}
           className="taskDelete"
@@ -170,7 +176,6 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
           fontWeight: descriptionSelected ? 'bold' : undefined,
           textDecoration: descriptionSelected ? 'underline' : undefined,
           backgroundColor: currentTaskType.backgroundColor,
-          borderLeft: `4px solid ${currentTaskType.color}`,
         }}
         onClick={() => {
           beginTaskEdit({ taskId: props.taskId });
@@ -189,6 +194,7 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
             fontSize: { xs: '0.75rem', sm: '0.7rem' },
             height: { xs: 24, sm: 20 },
             marginRight: 1,
+            minWidth: 65,
           }}
         />
         {task.description}
@@ -214,8 +220,11 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
             onChange={(event) => setTaskType(event.target.value)}
             size="small"
             sx={{
-              fontSize: { xs: 14, sm: 13 },
-              minWidth: { xs: '100%', sm: 100 },
+              fontSize: { xs: 14, sm: 12 },
+              minWidth: { xs: '100%', sm: 90 },
+              '& .MuiSelect-select': {
+                py: 0.5,
+              },
             }}
           >
             {DEFAULT_TASK_TYPES.map((type) => (

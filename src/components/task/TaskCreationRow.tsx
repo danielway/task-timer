@@ -85,8 +85,11 @@ export const TaskCreationRow = () => {
             onChange={(event) => setTaskType(event.target.value)}
             size="small"
             sx={{
-              fontSize: { xs: 14, sm: 13 },
-              minWidth: { xs: '100%', sm: 100 },
+              fontSize: { xs: 14, sm: 12 },
+              minWidth: { xs: '100%', sm: 90 },
+              '& .MuiSelect-select': {
+                py: 0.5,
+              },
             }}
           >
             {DEFAULT_TASK_TYPES.map((type) => (
