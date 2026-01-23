@@ -9,26 +9,31 @@ import {
   Box,
 } from '@mui/material';
 import { TimeSummaryCell } from '../time/TimeSummaryCell';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { createTask, getNextTaskId } from '../../app/slices/taskSlice';
-import { type TaskTime, getTimesForDate } from '../../app/slices/timeSlice';
-import { getSelectedDate } from '../../app/slices/appSlice';
-import { addTaskToDate } from '../../app/slices/dateSlice';
+import {
+  useAppStore,
+  useTaskStore,
+  useDateStore,
+  useTimeStore,
+  getTimesForDate,
+  getNextTaskId,
+  type TaskTime,
+} from '../../store';
 import { DEFAULT_TASK_TYPES } from '../../types/taskTypes';
 import { MAX_TASK_DESCRIPTION_LENGTH } from '../../app/constants';
 
 export const TaskCreationRow = () => {
-  const dispatch = useAppDispatch();
-
   const [description, setDescription] = useState('');
   const [taskType, setTaskType] = useState('task');
 
-  const selectedDate = useAppSelector(getSelectedDate);
-  const timesForDate = useAppSelector((state) =>
-    getTimesForDate(state.time, selectedDate)
-  );
+  const selectedDate = useAppStore((state) => state.selectedDate);
+  const timeState = useTimeStore();
+  const timesForDate = getTimesForDate(timeState, selectedDate);
 
-  const nextId = useAppSelector((state) => getNextTaskId(state.task));
+  const taskState = useTaskStore();
+  const nextId = getNextTaskId(taskState);
+
+  const createTask = useTaskStore((state) => state.createTask);
+  const addTaskToDate = useDateStore((state) => state.addTaskToDate);
 
   const addTask = () => {
     const trimmedDescription = description.trim();
@@ -46,14 +51,12 @@ export const TaskCreationRow = () => {
       return;
     }
 
-    dispatch(
-      createTask({
-        id: nextId,
-        description: trimmedDescription,
-        type: taskType,
-      })
-    );
-    dispatch(addTaskToDate({ date: selectedDate, taskId: nextId }));
+    createTask({
+      id: nextId,
+      description: trimmedDescription,
+      type: taskType,
+    });
+    addTaskToDate({ date: selectedDate, taskId: nextId });
     setDescription('');
     setTaskType('task');
   };

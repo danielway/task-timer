@@ -2,11 +2,11 @@ import { describe, it, expect } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders, mockToday } from '../../test-utils/test-utils';
 import { TimeIncrement } from './TimeIncrement';
-import type { RootState } from '../../app/store';
+import { type TestState } from '../../test-utils/test-utils';
 
 describe('TimeIncrement', () => {
   it('should render with unlogged class when segment is not logged', () => {
-    const preloadedState: Partial<RootState> = {
+    const preloadedState: Partial<TestState> = {
       app: { version: '1.0', selectedDate: mockToday },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {},
@@ -39,7 +39,7 @@ describe('TimeIncrement', () => {
       15
     ).getTime();
 
-    const preloadedState: Partial<RootState> = {
+    const preloadedState: Partial<TestState> = {
       app: { version: '1.0', selectedDate: mockToday },
       time: {
         dateTimes: [
@@ -64,7 +64,7 @@ describe('TimeIncrement', () => {
   it('should dispatch toggleSegment when clicked', async () => {
     const user = userEvent.setup();
 
-    const preloadedState: Partial<RootState> = {
+    const preloadedState: Partial<TestState> = {
       app: { version: '1.0', selectedDate: mockToday },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {},
@@ -75,7 +75,7 @@ describe('TimeIncrement', () => {
       },
     };
 
-    const { store, container } = renderWithProviders(
+    const { stores, container } = renderWithProviders(
       <TimeIncrement taskId={1} segment={0} />,
       { preloadedState }
     );
@@ -85,9 +85,9 @@ describe('TimeIncrement', () => {
 
     await user.click(increment!);
 
-    const state = store.getState() as RootState;
-    expect(state.time.dateTimes[0].taskTimes).toHaveLength(1);
-    expect(state.time.dateTimes[0].taskTimes[0].task).toBe(1);
+    const state = stores.time.getState();
+    expect(state.dateTimes[0].taskTimes).toHaveLength(1);
+    expect(state.dateTimes[0].taskTimes[0].task).toBe(1);
   });
 
   it('should toggle from logged to unlogged when clicked', async () => {
@@ -109,7 +109,7 @@ describe('TimeIncrement', () => {
       15
     ).getTime();
 
-    const preloadedState: Partial<RootState> = {
+    const preloadedState: Partial<TestState> = {
       app: { version: '1.0', selectedDate: mockToday },
       time: {
         dateTimes: [
@@ -127,7 +127,7 @@ describe('TimeIncrement', () => {
       },
     };
 
-    const { store, container } = renderWithProviders(
+    const { stores, container } = renderWithProviders(
       <TimeIncrement taskId={1} segment={0} />,
       { preloadedState }
     );
@@ -135,12 +135,12 @@ describe('TimeIncrement', () => {
     const increment = container.querySelector('.increment');
     await user.click(increment!);
 
-    const state = store.getState() as RootState;
-    expect(state.time.dateTimes[0].taskTimes).toHaveLength(0);
+    const state = stores.time.getState();
+    expect(state.dateTimes[0].taskTimes).toHaveLength(0);
   });
 
   it('should show selected border when segment is keyboard selected', () => {
-    const preloadedState: Partial<RootState> = {
+    const preloadedState: Partial<TestState> = {
       app: { version: '1.0', selectedDate: mockToday },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {
@@ -163,7 +163,7 @@ describe('TimeIncrement', () => {
   });
 
   it('should not show selected border when different segment is selected', () => {
-    const preloadedState: Partial<RootState> = {
+    const preloadedState: Partial<TestState> = {
       app: { version: '1.0', selectedDate: mockToday },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {
@@ -186,7 +186,7 @@ describe('TimeIncrement', () => {
   });
 
   it('should not show selected border when different task is selected', () => {
-    const preloadedState: Partial<RootState> = {
+    const preloadedState: Partial<TestState> = {
       app: { version: '1.0', selectedDate: mockToday },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {
@@ -211,7 +211,7 @@ describe('TimeIncrement', () => {
   it('should handle multiple segments for same task', async () => {
     const user = userEvent.setup();
 
-    const preloadedState: Partial<RootState> = {
+    const preloadedState: Partial<TestState> = {
       app: { version: '1.0', selectedDate: mockToday },
       time: { dateTimes: [{ date: mockToday, taskTimes: [] }] },
       edit: {},
@@ -222,7 +222,7 @@ describe('TimeIncrement', () => {
       },
     };
 
-    const { store, container, rerender } = renderWithProviders(
+    const { stores, container, rerender } = renderWithProviders(
       <TimeIncrement taskId={1} segment={0} />,
       { preloadedState }
     );
@@ -231,15 +231,15 @@ describe('TimeIncrement', () => {
     const increment1 = container.querySelector('.increment');
     await user.click(increment1!);
 
-    let state = store.getState() as RootState;
-    expect(state.time.dateTimes[0].taskTimes).toHaveLength(1);
+    let state = stores.time.getState();
+    expect(state.dateTimes[0].taskTimes).toHaveLength(1);
 
     // Render and click second segment
     rerender(<TimeIncrement taskId={1} segment={1} />);
     const increment2 = container.querySelector('.increment');
     await user.click(increment2!);
 
-    state = store.getState() as RootState;
-    expect(state.time.dateTimes[0].taskTimes).toHaveLength(2);
+    state = stores.time.getState();
+    expect(state.dateTimes[0].taskTimes).toHaveLength(2);
   });
 });

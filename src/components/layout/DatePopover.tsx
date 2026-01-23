@@ -10,8 +10,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useState } from 'react';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
-import { useAppSelector } from '../../app/hooks';
-import { getDatesWithTasks } from '../../app/slices/dateSlice';
+import { useDateStore, getDatesWithTasks } from '../../store';
 
 interface DatePopoverProps {
   selectedDate: number;
@@ -50,9 +49,8 @@ const CalendarPopover = (
   closePopover: () => void,
   onSelectDate: (date: number) => void
 ) => {
-  const daysWithTasks = useAppSelector(getDatesWithTasks).map(
-    (date) => date.date
-  );
+  const dateState = useDateStore();
+  const daysWithTasks = getDatesWithTasks(dateState).map((date) => date.date);
 
   return (
     <Popover

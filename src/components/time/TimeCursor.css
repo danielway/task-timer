@@ -4,7 +4,7 @@
 
   width: 2px;
 
-  background-color: #173041;
+  background-color: #173040; /* theme primary.main */
   z-index: 100;
 }
 

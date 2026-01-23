@@ -1,6 +1,6 @@
-import type { Task } from '../app/slices/taskSlice';
-import type { TaskTime } from '../app/slices/timeSlice';
-import type { RootState } from '../app/store';
+import type { Task } from '../store/taskStore';
+import type { TaskTime } from '../store/timeStore';
+import type { TestState } from './test-utils';
 import { mockToday } from './test-utils';
 
 export const createMockTask = (overrides: Partial<Task> = {}): Task => ({
@@ -33,8 +33,8 @@ export const createMockDateTimes = (
 });
 
 export const createMockState = (
-  overrides: Partial<RootState> = {}
-): RootState => ({
+  overrides: Partial<TestState> = {}
+): TestState => ({
   app: {
     version: '1.0.0',
     selectedDate: mockToday,
@@ -57,7 +57,7 @@ export const createMockStateWithTask = (
   taskId: number = 1,
   description: string = 'Test Task',
   date: number = mockToday
-): RootState => ({
+): TestState => ({
   app: {
     version: '1.0.0',
     selectedDate: date,
@@ -80,7 +80,7 @@ export const createMockStateWithTaskAndTime = (
   description: string = 'Test Task',
   date: number = mockToday,
   segment: number = 0
-): RootState => {
+): TestState => {
   // Calculate segment start and end times
   const dateObj = new Date(date);
   const START_HOUR = 7;

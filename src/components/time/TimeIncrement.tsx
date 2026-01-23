@@ -1,24 +1,34 @@
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { getSelectedDate } from '../../app/slices/appSlice';
-import { getSelection } from '../../app/slices/editSlice';
-import { getSegment, toggleSegment } from '../../app/slices/timeSlice';
+import { memo } from 'react';
+import {
+  useAppStore,
+  useEditStore,
+  useTimeStore,
+  getSegment,
+} from '../../store';
 import { UI } from '../../app/constants';
+import { colors } from '../../theme';
 
 interface TimeIncrementProps {
   taskId: number;
   segment: number;
 }
 
-export const TimeIncrement = (props: TimeIncrementProps) => {
-  const dispatch = useAppDispatch();
+export const TimeIncrement = memo(function TimeIncrement(
+  props: TimeIncrementProps
+) {
+  const selectedDate = useAppStore((state) => state.selectedDate);
 
-  const selectedDate = useAppSelector(getSelectedDate);
-
-  const { logged } = useAppSelector((state) =>
-    getSegment(state.time, selectedDate, props.taskId, props.segment)
+  const timeState = useTimeStore();
+  const { logged } = getSegment(
+    timeState,
+    selectedDate,
+    props.taskId,
+    props.segment
   );
 
-  const uiSelection = useAppSelector(getSelection);
+  const toggleSegment = useTimeStore((state) => state.toggleSegment);
+
+  const uiSelection = useEditStore((state) => state.selection);
   const selected =
     uiSelection &&
     uiSelection.taskId === props.taskId &&
@@ -27,17 +37,17 @@ export const TimeIncrement = (props: TimeIncrementProps) => {
   return (
     <div
       style={{
-        border: selected ? UI.SELECTION_BORDER : undefined,
+        border: selected
+          ? `${UI.SELECTION_BORDER_STYLE} ${colors.border.selection}`
+          : undefined,
       }}
       className={logged ? 'increment logged' : 'increment'}
       onClick={() =>
-        dispatch(
-          toggleSegment({
-            date: selectedDate,
-            taskId: props.taskId,
-            segment: props.segment,
-          })
-        )
+        toggleSegment({
+          date: selectedDate,
+          taskId: props.taskId,
+          segment: props.segment,
+        })
       }
       role="button"
       aria-label={`Time segment ${props.segment + 1}, ${logged ? 'logged' : 'not logged'}`}
@@ -46,15 +56,13 @@ export const TimeIncrement = (props: TimeIncrementProps) => {
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
-          dispatch(
-            toggleSegment({
-              date: selectedDate,
-              taskId: props.taskId,
-              segment: props.segment,
-            })
-          );
+          toggleSegment({
+            date: selectedDate,
+            taskId: props.taskId,
+            segment: props.segment,
+          });
         }
       }}
     />
   );
-};
+});

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import './TaskRow.css';
 import {
   TableRow,
@@ -13,21 +13,16 @@ import {
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { TimeRowCell } from '../time/TimeRow';
 import { TimeSummaryCell } from '../time/TimeSummaryCell';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { deleteTask, getTask, updateTask } from '../../app/slices/taskSlice';
 import {
-  beginTaskEdit,
-  endTaskEdit,
-  getActiveEditTaskId,
-  getSelection,
-} from '../../app/slices/editSlice';
-import { getSelectedDate } from '../../app/slices/appSlice';
-import {
-  type TaskTime,
+  useAppStore,
+  useTaskStore,
+  useEditStore,
+  useDateStore,
+  useTimeStore,
+  getTask,
   getTimesForTask,
-  removeTime,
-} from '../../app/slices/timeSlice';
-import { removeTaskFromDate } from '../../app/slices/dateSlice';
+  type TaskTime,
+} from '../../store';
 import { DEFAULT_TASK_TYPES, getTaskType } from '../../types/taskTypes';
 import { MAX_TASK_DESCRIPTION_LENGTH } from '../../app/constants';
 
@@ -40,30 +35,37 @@ interface TaskRowProps {
   onDrop?: () => void;
 }
 
-export const TaskRow = (props: TaskRowProps) => {
-  const dispatch = useAppDispatch();
-
-  const task = useAppSelector((state) => getTask(state.task, props.taskId));
+export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
+  // Get state from stores
+  const taskState = useTaskStore();
+  const task = getTask(taskState, props.taskId);
 
   const [description, setDescription] = useState('');
   const [taskType, setTaskType] = useState(task?.type || 'task');
   useEffect(() => setDescription(task?.description || ''), [task?.description]);
   useEffect(() => setTaskType(task?.type || 'task'), [task?.type]);
 
-  const uiSelection = useAppSelector(getSelection);
+  const uiSelection = useEditStore((state) => state.selection);
   const descriptionSelected =
     uiSelection?.taskId === props.taskId && uiSelection?.description;
 
-  const activeEditTaskId = useAppSelector(getActiveEditTaskId);
+  const activeEditTaskId = useEditStore((state) => state.activeEditTaskId);
   const editing = activeEditTaskId === props.taskId;
 
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => inputRef.current?.focus(), [inputRef, editing]);
 
-  const selectedDate = useAppSelector(getSelectedDate);
-  const times = useAppSelector((state) =>
-    getTimesForTask(state, selectedDate, props.taskId)
-  );
+  const selectedDate = useAppStore((state) => state.selectedDate);
+  const timeState = useTimeStore();
+  const times = getTimesForTask(timeState, selectedDate, props.taskId);
+
+  // Get actions from stores
+  const updateTask = useTaskStore((state) => state.updateTask);
+  const deleteTask = useTaskStore((state) => state.deleteTask);
+  const endTaskEdit = useEditStore((state) => state.endTaskEdit);
+  const beginTaskEdit = useEditStore((state) => state.beginTaskEdit);
+  const removeTaskFromDate = useDateStore((state) => state.removeTaskFromDate);
+  const removeTime = useTimeStore((state) => state.removeTime);
 
   const doUpdateTask = () => {
     const trimmedDescription = description.trim();
@@ -71,7 +73,7 @@ export const TaskRow = (props: TaskRowProps) => {
     // Validate description is not empty
     if (!trimmedDescription) {
       // Don't update if description is empty, just cancel edit
-      dispatch(endTaskEdit());
+      endTaskEdit();
       setDescription(task?.description || '');
       return;
     }
@@ -84,27 +86,23 @@ export const TaskRow = (props: TaskRowProps) => {
       return;
     }
 
-    dispatch(
-      updateTask({
-        id: props.taskId,
-        description: trimmedDescription,
-        type: taskType,
-      })
-    );
-    dispatch(endTaskEdit());
+    updateTask({
+      id: props.taskId,
+      description: trimmedDescription,
+      type: taskType,
+    });
+    endTaskEdit();
   };
 
   const doDeleteTask = () => {
-    dispatch(removeTaskFromDate({ date: selectedDate, taskId: props.taskId }));
-    dispatch(deleteTask({ id: props.taskId }));
+    removeTaskFromDate({ date: selectedDate, taskId: props.taskId });
+    deleteTask({ id: props.taskId });
     times.forEach((time) =>
-      dispatch(
-        removeTime({
-          date: selectedDate,
-          taskId: props.taskId,
-          start: time.start,
-        })
-      )
+      removeTime({
+        date: selectedDate,
+        taskId: props.taskId,
+        start: time.start,
+      })
     );
   };
 
@@ -193,7 +191,7 @@ export const TaskRow = (props: TaskRowProps) => {
           borderLeft: `4px solid ${currentTaskType.color}`,
         }}
         onClick={() => {
-          dispatch(beginTaskEdit({ taskId: props.taskId }));
+          beginTaskEdit({ taskId: props.taskId });
         }}
         component="th"
         scope="row"
@@ -260,7 +258,7 @@ export const TaskRow = (props: TaskRowProps) => {
               if (event.key === 'Enter') {
                 doUpdateTask();
               } else if (event.key === 'Escape') {
-                dispatch(endTaskEdit());
+                endTaskEdit();
                 setDescription(task.description);
                 setTaskType(task.type || 'task');
               }
@@ -284,4 +282,4 @@ export const TaskRow = (props: TaskRowProps) => {
   );
 
   return editing ? renderEditRow() : renderViewRow();
-};
+});

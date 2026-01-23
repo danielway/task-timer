@@ -1,13 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { screen } from '@testing-library/react';
-import { renderWithProviders, mockToday } from '../../test-utils/test-utils';
+import {
+  renderWithProviders,
+  mockToday,
+  type TestState,
+} from '../../test-utils/test-utils';
 import { TableBody } from './TableBody';
-import type { RootState } from '../../app/store';
-import { createTask } from '../../app/slices/taskSlice';
-import { addTaskToDate } from '../../app/slices/dateSlice';
 
 describe('TableBody', () => {
-  const createDefaultState = (): Partial<RootState> => ({
+  const createDefaultState = (): Partial<TestState> => ({
     app: { version: '1.0', selectedDate: mockToday },
     task: {
       nextTaskId: 3,
@@ -42,7 +43,7 @@ describe('TableBody', () => {
     });
 
     it('should render empty table body with only creation row when no tasks', () => {
-      const stateWithNoTasks: Partial<RootState> = {
+      const stateWithNoTasks: Partial<TestState> = {
         app: { version: '1.0', selectedDate: mockToday },
         task: {
           nextTaskId: 1,
@@ -64,14 +65,14 @@ describe('TableBody', () => {
       expect(container.querySelector('tbody')).toBeTruthy();
     });
 
-    it('should display a task after it is added via Redux actions', () => {
+    it('should display a task after it is added via store actions', () => {
       // REAL-WORLD SCENARIO TEST:
       // This simulates the exact user workflow - starting with no tasks,
-      // then adding a task through Redux actions (like the UI does),
+      // then adding a task through store actions (like the UI does),
       // and verifying the task appears in the rendered table.
 
       // Start with empty state
-      const initialState: Partial<RootState> = {
+      const initialState: Partial<TestState> = {
         app: { version: '1.0', selectedDate: mockToday },
         task: {
           nextTaskId: 1,
@@ -82,18 +83,20 @@ describe('TableBody', () => {
         edit: {},
       };
 
-      const { store, rerender } = renderWithProviders(<TableBody />, {
+      const { stores, rerender } = renderWithProviders(<TableBody />, {
         preloadedState: initialState,
       });
 
       // Verify no tasks are displayed initially
       expect(screen.queryByText('New Task')).toBeFalsy();
 
-      // Add a task using Redux actions (simulating what TaskCreationRow does)
-      store.dispatch(
-        createTask({ id: 1, description: 'New Task', type: 'task' })
-      );
-      store.dispatch(addTaskToDate({ date: mockToday, taskId: 1 }));
+      // Add a task using Zustand store actions (simulating what TaskCreationRow does)
+      stores.task.getState().createTask({
+        id: 1,
+        description: 'New Task',
+        type: 'task',
+      });
+      stores.date.getState().addTaskToDate({ date: mockToday, taskId: 1 });
 
       // Re-render to reflect the state change
       rerender(<TableBody />);
@@ -104,7 +107,7 @@ describe('TableBody', () => {
 
     it('should display multiple tasks added sequentially', () => {
       // Test adding multiple tasks one by one (real user scenario)
-      const initialState: Partial<RootState> = {
+      const initialState: Partial<TestState> = {
         app: { version: '1.0', selectedDate: mockToday },
         task: {
           nextTaskId: 1,
@@ -115,23 +118,27 @@ describe('TableBody', () => {
         edit: {},
       };
 
-      const { store, rerender } = renderWithProviders(<TableBody />, {
+      const { stores, rerender } = renderWithProviders(<TableBody />, {
         preloadedState: initialState,
       });
 
       // Add first task
-      store.dispatch(
-        createTask({ id: 1, description: 'First Task', type: 'task' })
-      );
-      store.dispatch(addTaskToDate({ date: mockToday, taskId: 1 }));
+      stores.task.getState().createTask({
+        id: 1,
+        description: 'First Task',
+        type: 'task',
+      });
+      stores.date.getState().addTaskToDate({ date: mockToday, taskId: 1 });
       rerender(<TableBody />);
       expect(screen.getByText('First Task')).toBeTruthy();
 
       // Add second task
-      store.dispatch(
-        createTask({ id: 2, description: 'Second Task', type: 'meeting' })
-      );
-      store.dispatch(addTaskToDate({ date: mockToday, taskId: 2 }));
+      stores.task.getState().createTask({
+        id: 2,
+        description: 'Second Task',
+        type: 'meeting',
+      });
+      stores.date.getState().addTaskToDate({ date: mockToday, taskId: 2 });
       rerender(<TableBody />);
 
       // Both tasks should be visible
@@ -149,7 +156,7 @@ describe('TableBody', () => {
 
       const yesterday = mockToday - 24 * 60 * 60 * 1000;
 
-      const stateWithPreviousDayTasks: Partial<RootState> = {
+      const stateWithPreviousDayTasks: Partial<TestState> = {
         app: { version: '1.0', selectedDate: mockToday }, // App opens to today
         task: {
           nextTaskId: 3,
@@ -204,7 +211,7 @@ describe('TableBody', () => {
 
       const yesterday = mockToday - 24 * 60 * 60 * 1000;
 
-      const stateViewingYesterday: Partial<RootState> = {
+      const stateViewingYesterday: Partial<TestState> = {
         app: { version: '1.0', selectedDate: yesterday }, // User is viewing yesterday
         task: {
           nextTaskId: 3,
@@ -253,7 +260,7 @@ describe('TableBody', () => {
       //
       // Fix: getTask() now properly returns undefined, and TaskRow checks for
       // undefined tasks and renders nothing instead of crashing.
-      const stateWithMismatch: Partial<RootState> = {
+      const stateWithMismatch: Partial<TestState> = {
         app: { version: '1.0', selectedDate: mockToday },
         task: {
           nextTaskId: 3,
@@ -284,7 +291,7 @@ describe('TableBody', () => {
     it('should render existing tasks and skip missing ones (partial mismatch)', () => {
       // Partial mismatch: task ID 1 exists, but task ID 2 is missing
       // This simulates what happens if the task slice and date slice get out of sync
-      const stateWithPartialMismatch: Partial<RootState> = {
+      const stateWithPartialMismatch: Partial<TestState> = {
         app: { version: '1.0', selectedDate: mockToday },
         task: {
           nextTaskId: 3,

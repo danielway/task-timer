@@ -29,7 +29,7 @@ export const UI = {
   BUTTON: {
     MARGIN_LEFT: 10,
   },
-  SELECTION_BORDER: '2px dashed #173040',
+  SELECTION_BORDER_STYLE: '2px dashed',
 } as const;
 
 // Helper function to get today at midnight

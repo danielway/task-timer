@@ -1,26 +1,14 @@
 import { type ReactNode } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import {
-  ThemeProvider,
-  CssBaseline,
-  Container,
-  Box,
-  createTheme,
-} from '@mui/material';
+import { ThemeProvider, CssBaseline, Container, Box } from '@mui/material';
+import { theme, spacing } from '../../theme';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export const Layout = (props: LayoutProps) => {
-  const theme = createTheme({
-    palette: {
-      primary: { main: '#173040' },
-      secondary: { main: '#bf3111' },
-    },
-  });
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -28,7 +16,11 @@ export const Layout = (props: LayoutProps) => {
       <Container>
         <Box
           sx={{
-            p: { xs: 1, sm: 2, md: 2.5 },
+            p: {
+              xs: spacing.content.xs,
+              sm: spacing.content.sm,
+              md: spacing.content.md,
+            },
           }}
         >
           {props.children}

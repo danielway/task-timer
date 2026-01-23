@@ -3,13 +3,13 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders, mockToday } from '../../test-utils/test-utils';
 import { TaskRow } from './TaskRow';
-import type { RootState } from '../../app/store';
+import { type TestState } from '../../test-utils/test-utils';
 
 describe('TaskRow', () => {
   const createDefaultState = (
     taskId: number = 1,
     description: string = 'Test Task'
-  ): Partial<RootState> => ({
+  ): Partial<TestState> => ({
     app: { version: '1.0', selectedDate: mockToday },
     task: {
       nextTaskId: taskId + 1,
@@ -62,22 +62,22 @@ describe('TaskRow', () => {
     it('should enter edit mode when description is clicked', async () => {
       const user = userEvent.setup();
 
-      const { store } = renderWithProviders(<TaskRow taskId={1} />, {
+      const { stores } = renderWithProviders(<TaskRow taskId={1} />, {
         preloadedState: createDefaultState(1, 'Original Description'),
       });
 
       const taskName = screen.getByText('Original Description');
       await user.click(taskName);
 
-      const state = store.getState() as RootState;
-      expect(state.edit.activeEditTaskId).toBe(1);
+      const editState = stores.edit.getState();
+      expect(editState.activeEditTaskId).toBe(1);
     });
 
     it('should display total time for task', () => {
       const start = new Date(mockToday).setHours(7, 0, 0, 0);
       const end = new Date(mockToday).setHours(7, 30, 0, 0);
 
-      const stateWithTime: Partial<RootState> = {
+      const stateWithTime: Partial<TestState> = {
         ...createDefaultState(),
         time: {
           dateTimes: [
@@ -104,7 +104,7 @@ describe('TaskRow', () => {
       const start2 = new Date(mockToday).setHours(8, 0, 0, 0);
       const end2 = new Date(mockToday).setHours(8, 30, 0, 0);
 
-      const stateWithTime: Partial<RootState> = {
+      const stateWithTime: Partial<TestState> = {
         ...createDefaultState(),
         time: {
           dateTimes: [
@@ -131,7 +131,7 @@ describe('TaskRow', () => {
 
   describe('edit mode', () => {
     it('should render input and update button in edit mode', () => {
-      const stateInEditMode: Partial<RootState> = {
+      const stateInEditMode: Partial<TestState> = {
         ...createDefaultState(1, 'Edit Me'),
         edit: {
           activeEditTaskId: 1,
@@ -150,14 +150,14 @@ describe('TaskRow', () => {
     it('should update task description when Update Task button is clicked', async () => {
       const user = userEvent.setup();
 
-      const stateInEditMode: Partial<RootState> = {
+      const stateInEditMode: Partial<TestState> = {
         ...createDefaultState(1, 'Original'),
         edit: {
           activeEditTaskId: 1,
         },
       };
 
-      const { store } = renderWithProviders(<TaskRow taskId={1} />, {
+      const { stores } = renderWithProviders(<TaskRow taskId={1} />, {
         preloadedState: stateInEditMode,
       });
 
@@ -168,21 +168,21 @@ describe('TaskRow', () => {
       const updateButton = screen.getByRole('button', { name: /update task/i });
       await user.click(updateButton);
 
-      const state = store.getState() as RootState;
-      expect(state.task.tasks[0].description).toBe('Updated Description');
+      const taskState = stores.task.getState();
+      expect(taskState.tasks[0].description).toBe('Updated Description');
     });
 
     it('should exit edit mode after updating', async () => {
       const user = userEvent.setup();
 
-      const stateInEditMode: Partial<RootState> = {
+      const stateInEditMode: Partial<TestState> = {
         ...createDefaultState(1, 'Original'),
         edit: {
           activeEditTaskId: 1,
         },
       };
 
-      const { store } = renderWithProviders(<TaskRow taskId={1} />, {
+      const { stores } = renderWithProviders(<TaskRow taskId={1} />, {
         preloadedState: stateInEditMode,
       });
 
@@ -192,21 +192,21 @@ describe('TaskRow', () => {
       const updateButton = screen.getByRole('button', { name: /update task/i });
       await user.click(updateButton);
 
-      const state = store.getState() as RootState;
-      expect(state.edit.activeEditTaskId).toBeUndefined();
+      const editState = stores.edit.getState();
+      expect(editState.activeEditTaskId).toBeUndefined();
     });
 
     it('should update task when pressing Enter', async () => {
       const user = userEvent.setup();
 
-      const stateInEditMode: Partial<RootState> = {
+      const stateInEditMode: Partial<TestState> = {
         ...createDefaultState(1, 'Original'),
         edit: {
           activeEditTaskId: 1,
         },
       };
 
-      const { store } = renderWithProviders(<TaskRow taskId={1} />, {
+      const { stores } = renderWithProviders(<TaskRow taskId={1} />, {
         preloadedState: stateInEditMode,
       });
 
@@ -214,22 +214,23 @@ describe('TaskRow', () => {
       await user.clear(input);
       await user.type(input, 'Via Enter{Enter}');
 
-      const state = store.getState() as RootState;
-      expect(state.task.tasks[0].description).toBe('Via Enter');
-      expect(state.edit.activeEditTaskId).toBeUndefined();
+      const taskState = stores.task.getState();
+      const editState = stores.edit.getState();
+      expect(taskState.tasks[0].description).toBe('Via Enter');
+      expect(editState.activeEditTaskId).toBeUndefined();
     });
 
     it('should cancel edit and restore original description when pressing Escape', async () => {
       const user = userEvent.setup();
 
-      const stateInEditMode: Partial<RootState> = {
+      const stateInEditMode: Partial<TestState> = {
         ...createDefaultState(1, 'Original'),
         edit: {
           activeEditTaskId: 1,
         },
       };
 
-      const { store } = renderWithProviders(<TaskRow taskId={1} />, {
+      const { stores } = renderWithProviders(<TaskRow taskId={1} />, {
         preloadedState: stateInEditMode,
       });
 
@@ -241,22 +242,23 @@ describe('TaskRow', () => {
 
       await user.keyboard('{Escape}');
 
-      const state = store.getState() as RootState;
-      expect(state.edit.activeEditTaskId).toBeUndefined();
-      expect(state.task.tasks[0].description).toBe('Original');
+      const editState = stores.edit.getState();
+      const taskState = stores.task.getState();
+      expect(editState.activeEditTaskId).toBeUndefined();
+      expect(taskState.tasks[0].description).toBe('Original');
     });
 
     it('should not allow empty description and cancel edit', async () => {
       const user = userEvent.setup();
 
-      const stateInEditMode: Partial<RootState> = {
+      const stateInEditMode: Partial<TestState> = {
         ...createDefaultState(1, 'Original'),
         edit: {
           activeEditTaskId: 1,
         },
       };
 
-      const { store } = renderWithProviders(<TaskRow taskId={1} />, {
+      const { stores } = renderWithProviders(<TaskRow taskId={1} />, {
         preloadedState: stateInEditMode,
       });
 
@@ -266,11 +268,12 @@ describe('TaskRow', () => {
       const updateButton = screen.getByRole('button', { name: /update task/i });
       await user.click(updateButton);
 
-      const state = store.getState() as RootState;
+      const taskState = stores.task.getState();
+      const editState = stores.edit.getState();
       // Should keep original description due to validation
-      expect(state.task.tasks[0].description).toBe('Original');
+      expect(taskState.tasks[0].description).toBe('Original');
       // Should exit edit mode
-      expect(state.edit.activeEditTaskId).toBeUndefined();
+      expect(editState.activeEditTaskId).toBeUndefined();
     });
   });
 

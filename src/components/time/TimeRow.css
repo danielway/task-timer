@@ -23,12 +23,12 @@
 }
 
 .increment:hover {
-  background-color: #f9643d;
+  background-color: #e04a2a; /* theme secondary.light */
   cursor: pointer;
 }
 
 .increment.logged {
-  background-color: #bf3111;
+  background-color: #bf3111; /* theme secondary.main */
 }
 
 td:last-child {

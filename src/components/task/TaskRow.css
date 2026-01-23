@@ -11,15 +11,11 @@
 }
 
 .taskName:hover {
-  color: #bf3111;
+  color: #bf3111; /* theme secondary.main */
 }
 
 .taskDelete:hover {
-  color: #870000;
-}
-
-.cell {
-  font-size: 14px;
+  color: #8c240d; /* theme secondary.dark */
 }
 
 .taskRow.dragging {
