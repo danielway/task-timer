@@ -1,7 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import {
   useAppStore,
-  useEditStore,
   useDateStore,
   useTimeStore,
   getTasksForDate,
@@ -18,16 +17,16 @@ export const useKeyboardNavigation = () => {
   const dateState = useDateStore();
   const tasksForDate = getTasksForDate(dateState, selectedDate);
 
-  const uiSelection = useEditStore((state) => state.selection);
-  const activeEditTaskId = useEditStore((state) => state.activeEditTaskId);
-  const selectTaskDescription = useEditStore(
+  const uiSelection = useAppStore((state) => state.selection);
+  const activeEditTaskId = useAppStore((state) => state.activeEditTaskId);
+  const selectTaskDescription = useAppStore(
     (state) => state.selectTaskDescription
   );
-  const selectTaskTimeSegment = useEditStore(
+  const selectTaskTimeSegment = useAppStore(
     (state) => state.selectTaskTimeSegment
   );
-  const clearSelection = useEditStore((state) => state.clearSelection);
-  const beginTaskEdit = useEditStore((state) => state.beginTaskEdit);
+  const clearSelection = useAppStore((state) => state.clearSelection);
+  const beginTaskEdit = useAppStore((state) => state.beginTaskEdit);
 
   const toggleSegment = useTimeStore((state) => state.toggleSegment);
 

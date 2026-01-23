@@ -1,5 +1,5 @@
 import { MAX_SEGMENTS } from './constants';
-import type { KeyboardSelection } from '../store/editStore';
+import type { KeyboardSelection } from '../store/appStore';
 
 type taskDescriptionSelector = (payload: { taskId: number }) => void;
 type taskTimeSegmentSelector = (payload: {

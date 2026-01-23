@@ -16,7 +16,6 @@ import { TimeSummaryCell } from '../time/TimeSummaryCell';
 import {
   useAppStore,
   useTaskStore,
-  useEditStore,
   useDateStore,
   useTimeStore,
   getTask,
@@ -25,6 +24,7 @@ import {
 } from '../../store';
 import { DEFAULT_TASK_TYPES, getTaskType } from '../../types/taskTypes';
 import { MAX_TASK_DESCRIPTION_LENGTH } from '../../app/constants';
+import { setDragImage } from '../../app/dragImage';
 
 interface TaskRowProps {
   taskId: number;
@@ -45,11 +45,11 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
   useEffect(() => setDescription(task?.description || ''), [task?.description]);
   useEffect(() => setTaskType(task?.type || 'task'), [task?.type]);
 
-  const uiSelection = useEditStore((state) => state.selection);
+  const uiSelection = useAppStore((state) => state.selection);
   const descriptionSelected =
     uiSelection?.taskId === props.taskId && uiSelection?.description;
 
-  const activeEditTaskId = useEditStore((state) => state.activeEditTaskId);
+  const activeEditTaskId = useAppStore((state) => state.activeEditTaskId);
   const editing = activeEditTaskId === props.taskId;
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -62,8 +62,8 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
   // Get actions from stores
   const updateTask = useTaskStore((state) => state.updateTask);
   const deleteTask = useTaskStore((state) => state.deleteTask);
-  const endTaskEdit = useEditStore((state) => state.endTaskEdit);
-  const beginTaskEdit = useEditStore((state) => state.beginTaskEdit);
+  const endTaskEdit = useAppStore((state) => state.endTaskEdit);
+  const beginTaskEdit = useAppStore((state) => state.beginTaskEdit);
   const removeTaskFromDate = useDateStore((state) => state.removeTaskFromDate);
   const removeTime = useTimeStore((state) => state.removeTime);
 
@@ -137,25 +137,7 @@ export const TaskRow = memo(function TaskRow(props: TaskRowProps) {
       className={`taskRow cell${props.dragging ? ' dragging' : ''}`}
       draggable="true"
       onDragStart={(event) => {
-        // Custom drag image logic for white background with cursor offset
-        const target = event.currentTarget;
-        const clone = target.cloneNode(true) as HTMLElement;
-        clone.style.background = '#fff';
-        clone.style.color = getComputedStyle(target).color;
-        clone.style.position = 'absolute';
-        clone.style.top = '-9999px';
-        clone.style.left = '-9999px';
-        clone.style.width = `${target.offsetWidth}px`;
-        clone.style.height = `${target.offsetHeight}px`;
-        document.body.appendChild(clone);
-
-        // Calculate offset between mouse and row top-left
-        const rect = target.getBoundingClientRect();
-        const offsetX = event.clientX - rect.left;
-        const offsetY = event.clientY - rect.top;
-        event.dataTransfer.setDragImage(clone, offsetX, offsetY);
-
-        setTimeout(() => document.body.removeChild(clone), 0);
+        setDragImage(event);
         if (props.onDragStart) props.onDragStart();
       }}
       onDragEnd={props.onDragEnd}

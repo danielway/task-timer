@@ -69,8 +69,8 @@ describe('TaskRow', () => {
       const taskName = screen.getByText('Original Description');
       await user.click(taskName);
 
-      const editState = stores.edit.getState();
-      expect(editState.activeEditTaskId).toBe(1);
+      const appState = stores.app.getState();
+      expect(appState.activeEditTaskId).toBe(1);
     });
 
     it('should display total time for task', () => {
@@ -192,8 +192,8 @@ describe('TaskRow', () => {
       const updateButton = screen.getByRole('button', { name: /update task/i });
       await user.click(updateButton);
 
-      const editState = stores.edit.getState();
-      expect(editState.activeEditTaskId).toBeUndefined();
+      const appState = stores.app.getState();
+      expect(appState.activeEditTaskId).toBeUndefined();
     });
 
     it('should update task when pressing Enter', async () => {
@@ -215,9 +215,9 @@ describe('TaskRow', () => {
       await user.type(input, 'Via Enter{Enter}');
 
       const taskState = stores.task.getState();
-      const editState = stores.edit.getState();
+      const appState = stores.app.getState();
       expect(taskState.tasks[0].description).toBe('Via Enter');
-      expect(editState.activeEditTaskId).toBeUndefined();
+      expect(appState.activeEditTaskId).toBeUndefined();
     });
 
     it('should cancel edit and restore original description when pressing Escape', async () => {
@@ -242,9 +242,9 @@ describe('TaskRow', () => {
 
       await user.keyboard('{Escape}');
 
-      const editState = stores.edit.getState();
+      const appState = stores.app.getState();
       const taskState = stores.task.getState();
-      expect(editState.activeEditTaskId).toBeUndefined();
+      expect(appState.activeEditTaskId).toBeUndefined();
       expect(taskState.tasks[0].description).toBe('Original');
     });
 
@@ -269,11 +269,11 @@ describe('TaskRow', () => {
       await user.click(updateButton);
 
       const taskState = stores.task.getState();
-      const editState = stores.edit.getState();
+      const appState = stores.app.getState();
       // Should keep original description due to validation
       expect(taskState.tasks[0].description).toBe('Original');
       // Should exit edit mode
-      expect(editState.activeEditTaskId).toBeUndefined();
+      expect(appState.activeEditTaskId).toBeUndefined();
     });
   });
 

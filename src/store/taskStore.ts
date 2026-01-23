@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import {
   getPersistedSlice,
-  registerStore,
+  registerStoreGetter,
   triggerPersist,
 } from './middleware/persist';
 
@@ -45,14 +45,8 @@ const getInitialState = (): TaskState => {
 };
 
 export const useTaskStore = create<TaskStore>()((set, get) => {
-  // Register this store for combined persistence
-  registerStore('task', () => {
-    const state = get();
-    return {
-      nextTaskId: state.nextTaskId,
-      tasks: state.tasks,
-    };
-  });
+  // Register this store's getter for persistence
+  registerStoreGetter('task', () => get());
 
   return {
     ...getInitialState(),

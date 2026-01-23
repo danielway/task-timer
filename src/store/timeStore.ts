@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import {
   getPersistedSlice,
-  registerStore,
+  registerStoreGetter,
   triggerPersist,
 } from './middleware/persist';
 import { START_HOUR } from '../app/constants';
@@ -88,13 +88,8 @@ const calculateSegmentTimes = (date: number, segment: number) => {
 };
 
 export const useTimeStore = create<TimeStore>()((set, get) => {
-  // Register this store for combined persistence
-  registerStore('time', () => {
-    const state = get();
-    return {
-      dateTimes: state.dateTimes,
-    };
-  });
+  // Register this store's getter for persistence
+  registerStoreGetter('time', () => get());
 
   return {
     ...getInitialState(),

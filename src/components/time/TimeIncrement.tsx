@@ -1,12 +1,8 @@
 import { memo } from 'react';
-import {
-  useAppStore,
-  useEditStore,
-  useTimeStore,
-  getSegment,
-} from '../../store';
-import { UI } from '../../app/constants';
+import { useAppStore, useTimeStore, getSegment } from '../../store';
 import { colors } from '../../theme';
+
+const SELECTION_BORDER_STYLE = '2px dashed';
 
 interface TimeIncrementProps {
   taskId: number;
@@ -28,7 +24,7 @@ export const TimeIncrement = memo(function TimeIncrement(
 
   const toggleSegment = useTimeStore((state) => state.toggleSegment);
 
-  const uiSelection = useEditStore((state) => state.selection);
+  const uiSelection = useAppStore((state) => state.selection);
   const selected =
     uiSelection &&
     uiSelection.taskId === props.taskId &&
@@ -38,7 +34,7 @@ export const TimeIncrement = memo(function TimeIncrement(
     <div
       style={{
         border: selected
-          ? `${UI.SELECTION_BORDER_STYLE} ${colors.border.selection}`
+          ? `${SELECTION_BORDER_STYLE} ${colors.border.selection}`
           : undefined,
       }}
       className={logged ? 'increment logged' : 'increment'}

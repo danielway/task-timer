@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useInterval } from '../../app/hooks';
+import { useInterval } from '../../app/hooks/useInterval';
 import './TimeCursor.css';
 import { END_HOUR, HOUR_COUNT, START_HOUR } from '../../app/constants';
 import { useAppStore } from '../../store';

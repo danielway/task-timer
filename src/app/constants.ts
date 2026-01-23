@@ -11,27 +11,6 @@ export const MAX_SEGMENTS = HOUR_COUNT * SEGMENTS_PER_HOUR;
 // Validation constants
 export const MAX_TASK_DESCRIPTION_LENGTH = 500;
 
-// UI constants
-export const UI = {
-  CHIP: {
-    FONT_SIZE: '0.7rem',
-    HEIGHT: '20px',
-    MARGIN_RIGHT: '8px',
-  },
-  SELECT: {
-    FONT_SIZE: 13,
-    MARGIN_RIGHT: 10,
-    MIN_WIDTH: 100,
-  },
-  INPUT: {
-    FONT_SIZE: 13,
-  },
-  BUTTON: {
-    MARGIN_LEFT: 10,
-  },
-  SELECTION_BORDER_STYLE: '2px dashed',
-} as const;
-
 // Helper function to get today at midnight
 export const getTodayAtMidnight = (): number => {
   const date = new Date();

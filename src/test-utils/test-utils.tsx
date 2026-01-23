@@ -2,14 +2,22 @@ import { render, type RenderOptions } from '@testing-library/react';
 import { type ReactElement } from 'react';
 import { useAppStore } from '../store/appStore';
 import { useTaskStore } from '../store/taskStore';
-import { useEditStore } from '../store/editStore';
 import { useDateStore } from '../store/dateStore';
 import { useTimeStore } from '../store/timeStore';
 import type { AppState } from '../store/appStore';
 import type { TaskState } from '../store/taskStore';
-import type { EditState } from '../store/editStore';
 import type { DateState } from '../store/dateStore';
 import type { TimeState } from '../store/timeStore';
+
+// Edit state is now part of AppState, but keep interface for test compatibility
+export interface EditState {
+  selection?: {
+    taskId: number;
+    description: boolean;
+    timeSegment?: number;
+  };
+  activeEditTaskId?: number;
+}
 
 // Combined state type for compatibility with existing tests
 export interface TestState {
@@ -33,14 +41,12 @@ export function resetStores() {
   useAppStore.setState({
     version: 'REPLACE_WITH_RELEASE',
     selectedDate: todayTime,
+    selection: undefined,
+    activeEditTaskId: undefined,
   });
   useTaskStore.setState({
     nextTaskId: 1,
     tasks: [],
-  });
-  useEditStore.setState({
-    selection: undefined,
-    activeEditTaskId: undefined,
   });
   useDateStore.setState({
     dateTasks: [{ date: todayTime, tasks: [] }],
@@ -60,8 +66,9 @@ export function setupStores(preloadedState: Partial<TestState> = {}) {
   if (preloadedState.task) {
     useTaskStore.setState(preloadedState.task);
   }
+  // Edit state is now part of appStore
   if (preloadedState.edit) {
-    useEditStore.setState(preloadedState.edit);
+    useAppStore.setState(preloadedState.edit);
   }
   if (preloadedState.date) {
     useDateStore.setState(preloadedState.date);
@@ -83,7 +90,6 @@ export function renderWithProviders(
     stores: {
       app: useAppStore,
       task: useTaskStore,
-      edit: useEditStore,
       date: useDateStore,
       time: useTimeStore,
     },

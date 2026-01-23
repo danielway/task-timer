@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import {
   getPersistedSlice,
-  registerStore,
+  registerStoreGetter,
   triggerPersist,
 } from './middleware/persist';
 
@@ -46,13 +46,8 @@ const getInitialState = (): DateState => {
 };
 
 export const useDateStore = create<DateStore>()((set, get) => {
-  // Register this store for combined persistence
-  registerStore('date', () => {
-    const state = get();
-    return {
-      dateTasks: state.dateTasks,
-    };
-  });
+  // Register this store's getter for persistence
+  registerStoreGetter('date', () => get());
 
   return {
     ...getInitialState(),

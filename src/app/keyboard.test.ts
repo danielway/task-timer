@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { handleKeyboardInput } from './keyboard';
-import type { KeyboardSelection } from '../store/editStore';
+import type { KeyboardSelection } from '../store/appStore';
 import { mockToday } from '../test-utils/test-utils';
 import { HOUR_COUNT } from './constants';
 

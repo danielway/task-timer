@@ -72,27 +72,46 @@ export const getPersistedSlice = <K extends keyof PersistedState>(
   return state?.[key];
 };
 
-// Registry for all stores - allows us to save the combined state
-type StoreGetter = () => unknown;
-const storeRegistry = new Map<keyof PersistedState, StoreGetter>();
+// Registry for store state getters - avoids circular dependencies
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type StateGetter = () => any;
+const storeGetters: Record<string, StateGetter> = {};
 
-export const registerStore = (
-  key: keyof PersistedState,
-  getState: StoreGetter
-): void => {
-  storeRegistry.set(key, getState);
+export const registerStoreGetter = (key: string, getter: StateGetter): void => {
+  storeGetters[key] = getter;
 };
 
 // Persist all stores to localStorage
 const persistCombinedState = (): void => {
-  const combinedState: Partial<PersistedState> = {};
+  const appState = storeGetters['app']?.() || {};
+  const taskState = storeGetters['task']?.() || {};
+  const dateState = storeGetters['date']?.() || {};
+  const timeState = storeGetters['time']?.() || {};
 
-  storeRegistry.forEach((getState, key) => {
-    (combinedState as Record<string, unknown>)[key] = getState();
-  });
+  const combinedState: Partial<PersistedState> = {
+    app: {
+      version: (appState.version as string) || 'REPLACE_WITH_RELEASE',
+      selectedDate: appState.selectedDate as number,
+    },
+    task: {
+      nextTaskId: taskState.nextTaskId as number,
+      tasks: taskState.tasks as PersistedState['task']['tasks'],
+    },
+    date: {
+      dateTasks: dateState.dateTasks as PersistedState['date']['dateTasks'],
+    },
+    time: {
+      dateTimes: timeState.dateTimes as PersistedState['time']['dateTimes'],
+    },
+    // Edit state is now part of appStore, but persisted separately for backwards compatibility
+    edit: {
+      selection: appState.selection as PersistedState['edit']['selection'],
+      activeEditTaskId: appState.activeEditTaskId as number | undefined,
+    },
+  };
 
   savePersistedState(combinedState);
 };
 
-// Allow external triggering of persist (for initial setup)
+// Allow external triggering of persist
 export const triggerPersist = persistCombinedState;
