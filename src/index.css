@@ -86,46 +86,17 @@ th.icon {
   }
 }
 
-/* Sticky columns for horizontal scrolling */
-th.icon,
-td.icon {
-  position: sticky;
-  left: 0;
-  z-index: 2;
-  background-color: #fff;
-}
-
-th.header,
-td.taskName {
-  position: sticky;
-  left: 24px;
-  z-index: 2;
-  background-color: #fff;
-  min-width: 200px;
+/* Task description truncation */
+.taskDescription {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  max-width: 150px;
 }
 
 @media (min-width: 600px) {
-  th.header,
-  td.taskName {
-    left: 32px;
-    min-width: 280px;
+  .taskDescription {
+    max-width: 250px;
   }
-}
-
-/* Ensure sticky cells have border to separate from scrolling content */
-th.header,
-td.taskName {
-  border-right: 1px solid #e0e0e0;
-}
-
-/* Header row background */
-thead th.icon,
-thead th.header {
-  background-color: #fafafa;
-}
-
-/* Hover state for sticky cells */
-.taskRow:hover td.icon,
-.taskRow:hover td.taskName {
-  background-color: #f5f5f5;
 }

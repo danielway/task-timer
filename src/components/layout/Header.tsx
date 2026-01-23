@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -10,9 +9,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import ListIcon from '@mui/icons-material/List';
-import SettingsIcon from '@mui/icons-material/Settings';
 import { DatePicker } from './DatePicker';
-import { ProjectManager } from '../project/ProjectManager';
 import {
   useAppStore,
   useProjectStore,
@@ -20,8 +17,6 @@ import {
 } from '../../store';
 
 export const Header = () => {
-  const [projectManagerOpen, setProjectManagerOpen] = useState(false);
-
   const backlogOpen = useAppStore((state) => state.backlogOpen);
   const toggleBacklog = useAppStore((state) => state.toggleBacklog);
   const projectFilter = useAppStore((state) => state.projectFilter);
@@ -118,23 +113,9 @@ export const Header = () => {
             </Select>
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Tooltip title="Manage Projects">
-              <IconButton
-                color="inherit"
-                onClick={() => setProjectManagerOpen(true)}
-              >
-                <SettingsIcon />
-              </IconButton>
-            </Tooltip>
-            <DatePicker />
-          </Box>
+          <DatePicker />
         </Toolbar>
       </AppBar>
-      <ProjectManager
-        open={projectManagerOpen}
-        onClose={() => setProjectManagerOpen(false)}
-      />
     </>
   );
 };

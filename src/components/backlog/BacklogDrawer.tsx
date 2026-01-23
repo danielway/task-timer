@@ -69,14 +69,12 @@ export function BacklogDrawer() {
       open={backlogOpen}
       variant="persistent"
       sx={{
-        width: backlogOpen ? drawerWidth : 0,
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           width: drawerWidth,
           boxSizing: 'border-box',
           top: 64, // Below the app bar
           height: 'calc(100% - 64px)',
-          transition: 'width 0.2s ease-in-out',
         },
       }}
     >
