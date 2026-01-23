@@ -6,8 +6,6 @@ import {
   Box,
   IconButton,
   Tooltip,
-  FormControlLabel,
-  Switch,
   Select,
   MenuItem,
 } from '@mui/material';
@@ -26,8 +24,6 @@ export const Header = () => {
 
   const backlogOpen = useAppStore((state) => state.backlogOpen);
   const toggleBacklog = useAppStore((state) => state.toggleBacklog);
-  const showCompleted = useAppStore((state) => state.showCompleted);
-  const setShowCompleted = useAppStore((state) => state.setShowCompleted);
   const projectFilter = useAppStore((state) => state.projectFilter);
   const setProjectFilter = useAppStore((state) => state.setProjectFilter);
 
@@ -120,27 +116,6 @@ export const Header = () => {
                 </MenuItem>
               ))}
             </Select>
-
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={showCompleted}
-                  onChange={(e) => setShowCompleted(e.target.checked)}
-                  size="small"
-                  sx={{
-                    '& .MuiSwitch-track': {
-                      backgroundColor: 'rgba(255,255,255,0.3)',
-                    },
-                  }}
-                />
-              }
-              label={
-                <Typography sx={{ fontSize: 12, color: 'white' }}>
-                  Show Done
-                </Typography>
-              }
-              sx={{ margin: 0 }}
-            />
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

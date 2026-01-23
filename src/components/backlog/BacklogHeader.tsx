@@ -1,6 +1,4 @@
 import { Box, IconButton, TextField, Tooltip, Typography } from '@mui/material';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAppStore } from '../../store';
 
@@ -13,8 +11,6 @@ export function BacklogHeader({
   searchQuery,
   onSearchChange,
 }: BacklogHeaderProps) {
-  const backlogExpanded = useAppStore((state) => state.backlogExpanded);
-  const setBacklogExpanded = useAppStore((state) => state.setBacklogExpanded);
   const toggleBacklog = useAppStore((state) => state.toggleBacklog);
 
   return (
@@ -37,21 +33,11 @@ export function BacklogHeader({
         <Typography variant="subtitle1" fontWeight="bold">
           Backlog
         </Typography>
-        <Box>
-          <Tooltip title={backlogExpanded ? 'Collapse' : 'Expand'}>
-            <IconButton
-              size="small"
-              onClick={() => setBacklogExpanded(!backlogExpanded)}
-            >
-              {backlogExpanded ? <FullscreenExitIcon /> : <FullscreenIcon />}
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Close">
-            <IconButton size="small" onClick={toggleBacklog}>
-              <CloseIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
+        <Tooltip title="Close">
+          <IconButton size="small" onClick={toggleBacklog}>
+            <CloseIcon />
+          </IconButton>
+        </Tooltip>
       </Box>
       <TextField
         size="small"

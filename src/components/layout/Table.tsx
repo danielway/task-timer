@@ -63,10 +63,10 @@ export const Table = () => {
       <MuiTable size="small" sx={{ minWidth: { xs: 800, sm: 'auto' } }}>
         <TableHead>
           <TableRow>
-            <TableCell className="icon" />
-            <TableCell className="header">Task</TableCell>
+            <TableCell component="th" className="icon" />
+            <TableCell component="th" className="header">Task</TableCell>
             <TimeHeaderCells onNewPosition={handleNewHoursPosition} />
-            <TableCell className="header">Total</TableCell>
+            <TableCell component="th" className="time">Total</TableCell>
           </TableRow>
         </TableHead>
         <TableBody />

@@ -200,45 +200,6 @@ describe('TaskCreationRow', () => {
     expect(taskState.tasks).toHaveLength(0);
   });
 
-  it('should display total time for date', () => {
-    const start1 = new Date(mockToday).setHours(7, 0, 0, 0);
-    const end1 = new Date(mockToday).setHours(7, 30, 0, 0);
-    const start2 = new Date(mockToday).setHours(8, 0, 0, 0);
-    const end2 = new Date(mockToday).setHours(8, 15, 0, 0);
-
-    const stateWithTime: Partial<TestState> = {
-      app: {
-        version: '1.0',
-        selectedDate: mockToday,
-        backlogOpen: false,
-        backlogExpanded: false,
-        showCompleted: true,
-      },
-      task: { nextTaskId: 3, tasks: [] },
-      date: { dateTasks: [{ date: mockToday, tasks: [], taskFirstWorkTime: {} }] },
-      time: {
-        dateTimes: [
-          {
-            date: mockToday,
-            taskTimes: [
-              { task: 1, start: start1, end: end1 },
-              { task: 2, start: start2, end: end2 },
-            ],
-          },
-        ],
-      },
-    };
-
-    const { container } = renderWithProviders(<TaskCreationRow />, {
-      preloadedState: stateWithTime,
-    });
-
-    // Total should be 30 + 15 = 45 minutes = 0:45
-    // Text might be split across elements, so check container text
-    expect(container.textContent).toContain('0');
-    expect(container.textContent).toContain('45');
-  });
-
   it('should use correct task id based on nextTaskId', async () => {
     const user = userEvent.setup();
 

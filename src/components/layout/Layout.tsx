@@ -10,11 +10,10 @@ interface LayoutProps {
   children: ReactNode;
 }
 
+const DRAWER_WIDTH = 320;
+
 export const Layout = (props: LayoutProps) => {
   const backlogOpen = useAppStore((state) => state.backlogOpen);
-  const backlogExpanded = useAppStore((state) => state.backlogExpanded);
-
-  const drawerWidth = backlogExpanded ? '80%' : 320;
 
   return (
     <ThemeProvider theme={theme}>
@@ -27,10 +26,8 @@ export const Layout = (props: LayoutProps) => {
           sx={{
             flexGrow: 1,
             transition: 'margin 0.2s ease-in-out',
-            marginLeft: backlogOpen ? `${drawerWidth}px` : 0,
-            width: backlogOpen
-              ? `calc(100% - ${typeof drawerWidth === 'string' ? drawerWidth : `${drawerWidth}px`})`
-              : '100%',
+            marginLeft: backlogOpen ? `${DRAWER_WIDTH}px` : 0,
+            width: backlogOpen ? `calc(100% - ${DRAWER_WIDTH}px)` : '100%',
           }}
         >
           <Container>

@@ -32,8 +32,6 @@ export function BacklogDrawer() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const backlogOpen = useAppStore((state) => state.backlogOpen);
-  const backlogExpanded = useAppStore((state) => state.backlogExpanded);
-  const showCompleted = useAppStore((state) => state.showCompleted);
   const projectFilter = useAppStore((state) => state.projectFilter);
 
   const taskState = useTaskStore();
@@ -49,9 +47,6 @@ export function BacklogDrawer() {
       const task = getTask(taskState, taskId);
       if (!task) return false;
 
-      // Filter by completion status
-      if (!showCompleted && task.status === 'done') return false;
-
       // Filter by project
       if (projectFilter !== undefined && task.projectId !== projectFilter)
         return false;
@@ -64,9 +59,9 @@ export function BacklogDrawer() {
 
       return true;
     });
-  }, [backlogTaskIds, taskState, showCompleted, projectFilter, searchQuery]);
+  }, [backlogTaskIds, taskState, projectFilter, searchQuery]);
 
-  const drawerWidth = backlogExpanded ? '80%' : 320;
+  const drawerWidth = 320;
 
   return (
     <Drawer

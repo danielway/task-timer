@@ -13,7 +13,6 @@ import { useCallback, useMemo } from 'react';
 
 export const TableBody = () => {
   const selectedDate = useAppStore((state) => state.selectedDate);
-  const showCompleted = useAppStore((state) => state.showCompleted);
   const projectFilter = useAppStore((state) => state.projectFilter);
   const dateState = useDateStore();
   const taskState = useTaskStore();
@@ -22,14 +21,11 @@ export const TableBody = () => {
     (state) => state.reorderTasksForDate
   );
 
-  // Filter tasks by project and completion status
+  // Filter tasks by project
   const taskIds = useMemo(() => {
     return allTaskIds.filter((taskId) => {
       const task = getTask(taskState, taskId);
       if (!task) return false;
-
-      // Filter by completion status
-      if (!showCompleted && task.status === 'done') return false;
 
       // Filter by project
       if (projectFilter !== undefined && task.projectId !== projectFilter)
@@ -37,7 +33,7 @@ export const TableBody = () => {
 
       return true;
     });
-  }, [allTaskIds, taskState, showCompleted, projectFilter]);
+  }, [allTaskIds, taskState, projectFilter]);
 
   // Track which tasks are continued from a previous date
   const continuedTaskIds = useMemo(() => {

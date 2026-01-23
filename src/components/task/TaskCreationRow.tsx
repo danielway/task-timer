@@ -10,20 +10,16 @@ import {
   FormControlLabel,
   Checkbox,
 } from '@mui/material';
-import { TimeSummaryCell } from '../time/TimeSummaryCell';
 import {
   useAppStore,
   useTaskStore,
   useDateStore,
-  useTimeStore,
   useProjectStore,
-  getTimesForDate,
   getNextTaskId,
   getActiveProjects,
-  type TaskTime,
 } from '../../store';
 import { DEFAULT_TASK_TYPES } from '../../types/taskTypes';
-import { MAX_TASK_DESCRIPTION_LENGTH } from '../../app/constants';
+import { MAX_TASK_DESCRIPTION_LENGTH, HOUR_COUNT } from '../../app/constants';
 
 export const TaskCreationRow = () => {
   const [description, setDescription] = useState('');
@@ -32,8 +28,6 @@ export const TaskCreationRow = () => {
   const [addToBacklog, setAddToBacklog] = useState(false);
 
   const selectedDate = useAppStore((state) => state.selectedDate);
-  const timeState = useTimeStore();
-  const timesForDate = getTimesForDate(timeState, selectedDate);
 
   const taskState = useTaskStore();
   const nextId = getNextTaskId(taskState);
@@ -78,23 +72,23 @@ export const TaskCreationRow = () => {
     setAddToBacklog(false);
   };
 
-  const totalMinutes = timesForDate.reduce(
-    (acc, cur) => acc + getDurationMinutes(cur),
-    0
-  );
-
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Total columns: icon (1) + task (1) + hours (HOUR_COUNT) + total (1)
+  // We span all columns except the icon cell
+  const colSpan = 1 + HOUR_COUNT + 1;
 
   return (
     <TableRow>
       <TableCell className="icon" />
-      <TableCell>
+      <TableCell colSpan={colSpan}>
         <Box
           sx={{
             display: 'flex',
             flexDirection: { xs: 'column', sm: 'row' },
             gap: { xs: 1, sm: 1 },
             alignItems: { xs: 'stretch', sm: 'center' },
+            justifyContent: 'flex-start',
           }}
         >
           <Select
@@ -206,13 +200,6 @@ export const TaskCreationRow = () => {
           </Button>
         </Box>
       </TableCell>
-      <TableCell colSpan={11}></TableCell>
-      <TimeSummaryCell totalMinutes={totalMinutes} />
     </TableRow>
   );
-};
-
-const getDurationMinutes = (time: TaskTime) => {
-  const end = time.end ?? new Date().getTime();
-  return end / 1000 / 60 - time.start / 1000 / 60;
 };
