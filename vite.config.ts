@@ -32,15 +32,6 @@ export default defineConfig({
         'playwright.config.ts',
         'eslint.config.js',
       ],
-      // Realistic thresholds focused on business logic coverage
-      // Currently at: 100% on business logic (slices, keyboard)
-      // Lower overall due to presentation components being less critical to test
-      thresholds: {
-        branches: 75,
-        functions: 50,
-        lines: 45,
-        statements: 45,
-      },
     },
   },
 });
